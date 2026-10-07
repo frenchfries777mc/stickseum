@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ARENA CLASH — 바로 플레이 · 다운로드</title>
+<title>Stickseum — 바로 플레이 · 다운로드</title>
 <meta name="description" content="브라우저에서 바로 실행되는 스틱맨 멀티플레이어 난투 게임. 링크 하나로 친구들과 같은 버전으로 즐겨요.">
+<meta property="og:title" content="Stickseum — 바로 플레이"><meta property="og:description" content="설치 없이 브라우저에서 바로. 친구들과 실시간으로 붙는 스틱맨 난투 게임."><meta property="og:type" content="website"><meta name="theme-color" content="#0a0b0f">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -68,14 +69,14 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="topbar"><div class="wordmark">ARENA<b>CLASH</b></div><nav><a href="#play">플레이</a><a href="#versions">버전</a><a href="#help">도움말</a></nav></div>
+  <div class="topbar"><div class="wordmark">STICK<b>SEUM</b></div><nav><a href="#play">플레이</a><a href="#versions">버전</a><a href="#help">도움말</a></nav></div>
 
   <div class="hero" id="play">
     <h1>스틱맨들의<br><span class="clash">실시간 난투.</span></h1>
     <p>설치 없이 브라우저에서 바로. 링크 하나로 친구들과 같은 방에서 붙어요.</p>
     <div class="cta">
-      <a class="btn play" id="playBtn" href="files/ArenaClash-latest.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>바로 플레이</a>
-      <a class="btn dl" id="dlBtn" href="files/ArenaClash-latest.html" download="ArenaClash-latest.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>다운로드</a>
+      <a class="btn play" id="playBtn" href="Stickseum-latest.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>바로 플레이</a>
+      <a class="btn dl" id="dlBtn" href="Stickseum-latest.html" download="Stickseum-latest.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>다운로드</a>
     </div>
     <div class="meta" id="heroMeta">최신 버전 불러오는 중…</div>
   </div>
@@ -115,12 +116,12 @@
     <details><summary>왜 옛 버전도 있나요?</summary><p>예전 버전을 보고 싶을 때를 위해 남겨 뒀어요. 친구와 함께 하려면 최신 버전을 쓰세요.</p></details>
   </section>
 
-  <footer>ARENA CLASH — 브라우저에서 바로 실행되는 HTML 게임. <span id="footVer"></span></footer>
+  <footer>Stickseum — 브라우저에서 바로 실행되는 HTML 게임. <span id="footVer"></span></footer>
 </div>
 
 <script>
 /* the list of versions: read from versions.json when the page is on a web server; the copy below is used when the page is opened as a plain file (no server) */
-const FALLBACK = {"name": "ARENA CLASH", "latest": "0.5", "latestFile": "files/ArenaClash-latest.html", "updated": "2026-10-07", "versions": [{"version": "0.5", "date": "2026-10-07", "file": "files/ArenaClash-v0.5.html", "size": 1302241, "sha256": "cb32c0b03d79", "title": "캐릭터 22명 · 상자 · 채팅", "summary": "자다이·호렘헵 추가, 티어 스킨과 화려한 연출, 깃발 뺏기, 랜덤 상자·영혼석·일일 보상, 닉네임 검색, 승리/패배 음악, 채팅 개선, 성능 최적화", "latest": true}, {"version": "0.4", "date": "2026-10-05", "file": "files/ArenaClash-v0.4.html", "size": 788610, "sha256": "173d54b14b3c", "title": "미니게임 · 봇", "summary": "좀비 · 폭탄 돌리기 · 숨바꼭질 · 파쿠르 · 서바이벌, 킬캠 리플레이, 도전과제와 무기 숙련도, 온라인 AI 봇", "latest": false}, {"version": "0.3", "date": "2026-10-02", "file": "files/ArenaClash-v0.3.html", "size": 282123, "sha256": "ce9c39fae96f", "title": "캐릭터 17명 · 소셜", "summary": "드라큘라·도박사·마법사 추가, 킬캠과 킬 배너, 상점·프로필·레벨, 친구와 게임 초대", "latest": false}, {"version": "0.2", "date": "2026-09-29", "file": "files/ArenaClash-v0.2.html", "size": 195634, "sha256": "3ab313578dd5", "title": "다듬기", "summary": "화면과 이펙트 정리, 밸런스 조정", "latest": false}, {"version": "0.1", "date": "2026-09-29", "file": "files/ArenaClash-v0.1.html", "size": 195433, "sha256": "e2a2978c5565", "title": "첫 버전", "summary": "2~32인 온라인 스틱맨 난투, 무기와 궁극기, 점령전, 코스튬·골드의 기본 틀", "latest": false}]};
+const FALLBACK = {"name": "Stickseum", "latest": "0.5", "latestFile": "Stickseum-latest.html", "updated": "2026-10-07", "versions": [{"version": "0.5", "date": "2026-10-07", "file": "Stickseum-v0.5.html", "size": 1302236, "sha256": "1f6c18f5803f", "title": "캐릭터 22명 · 상자 · 채팅", "summary": "자다이·호렘헵 추가, 티어 스킨과 화려한 연출, 깃발 뺏기, 랜덤 상자·영혼석·일일 보상, 닉네임 검색, 승리/패배 음악, 채팅 개선, 성능 최적화, 이름이 Stickseum으로 바뀜", "latest": true}, {"version": "0.4", "date": "2026-10-05", "file": "Stickseum-v0.4.html", "size": 788610, "sha256": "173d54b14b3c", "title": "미니게임 · 봇", "summary": "좀비 · 폭탄 돌리기 · 숨바꼭질 · 파쿠르 · 서바이벌, 킬캠 리플레이, 도전과제와 무기 숙련도, 온라인 AI 봇", "latest": false}, {"version": "0.3", "date": "2026-10-02", "file": "Stickseum-v0.3.html", "size": 282123, "sha256": "ce9c39fae96f", "title": "캐릭터 17명 · 소셜", "summary": "드라큘라·도박사·마법사 추가, 킬캠과 킬 배너, 상점·프로필·레벨, 친구와 게임 초대", "latest": false}, {"version": "0.2", "date": "2026-09-29", "file": "Stickseum-v0.2.html", "size": 195634, "sha256": "3ab313578dd5", "title": "다듬기", "summary": "화면과 이펙트 정리, 밸런스 조정", "latest": false}, {"version": "0.1", "date": "2026-09-29", "file": "Stickseum-v0.1.html", "size": 195433, "sha256": "e2a2978c5565", "title": "첫 버전", "summary": "2~32인 온라인 스틱맨 난투, 무기와 궁극기, 점령전, 코스튬·골드의 기본 틀", "latest": false}]};
 const dlSvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>';
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const kb=n=>n>=1048576?(n/1048576).toFixed(1)+' MB':Math.round(n/1024)+' KB';
