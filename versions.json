@@ -1,0 +1,58 @@
+{
+ "name": "ARENA CLASH",
+ "latest": "0.5",
+ "latestFile": "files/ArenaClash-latest.html",
+ "updated": "2026-10-07",
+ "versions": [
+  {
+   "version": "0.5",
+   "date": "2026-10-07",
+   "file": "files/ArenaClash-v0.5.html",
+   "size": 1302241,
+   "sha256": "cb32c0b03d79",
+   "title": "캐릭터 22명 · 상자 · 채팅",
+   "summary": "자다이·호렘헵 추가, 티어 스킨과 화려한 연출, 깃발 뺏기, 랜덤 상자·영혼석·일일 보상, 닉네임 검색, 승리/패배 음악, 채팅 개선, 성능 최적화",
+   "latest": true
+  },
+  {
+   "version": "0.4",
+   "date": "2026-10-05",
+   "file": "files/ArenaClash-v0.4.html",
+   "size": 788610,
+   "sha256": "173d54b14b3c",
+   "title": "미니게임 · 봇",
+   "summary": "좀비 · 폭탄 돌리기 · 숨바꼭질 · 파쿠르 · 서바이벌, 킬캠 리플레이, 도전과제와 무기 숙련도, 온라인 AI 봇",
+   "latest": false
+  },
+  {
+   "version": "0.3",
+   "date": "2026-10-02",
+   "file": "files/ArenaClash-v0.3.html",
+   "size": 282123,
+   "sha256": "ce9c39fae96f",
+   "title": "캐릭터 17명 · 소셜",
+   "summary": "드라큘라·도박사·마법사 추가, 킬캠과 킬 배너, 상점·프로필·레벨, 친구와 게임 초대",
+   "latest": false
+  },
+  {
+   "version": "0.2",
+   "date": "2026-09-29",
+   "file": "files/ArenaClash-v0.2.html",
+   "size": 195634,
+   "sha256": "3ab313578dd5",
+   "title": "다듬기",
+   "summary": "화면과 이펙트 정리, 밸런스 조정",
+   "latest": false
+  },
+  {
+   "version": "0.1",
+   "date": "2026-09-29",
+   "file": "files/ArenaClash-v0.1.html",
+   "size": 195433,
+   "sha256": "e2a2978c5565",
+   "title": "첫 버전",
+   "summary": "2~32인 온라인 스틱맨 난투, 무기와 궁극기, 점령전, 코스튬·골드의 기본 틀",
+   "latest": false
+  }
+ ]
+}
