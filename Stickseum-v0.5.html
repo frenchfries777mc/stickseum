@@ -120,6 +120,13 @@
   #dailyBadge.ready .dot{ display:block; }
   #dailyBadge.ready{ box-shadow:0 0 0 2px rgba(255,211,77,.7); }
   @keyframes dailyPulse{ 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.35);} }
+  .accBox{ background:var(--panel-2); border:1px solid var(--line); border-radius:8px; padding:8px 10px; margin:6px 0; font-size:13px; }
+  .accBox .accRow{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin:2px 0; }
+  .accBox .accPwVal{ font-family:monospace; letter-spacing:.5px; word-break:break-all; }
+  .accBox button{ padding:3px 10px; font-size:12px; }
+  .accBox .accCloud{ margin-top:4px; }
+  .pwOpt{ display:block; text-align:left; font-size:13px; margin:4px 0 8px; }
+  .pwOpt input{ width:auto; margin-right:6px; }
   .shopItem{position:relative;}
   .shopItem.lux1{ box-shadow:0 0 12px var(--luxc,#7bf3ff); border-color:var(--luxc,#7bf3ff); }
   .shopItem.lux2{ box-shadow:0 0 18px var(--luxc,#ff5252), inset 0 0 14px rgba(255,255,255,.07); border-color:var(--luxc,#ff5252); animation:luxPulse 2.2s ease-in-out infinite; }
@@ -290,6 +297,12 @@
     color:var(--text); font-family:'JetBrains Mono',monospace; font-size:15px; letter-spacing:1px; outline:none;
   }
   input[type=text]:focus{border-color:var(--accent-2);}
+  input[type=password]{
+    width:100%; padding:11px 12px; border-radius:8px; border:1px solid var(--line); background:var(--panel-2);
+    color:var(--text); font-family:'JetBrains Mono',monospace; font-size:15px; letter-spacing:1px; outline:none;
+  }
+  input[type=password]:focus{border-color:var(--accent-2);}
+  input:-webkit-autofill{ -webkit-box-shadow:0 0 0 40px var(--panel-2) inset; -webkit-text-fill-color:var(--text); caret-color:var(--text); }
   .row{display:flex; gap:10px;}
   .row > *{flex:1;}
   button{
@@ -431,7 +444,7 @@
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-06-v105</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-06-v111</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -463,6 +476,7 @@
   <div id="matchEndOverlay" style="display:none; position:fixed; inset:0; z-index:20; background:rgba(8,9,12,.9); align-items:center; justify-content:center; flex-direction:column; pointer-events:auto;">
     <div style="font-size:28px; font-weight:700; color:var(--accent-2); margin-bottom:18px; text-align:center; padding:0 20px;" id="matchEndText"></div>
     <div style="font-size:15px; color:#9aa0a6; margin:-10px 0 18px; text-align:center; padding:0 20px;" id="matchEndSub"></div>
+    <div id="matchEndXp" style="display:none; margin:-6px 0 8px; padding:8px 16px; border:1px solid #1f3a30; background:rgba(63,224,197,.07); border-radius:10px; text-align:center; font-size:14px; line-height:1.6; color:#e8eaed;"></div>
     <div id="matchEndMastery" style="display:none; margin:-6px 0 18px; padding:8px 16px; border:1px solid #3a3320; background:rgba(255,211,77,.07); border-radius:10px; text-align:center; font-size:14px; line-height:1.6; color:#e8eaed;"></div>
     <button class="btn-primary" id="matchEndMenuBtn" style="padding:12px 28px;">메인으로</button>
   </div>
@@ -849,6 +863,9 @@ let saveData={owned:{}, equipped:{name:null, skin:{}}, xp:0, totalKills:0, total
    Players: the old curve (50 x (level-1)^2, growing) up to Lv.10, then XP_FLAT per level.
    Characters (weapon mastery): the old table up to Lv.10, then a gentle growth (+50 per level) until it reaches XP_FLAT at Lv.20, then XP_FLAT per level.
    Both systems earn XP at the same pace (10 per kill, 5 per assist, 5 per match) and from their knee on need the very same XP for the next level. */
+/* the xp of the player (the profile level): a kill gives KILL_XP, a win gives WIN_XP on top of the 5 xp that every finished match gives.
+   Both are 1.8 times what they were (a kill 10 -> 18; there was no xp for a win before: it is now 18, the same as a kill). */
+const XP_MULT=1.8, KILL_XP=Math.round(10*XP_MULT), WIN_XP=Math.round(10*XP_MULT), FINISH_XP=5;
 const XP_FLAT=950, PLAYER_KNEE=10;      // 950 = what the old curve charged for Lv.10 -> 11, so the curve continues without a jump and nobody loses a level
 function xpForLevel(lv){ lv=Math.max(1,Math.floor(lv||1)); if(lv<=PLAYER_KNEE) return 50*(lv-1)*(lv-1); return 50*(PLAYER_KNEE-1)*(PLAYER_KNEE-1)+(lv-PLAYER_KNEE)*XP_FLAT; }
 function levelFromXp(xp){ xp=Math.max(0,+xp||0); const kx=xpForLevel(PLAYER_KNEE); if(xp<kx) return Math.floor(Math.sqrt(xp/50))+1; return PLAYER_KNEE+Math.floor((xp-kx)/XP_FLAT); }
@@ -879,6 +896,7 @@ function loadSave(){
 }
 function persistSave(){
   try{ sbScheduleStatsUpload(); }catch(e){}     // (also tells the others about the new numbers a few seconds later - see sbUploadStats)
+  try{ sbScheduleCloudSave(); }catch(e){}       // (and keeps the progress in the account - see cloudSaveUpload)
   try{
     localStorage.setItem(SAVE_KEY, JSON.stringify({
       gold, owned:saveData.owned, equipped:saveData.equipped, xp:saveData.xp, totalKills:saveData.totalKills, totalMatches:saveData.totalMatches,
@@ -1206,6 +1224,7 @@ function applyWeaponMastery(me, won, assists){
   return {wid, gained, oldLv, newLv, gold, xp:before+gained, kills:me.kills||0, assists:as, won:!!won};
 }
 let lastMastery=null; // what the finished match gave, shown on the match-end screen
+let lastMatchXp={kills:0, finish:0, win:0};
 function masteryBadgeText(wid){ const m=masteryInfo(wid); return (m.lv>=MASTERY_STAR_LV?'★ ':'')+'숙련 Lv.'+m.lv; }
 
 // ===== Achievements =====
@@ -2878,7 +2897,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-06-v105';
+const GAME_BUILD='build 2026-10-06-v111';
 function roomIdFor(mapId,slot,modeId){ return 'online-'+(modeId||gameMode)+'-'+mapId+'-'+slot; }
 
 function renderMapPreview(mapId, canvas){
@@ -3801,7 +3820,7 @@ let sbUser=null; // {id, username}
 let presenceChannel=null, friendReqChannel=null, inviteChannel=null;
 let friendsCache=[];
 function sbEmailFor(u){ return u.toLowerCase().replace(/[^a-z0-9_]/g,'')+'@arenaclash.local'; }
-async function sbSignUp(username, password){
+async function sbSignUp(username, password, remember){
   username=username.trim();
   if(!/^[a-zA-Z0-9_]{3,16}$/.test(username)) return {error:'아이디는 영문/숫자/밑줄 3~16자로 해주세요.'};
   if(!password || password.length<6) return {error:'비밀번호는 6자 이상으로 해주세요.'};
@@ -3809,30 +3828,232 @@ async function sbSignUp(username, password){
   if(error) return {error: /already|registered/i.test(error.message) ? '이미 있는 아이디예요.' : error.message};
   const { error: perr } = await sb.from('profiles').insert({ id: data.user.id, username });
   if(perr) return {error:'이미 있는 아이디예요.'};
-  await sbAfterLogin(data.user.id, username);
+  sbRememberPassword(username, password, remember!==false);
+  await sbAfterLogin(data.user.id, username, data.user.user_metadata);
   return {ok:true};
 }
-async function sbSignIn(username, password){
-  const { data, error } = await sb.auth.signInWithPassword({ email: sbEmailFor(username.trim()), password });
-  if(error) return {error:'아이디 또는 비밀번호가 틀렸어요.'};
+/* A correct password can still arrive a little different: a space (or an invisible character) in front of / behind it when it was copied, full-width letters from an IME,
+   and - on a Korean keyboard - the won sign (₩, U+20A9) and the backslash (\, U+005C), which look the SAME on screen but are different characters.
+   So when the server says "wrong credentials" the login also tries those variants of what was typed (at most 6 tries in all) before giving up. */
+function passwordVariants(p){
+  p=String(p==null?'':p); const out=[p];
+  const add=(x)=>{ if(x && !out.includes(x)) out.push(x); };
+  const clean=p.replace(/[\u200B-\u200D\uFEFF\u00A0]/g,'');                                    // invisible characters (zero-width, no-break space) that a copy can carry along
+  const trimmed=clean.trim(), nfkc=trimmed.normalize('NFKC');                                    // spaces around it; full-width letters/digits -> normal ones
+  add(clean); add(trimmed); add(nfkc);
+  const swap=(x)=>x.replace(/[\u20A9\u005C]/g, c=>c==='\u20A9' ? '\u005C' : '\u20A9');           // ₩ <-> \
+  if(/[\u20A9\u005C]/.test(p)){ add(swap(p)); add(swap(trimmed)); add(swap(nfkc)); }
+  return out.slice(0,6);
+}
+function sbAuthErrorInfo(error){
+  const m=String((error&&error.message)||''), c=String((error&&(error.code||error.error_code))||''), s=(error&&error.status)||0;
+  if(c==='invalid_credentials' || /invalid login credentials/i.test(m)) return {kind:'cred', text:'아이디 또는 비밀번호가 틀렸어요.', detail:c||'invalid_credentials'};
+  if(c==='email_not_confirmed' || /not confirmed/i.test(m)) return {kind:'confirm', text:'이메일 확인이 필요한 계정으로 설정돼 있어요. (서버 설정을 확인해 주세요)', detail:c||m.slice(0,60)};
+  if(s===429 || c==='over_request_rate_limit' || /rate limit|too many/i.test(m)) return {kind:'rate', text:'로그인을 너무 많이 시도했어요. 몇 분 뒤에 다시 해 주세요.', detail:c||String(s||'429')};
+  if(!s || /fetch|network|timeout|failed to|load failed/i.test(m)) return {kind:'net', text:'서버에 연결하지 못했어요. 인터넷이나 브라우저의 추적 차단·확장 프로그램을 확인해 주세요.', detail:m.slice(0,60)};
+  return {kind:'other', text:'로그인하지 못했어요.', detail:(c||String(s))+' '+m.slice(0,50)};
+}
+async function sbSignIn(username, password, remember){
+  const email=sbEmailFor(String(username==null?'':username).trim());
+  let data=null, error=null, used=password;
+  for(const v of passwordVariants(password)){
+    let r; try{ r=await sb.auth.signInWithPassword({ email, password:v }); }catch(e){ r={data:null, error:{message:String(e&&e.message||e), status:0}}; }
+    if(!r.error){ data=r.data; error=null; used=v; break; }
+    error=r.error; const info=sbAuthErrorInfo(error);
+    if(info.kind!=='cred') break;                                                                // only a "wrong password" answer is worth another try
+  }
+  if(error || !data){ const info=sbAuthErrorInfo(error); try{ console.warn('[login failed]', info.kind, info.detail); }catch(e){} return {error:info.text, detail:info.kind==='cred'?'':info.detail}; }
   const { data: prof } = await sb.from('profiles').select('username').eq('id', data.user.id).single();
-  await sbAfterLogin(data.user.id, prof ? prof.username : username);
+  sbRememberPassword(prof ? prof.username : username, used, remember!==false);
+  await sbAfterLogin(data.user.id, prof ? prof.username : username, data.user.user_metadata);
   return {ok:true};
 }
-async function sbAfterLogin(id, username){
-  sbUser={id, username};
+/* ---- what used to go wrong: the account of a new browser looked brand new ----
+   Logging in with the same name and password in ANOTHER browser is the same account (that is why the friends were all there), but gold, skins, level and so on were only kept inside each browser,
+   and the login then wrote this browser's EMPTY nickname and EMPTY numbers over the account's public profile. So the account looked newly made.
+   Now: (1) the progress is also kept in the account (in its own user data, see cloudSaveSync), and a login brings it into the browser (merging when both sides have played);
+        (2) a login never writes an empty nickname or empty statistics over the account; a nickname that the account already has is taken over instead. */
+function saveIsFresh(){ return !( (saveData.xp||0)>0 || (saveData.totalMatches||0)>0 || (saveData.totalKills||0)>0 || (gold||0)>0 || Object.keys(saveData.owned||{}).length>0 || Object.keys(saveData.achievements||{}).length>0 || (saveData.boxes||0)>0 || (saveData.souls||0)>0 ); }
+async function sbAfterLogin(id, username, userMeta){
+  const sameAccountAsLast=(localStorage.getItem(LAST_USER_KEY)||'')===username;
+  sbUser={id, username}; sbUserMeta=(userMeta && typeof userMeta==='object') ? userMeta : {};
   startPresence();
   subscribeFriendRequests();
   subscribeGameInvites();
-  sb.from('profiles').update({display_name:(typeof myName!=='undefined'&&myName)?myName:null}).eq('id',id).then(()=>{});
+  await sbSyncAccountData(id, username, sameAccountAsLast);
+  try{ localStorage.setItem(LAST_USER_KEY, username); }catch(e){}
   await refreshFriends();
   sbUploadStats();
 }
+const LAST_USER_KEY='arenaClashLastUser';
+async function sbSyncAccountData(id, username, sameAccountAsLast){
+  await cloudSaveSync(username, sameAccountAsLast);                              // 1) progress AND nickname: the account's save comes into this browser (and the other way round)
+  let profileName=null;                                                           // 2) the public profile says the same nickname (an old copy of the game may have overwritten it: that is repaired here)
+  try{ const r=await sb.from('profiles').select('display_name').eq('id',id).single(); profileName=(r && r.data && r.data.display_name) || null; }catch(e){}
+  const accountName=(myNameSet && myName) ? String(myName).slice(0,12) : null;
+  if(accountName){ if(profileName!==accountName){ try{ sb.from('profiles').update({display_name:accountName}).eq('id',id).then(()=>{}); }catch(e){} } }
+  else if(profileName){ myName=String(profileName).slice(0,12); myNameSet=true; saveData.playerName=myName; persistSave(); }       // no nickname anywhere but on the profile: take it
+}
+/* ===== the progress in the account =====
+   Everything the player has (gold, souls, boxes, xp, skins, achievements, the NICKNAME and the rest of saveData) is kept in the account itself, in its own user data
+   (user_metadata.stickseumSave: compressed, about 1-2 KB). Nothing has to be set up on the server, and an old copy of the game cannot touch it.
+   - login: if this browser has nothing yet, the account's save is taken over; if both have played, the two are MERGED (see mergeSaves);
+   - the NICKNAME of the account is the one in the save (the account wins over what this browser had); the public profile is made to say the same (so an old copy that overwrote it is repaired);
+   - while playing: the save goes up a little after changes (at most once in 30 s) and when the tab is left, but never before the first sync has finished (an empty browser cannot overwrite the account);
+   - no connection / too big / refused: the game goes on as before (progress only in this browser) and the account window says so. */
+const SAVE_FIELDS=['gold','xp','owned','equipped','totalKills','totalMatches','totalWins','totalDamage','totalAssists','modeMatches','charKills','avatar','playerName','achievements','weaponXp','boxes','boxesOpened','dailyLast','dailyCount','souls'];
+const CLOUD_META_KEY='stickseumSave', CLOUD_MAX_CHARS=3600, CLOUD_MIN_GAP_MS=30000, CLOUD_DEBOUNCE_MS=20000;
+let cloudSaveState='off', cloudSaveReady=false, cloudSaveTimer=null, cloudSaveLastJson='', cloudSaveLastAt=0, cloudSaveNote='', cloudSaveBackoffUntil=0, sbUserMeta={};
+function cloudSavePayload(){ const o={v:1}; for(const k of SAVE_FIELDS) o[k]=(k==='gold') ? gold : saveData[k]; o.at=Date.now(); return JSON.parse(JSON.stringify(o)); }
+function cloudScore(s){ return (+s.xp||0) + (+s.totalMatches||0)*3 + Object.keys(s.owned||{}).length*10 + Object.keys(s.achievements||{}).length*10; }
+function mergeSaves(local, cloud){
+  const base = cloudScore(cloud) > cloudScore(local) ? cloud : local, other = base===cloud ? local : cloud;     // the one that has gone further is the base
+  const m=JSON.parse(JSON.stringify(base));
+  m.owned=Object.assign({}, other.owned||{}, base.owned||{});
+  m.achievements=Object.assign({}, other.achievements||{}, base.achievements||{});
+  for(const k of ['xp','totalKills','totalMatches','totalWins','totalDamage','totalAssists','boxesOpened','dailyCount']) m[k]=Math.max(+base[k]||0, +other[k]||0);
+  for(const k of ['weaponXp','charKills','modeMatches']){ m[k]=Object.assign({}, base[k]||{}); for(const w in (other[k]||{})) m[k][w]=Math.max(+m[k][w]||0, +other[k][w]||0); }
+  m.dailyLast=((base.dailyLast||'')>(other.dailyLast||'')) ? (base.dailyLast||'') : (other.dailyLast||'');
+  if(!(m.playerName && String(m.playerName).trim())) m.playerName=other.playerName||null;
+  const eq=m.equipped||{}; if(eq.name && !m.owned[eq.name]) eq.name=null; if(eq.skin) for(const w in eq.skin){ if(eq.skin[w] && !m.owned[eq.skin[w]] && !(COSMETICS[eq.skin[w]]&&COSMETICS[eq.skin[w]].tier)) eq.skin[w]=null; }
+  return m;
+}
+function applyCloudSave(s){
+  gold=Math.max(0,+s.gold||0);
+  saveData.owned=s.owned||{}; saveData.equipped=Object.assign({name:null, skin:{}}, s.equipped||{}); if(!saveData.equipped.skin||typeof saveData.equipped.skin!=='object') saveData.equipped.skin={};
+  for(const k of ['xp','totalKills','totalMatches','totalWins','totalDamage','totalAssists','boxes','boxesOpened','dailyCount','souls']) saveData[k]=Math.max(0,+s[k]||0);
+  saveData.modeMatches=(s.modeMatches&&typeof s.modeMatches==='object')?s.modeMatches:{}; saveData.charKills=(s.charKills&&typeof s.charKills==='object')?s.charKills:{};
+  saveData.avatar=Object.assign({bg:'#274d3a', color:'#3fe0c5', accessory:null}, s.avatar||{});
+  if(typeof s.playerName==='string' && s.playerName.trim()){ saveData.playerName=s.playerName.trim().slice(0,12); myName=saveData.playerName; myNameSet=true; }     // the account's nickname wins
+  saveData.achievements=(s.achievements&&typeof s.achievements==='object')?s.achievements:{}; saveData.weaponXp=(s.weaponXp&&typeof s.weaponXp==='object')?s.weaponXp:{};
+  saveData.dailyLast=(typeof s.dailyLast==='string' && /^\d{4}-\d{2}-\d{2}$/.test(s.dailyLast)) ? s.dailyLast : '';
+  persistSave(); updateGoldUI();
+}
+// ---- the save is gzip-compressed and written as text (the user data travels inside the login token, so it must stay small) ----
+function bytesToB64(buf){ let bin=''; for(let i=0;i<buf.length;i++) bin+=String.fromCharCode(buf[i]); return btoa(bin); }
+function b64ToBytes(s){ const bin=atob(s), buf=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) buf[i]=bin.charCodeAt(i); return buf; }
+async function packSave(obj){
+  const json=JSON.stringify(obj);
+  try{ if(typeof CompressionStream==='function' && typeof Blob==='function' && typeof Response==='function'){
+    const out=await new Response(new Blob([json]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer();
+    return {v:1, z:1, d:bytesToB64(new Uint8Array(out))};
+  } }catch(e){}
+  return {v:1, z:0, d:json};
+}
+async function unpackSave(p){
+  if(!p || typeof p!=='object' || typeof p.d!=='string') return null;
+  try{
+    if(p.z===1){ const text=await new Response(new Blob([b64ToBytes(p.d)]).stream().pipeThrough(new DecompressionStream('gzip'))).text(); return JSON.parse(text); }
+    return JSON.parse(p.d);
+  }catch(e){ return null; }
+}
+async function cloudSaveSync(username, sameAccountAsLast){
+  cloudSaveReady=false; cloudSaveNote='';
+  if(!sb || !sbUser){ cloudSaveState='off'; return; }
+  try{
+    const cloud=await unpackSave(sbUserMeta && sbUserMeta[CLOUD_META_KEY]), local=cloudSavePayload();
+    if(!cloud){ cloudSaveState='ok'; cloudSaveReady=true; if(!saveIsFresh()){ await cloudSaveUpload(true); } return; }                    // the account has no save yet: this browser's one becomes it
+    if(saveIsFresh()){ applyCloudSave(cloud); cloudSaveNote='계정에 저장된 진행 상황을 불러왔어요'; }                                     // an empty browser takes over the account's progress
+    else if(!sameAccountAsLast && (localStorage.getItem(LAST_USER_KEY)||'') && (localStorage.getItem(LAST_USER_KEY)||'')!==username){   // another account had played in this browser: keep its record safe, take this account's one
+      try{ localStorage.setItem('arenaClashSaveBackup_'+localStorage.getItem(LAST_USER_KEY), localStorage.getItem(SAVE_KEY)||''); }catch(e){}
+      applyCloudSave(cloud); cloudSaveNote='이 계정의 진행 상황을 불러왔어요 (이전 계정의 기록은 이 브라우저에 따로 보관했어요)';
+    } else { const merged=mergeSaves(local, cloud); applyCloudSave(merged); cloudSaveNote='다른 기기의 진행 상황과 합쳤어요'; }
+    cloudSaveState='ok'; cloudSaveReady=true; cloudSaveLastJson=''; await cloudSaveUpload(true);
+  }catch(e){ cloudSaveState='error'; }
+}
+async function cloudSaveUpload(force){
+  if(!sb || !sbUser || !cloudSaveReady) return false;
+  if(!force && Date.now()<cloudSaveBackoffUntil) return false;
+  const payload=cloudSavePayload(), key=JSON.stringify(Object.assign({}, payload, {at:0}));
+  if(!force && key===cloudSaveLastJson) return true;
+  try{
+    const packed=await packSave(payload); packed.at=Date.now();
+    if(packed.d.length>CLOUD_MAX_CHARS){ cloudSaveState='toolarge'; return false; }                                     // (it would make the login token too big)
+    const r=await sb.auth.updateUser({ data:{ [CLOUD_META_KEY]: packed } });
+    if(r && r.error){ if(r.error.status===429 || /rate limit/i.test(r.error.message||'')) cloudSaveBackoffUntil=Date.now()+5*60*1000; cloudSaveState='error'; return false; }
+    sbUserMeta=Object.assign({}, sbUserMeta, {[CLOUD_META_KEY]:packed});
+    cloudSaveLastJson=key; cloudSaveLastAt=Date.now(); cloudSaveState='ok'; return true;
+  }catch(e){ cloudSaveState='error'; return false; }
+}
+/* the end of a match is a moment worth keeping: everything it gave (record, wins, xp, character xp, achievements, gold) goes to the account about 1.5 s later, whatever the usual wait is
+   (the short delay lets the last rewards of the match land first). It still keeps to the pause that follows a "too many requests" answer. */
+function sbCloudSaveAfterMatch(){ try{ if(!sb || !sbUser || !cloudSaveReady) return; clearTimeout(cloudSaveTimer); cloudSaveSoonUntil=Date.now()+CLOUD_AFTER_MATCH_MS+500; cloudSaveTimer=setTimeout(()=>{ cloudSaveSoonUntil=0; cloudSaveUpload(false); }, CLOUD_AFTER_MATCH_MS); }catch(e){} }
+let cloudSaveSoonUntil=0;
+const CLOUD_AFTER_MATCH_MS=1500;
+function sbScheduleCloudSave(){ try{ if(!sb || !sbUser || !cloudSaveReady) return; if(Date.now()<cloudSaveSoonUntil) return; clearTimeout(cloudSaveTimer); const wait=Math.max(CLOUD_DEBOUNCE_MS, CLOUD_MIN_GAP_MS-(Date.now()-cloudSaveLastAt)); cloudSaveTimer=setTimeout(()=>cloudSaveUpload(false), wait); }catch(e){} }
+try{ document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden'){ try{ clearTimeout(cloudSaveTimer); cloudSaveUpload(false); }catch(e){} } }); }catch(e){}
+function cloudSaveStatusText(){
+  if(cloudSaveState==='ok') return '☁️ 진행 상황이 계정에 저장돼요'+(cloudSaveLastAt?' (마지막 저장 '+new Date(cloudSaveLastAt).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})+')':'')+(cloudSaveNote?' · '+cloudSaveNote:'');
+  if(cloudSaveState==='toolarge') return '☁️ 저장 데이터가 너무 커서 계정에 저장하지 못했어요 (이 브라우저에는 저장돼요)';
+  if(cloudSaveState==='error') return '☁️ 진행 상황을 계정에 저장하지 못했어요 (연결을 확인해 주세요, 이 브라우저에는 저장돼요)';
+  return '';
+}
+
+/* ===== my own password, visible while I am logged in =====
+   The server never gives a password back (it only keeps a scrambled copy), so to show it again this browser keeps the one that was typed at the login:
+   - only if the box "이 기기에서 비밀번호 보기" is ticked (it is, unless you untick it: untick it on a computer that other people use);
+   - only in THIS browser (localStorage), never sent anywhere except to the login itself; removed when you log out;
+   - the account window shows it hidden (••••••) until you press "보기"; "변경" sets a new one (the server is told, this browser remembers it). */
+const PW_KEY='arenaClashPw', PW_OPT_KEY='arenaClashPwOpt';
+function pwOptionOn(){ try{ return localStorage.getItem(PW_OPT_KEY)!=='0'; }catch(e){ return true; } }
+function sbRememberPassword(username, password, wanted){
+  try{ localStorage.setItem(PW_OPT_KEY, wanted?'1':'0'); }catch(e){}
+  try{ if(wanted) localStorage.setItem(PW_KEY, JSON.stringify({u:String(username||'').toLowerCase(), p:String(password)})); else localStorage.removeItem(PW_KEY); }catch(e){}
+}
+function sbForgetPassword(){ try{ localStorage.removeItem(PW_KEY); }catch(e){} }
+function sbStoredPassword(){
+  try{ const o=JSON.parse(localStorage.getItem(PW_KEY)||'null'); if(o && typeof o.p==='string' && sbUser && String(o.u||'')===sbUser.username.toLowerCase()) return o.p; }catch(e){}
+  return null;
+}
+async function sbChangePassword(newPass){
+  if(!sb || !sbUser) return {error:'로그인이 필요해요.'};
+  if(!newPass || String(newPass).length<6) return {error:'비밀번호는 6자 이상으로 해주세요.'};
+  if(String(newPass).length>72) return {error:'비밀번호가 너무 길어요 (72자 이하).'};
+  try{
+    const r=await sb.auth.updateUser({password:String(newPass)});
+    if(r && r.error) return {error:'비밀번호를 바꾸지 못했어요: '+r.error.message};
+  }catch(e){ return {error:'비밀번호를 바꾸지 못했어요. 연결을 확인해 주세요.'}; }
+  if(pwOptionOn()) sbRememberPassword(sbUser.username, newPass, true);
+  return {ok:true};
+}
+function bindAccountBox(){
+  const show=document.getElementById('accPwShow'), chg=document.getElementById('accPwChange'), val=document.getElementById('accPwVal'), msg=document.getElementById('accPwMsg'), form=document.getElementById('accPwForm');
+  if(!show || !val) return;
+  let shown=false;
+  show.onclick=()=>{
+    const p=sbStoredPassword();
+    if(p===null){ msg.textContent='이번 로그인에서는 비밀번호를 저장하지 않았어요. 로그아웃하고 다시 로그인하면 볼 수 있어요 ("비밀번호 보기" 체크), 또는 "변경"으로 새로 정할 수 있어요.'; return; }
+    shown=!shown; val.textContent = shown ? p : '••••••••'; show.textContent = shown ? '숨기기' : '보기'; msg.textContent='';
+  };
+  const cp=document.getElementById('accPwCopy');
+  if(cp) cp.onclick=async ()=>{
+    const p=sbStoredPassword(); if(p===null){ msg.textContent='저장된 비밀번호가 없어요. 로그아웃하고 다시 로그인하면 복사할 수 있어요.'; return; }
+    try{ await navigator.clipboard.writeText(p); msg.textContent='비밀번호를 복사했어요. 다른 곳에 붙여넣기(Ctrl+V) 하세요.'; }
+    catch(e){ msg.textContent='복사하지 못했어요. "보기"로 보이게 한 뒤 직접 선택해서 복사해 주세요.'; }
+  };
+  chg.onclick=()=>{ form.style.display = form.style.display==='none' ? 'flex' : 'none'; msg.textContent=''; };
+  const save=document.getElementById('accPwSave');
+  if(save) save.onclick=async ()=>{
+    const inp=document.getElementById('accPwNew'); msg.textContent='처리 중...';
+    const r=await sbChangePassword(inp.value);
+    if(r.error){ msg.textContent=r.error; return; }
+    inp.value=''; form.style.display='none'; shown=false; val.textContent='••••••••'; show.textContent='보기'; msg.textContent='비밀번호를 바꿨어요.';
+  };
+}
+function accountBoxHtml(){
+  return '<div class="accBox"><div class="accRow"><span>비밀번호</span> <b id="accPwVal" class="accPwVal">••••••••</b> <button id="accPwShow">보기</button> <button id="accPwCopy">복사</button> <button id="accPwChange">변경</button></div>'+
+    '<div id="accPwForm" class="accRow" style="display:none;"><input type="password" id="accPwNew" placeholder="새 비밀번호 (6자 이상)" maxlength="72" style="flex:1;"> <button id="accPwSave">저장</button></div>'+
+    '<div id="accPwMsg" class="hint"></div>'+
+    (cloudSaveStatusText()?'<div class="hint accCloud">'+escapeHtmlText(cloudSaveStatusText())+'</div>':'')+'</div>';
+}
+
 async function sbSignOut(){
   if(presenceChannel){ sb.removeChannel(presenceChannel); presenceChannel=null; }
   if(friendReqChannel){ sb.removeChannel(friendReqChannel); friendReqChannel=null; }
   if(inviteChannel){ sb.removeChannel(inviteChannel); inviteChannel=null; }
   try{ await sb.auth.signOut(); }catch(e){}
+  try{ clearTimeout(cloudSaveTimer); }catch(e){} cloudSaveReady=false; cloudSaveState='off'; cloudSaveNote=''; sbUserMeta={};
+  sbForgetPassword();
   sbUser=null; friendsCache=[]; presenceLastSeen={};
   renderSocialBox(); updateInviteFriendBox();
 }
@@ -3882,6 +4103,7 @@ function buildPublicStats(){
 let sbStatsOk=true, sbStatsTimer=null, sbStatsLastJson='';
 async function sbUploadStats(){
   if(!sb || !sbUser || !sbStatsOk) return false;
+  if(saveIsFresh()) return false;            // a browser with an empty record must not write zeros over the account's statistics
   const stats=buildPublicStats(), json=JSON.stringify(stats.xp+'|'+stats.wins+'|'+stats.kills+'|'+stats.matches+'|'+stats.ach.length+'|'+JSON.stringify(stats.avatar)+'|'+stats.owned);
   if(json===sbStatsLastJson) return true;                       // nothing changed since the last upload
   try{
@@ -4024,17 +4246,18 @@ function renderSocialBox(){
       '<div id="socialAuthForm">'+
       '<input type="text" id="sbUserInput" placeholder="아이디 (영문/숫자, 3~16자)" maxlength="16">'+
       '<input type="password" id="sbPassInput" placeholder="비밀번호 (6자 이상)">'+
+      '<label class="pwOpt"><input type="checkbox" id="sbRememberPw" '+(pwOptionOn()?'checked':'')+'> 이 기기에서 내 비밀번호 보기 <span class="hint">(이 브라우저에만 저장돼요. 공용 컴퓨터에서는 끄세요)</span></label>'+
       '<div id="sbAuthMsg" class="hint" style="margin-bottom:8px;"></div>'+
       '<div class="row"><button class="btn-secondary" id="sbSignInBtn" style="flex:1;">로그인</button><button class="btn-primary" id="sbSignUpBtn" style="flex:1;">계정 만들기</button></div>'+
       '</div>';
     document.getElementById('sbSignInBtn').onclick=async ()=>{
       const msg=document.getElementById('sbAuthMsg'); msg.textContent='처리 중...';
-      const r=await sbSignIn(document.getElementById('sbUserInput').value, document.getElementById('sbPassInput').value);
-      if(r.error) msg.textContent=r.error; else renderSocialBox();
+      const r=await sbSignIn(document.getElementById('sbUserInput').value, document.getElementById('sbPassInput').value, document.getElementById('sbRememberPw').checked);
+      if(r.error) msg.textContent=r.error+(r.detail?' ['+r.detail+']':''); else renderSocialBox();
     };
     document.getElementById('sbSignUpBtn').onclick=async ()=>{
       const msg=document.getElementById('sbAuthMsg'); msg.textContent='처리 중...';
-      const r=await sbSignUp(document.getElementById('sbUserInput').value, document.getElementById('sbPassInput').value);
+      const r=await sbSignUp(document.getElementById('sbUserInput').value, document.getElementById('sbPassInput').value, document.getElementById('sbRememberPw').checked);
       if(r.error) msg.textContent=r.error; else renderSocialBox();
     };
     return;
@@ -4043,6 +4266,7 @@ function renderSocialBox(){
   const accepted=friendsCache.filter(f=>f.status==='accepted');
   const outgoing=friendsCache.filter(f=>f.outgoing);
   let html='<div class="socialRow"><span><span class="onlineDot on"></span><b>'+escapeHtmlText((myNameSet && myName) ? myName : sbUser.username)+'</b>'+((myNameSet && myName && myName!==sbUser.username) ? ' <span class="hint">(@'+escapeHtmlText(sbUser.username)+')</span>' : '')+' 로그인됨</span><button id="sbSignOutBtn">로그아웃</button></div>';
+  html+=accountBoxHtml();
   html+='<div style="display:flex; gap:6px; margin:8px 0;"><input type="text" id="sbSearchInput" placeholder="닉네임으로 찾기" style="flex:1;"><button class="btn-secondary" id="sbSearchBtn">검색</button></div>';
   html+='<div id="sbSearchResults"></div>';
   if(incoming.length){
@@ -4055,6 +4279,7 @@ function renderSocialBox(){
   for(const f of outgoing) html+='<div class="socialRow"><span class="profLink" data-prof="'+f.otherId+'" title="프로필 보기">'+escapeHtmlText(f.otherName)+'</span><span class="hint">요청 대기중</span></div>';
   box.innerHTML=html;
   document.getElementById('sbSignOutBtn').onclick=sbSignOut;
+  bindAccountBox();
   let lastSearchQ=null;
   const runSearch=async ()=>{
     const q=document.getElementById('sbSearchInput').value.trim();
@@ -4727,8 +4952,9 @@ function showMatchEndOverlay(resultText, winnerIds, forcedPick){
   lastMastery=null;
   try{ lastMastery=applyWeaponMastery(me, !!(winnerIds && winnerIds.indexOf(myId)!==-1)); }catch(e){ console.error('[mastery]', e); }
   persistSave();
-  addXP(5);
+  { const won=!!(winnerIds && winnerIds.indexOf(myId)!==-1); lastMatchXp={kills:Math.max(0,lastKnownKills||0), finish:FINISH_XP, win:won?WIN_XP:0}; addXP(FINISH_XP+(won?WIN_XP:0)); }       // (finishing a match: 5 xp; winning it: 18 more)
   checkAchievements({me, won:!!(winnerIds && winnerIds.indexOf(myId)!==-1), mode:gameMode});
+  sbCloudSaveAfterMatch();            // the match is over: the account gets its record now
   if(lastMastery && lastMastery.newLv>lastMastery.oldLv){
     if(lastMastery.gold>0) addGold(lastMastery.gold, null);
     const lm=lastMastery;
@@ -4888,6 +5114,14 @@ function finishMatchEndOverlay(resultText){
   const vd=lastMatchVerdict || {main:resultText, sub:'', color:''};
   { const t=document.getElementById('matchEndText'); t.textContent=vd.main; if(t.style){ t.style.color=vd.color||''; t.style.fontSize=vd.color?'46px':''; } }
   { const s=document.getElementById('matchEndSub'); if(s){ s.textContent=vd.sub||''; if(s.style) s.style.display=vd.sub?'':'none'; } }
+  const xEl=document.getElementById('matchEndXp');
+  if(xEl){                                                                                                  // the xp of the PLAYER: kills (as they came during the match) + the match itself + the win
+    if(!practiceMode && (lastMatchXp.kills>0 || lastMatchXp.finish>0)){
+      const parts=[]; if(lastMatchXp.kills>0) parts.push('처치 '+lastMatchXp.kills+'×'+KILL_XP); parts.push('완주 '+lastMatchXp.finish); if(lastMatchXp.win>0) parts.push('승리 '+lastMatchXp.win);
+      const total=lastMatchXp.kills*KILL_XP+lastMatchXp.finish+lastMatchXp.win;
+      xEl.innerHTML='⭐ 플레이어 XP <b style="color:#3fe0c5">+'+total+'</b> <span style="color:#9aa0a6">('+parts.join(' + ')+')</span>'; xEl.style.display='block';
+    } else xEl.style.display='none';
+  }
   const mEl=document.getElementById('matchEndMastery');
   if(mEl){
     if(lastMastery){
@@ -6295,14 +6529,16 @@ function tryFire(p, angle, tMs){
    weapons, snapshots and every client's rendering work unchanged. A human who joins later takes a bot's seat. */
 const BOT_FILL_MS=15000;     // a human waits this long (since the last human joined) before bots fill the room
 const BOT_JOIN_GAP_MS=450;   // bots then walk in one at a time instead of all at once
-const BOT_FILL_MAX=10;       // a big room (parkour holds 20) is only filled up to this many; the match then starts on its own
-const BOT_NAMES=['철수','영희','민수','지민','도윤','서연','하준','수아','유나','현우','시우','다은','제현','재민','이들','현진','상원','서윤'];
+const BOT_FILL_MAX=10;       // a very big room (parkour holds 20) is only filled up to this many; the match then starts on its own
+const BOT_FILL_FULL_UP_TO=12; // a room that holds up to this many is filled COMPLETELY (the flag mode holds 12; with the old limit of 10 it stayed two short)
+function botFillTargetFor(cap){ return cap<=BOT_FILL_FULL_UP_TO ? cap : Math.min(cap, BOT_FILL_MAX); }
+const BOT_NAMES=['제현','현진','재민','이들','상원','서윤','휘찬','재웅','연후','연준'];       // (the names of the bots; one name is never used twice in a room - when more bots are needed than there are names, a number is added: 봇 제현2)
 // 제현 is a bot with a character of its own by NAME (brilliant, whatever the room's bot level is).
 // The PERSONALITIES are not names: every other bot gets one (or none) when it joins and nothing on the screen tells which. They only change how it fights:
 //   coward: runs away when hurt (under half health) and fights from behind a team-mate         taunter: sticks to its enemy, hops and dashes around it, attacks less (picks a close-range character)
 //   sniper: picks a ranged character, keeps its distance and shoots steadily                    revenge: hunts whoever killed it (and gives up on a target it cannot get to)
 //   collector: goes for the flag / the point and avoids fights                                   rival: copies a human's character and goes after that human
-const SPECIAL_BOTS={'봇 제현':{level:'best', lv:60}};
+const SPECIAL_BOTS={};       // bots with their own level / skill (name -> {level:<ai level>, lv:<shown level>}); none at the moment: 제현 is an ordinary bot like the others
 const BOT_PERSONALITIES=['coward','taunter','sniper','revenge','collector','rival'], BOT_NO_PERSONALITY_CHANCE=0.25;
 const PERSONALITY_WEAPONS={sniper:['bow','rifle','pistol','bazooka','wizard'], taunter:['sword','gloves','dagger','lightsaber','horemheb','bat','dracula']};
 // modes the bots know how to play. (hide & seek is not here: a bot seeker/hider needs its own logic, so those rooms keep waiting for people)
@@ -6328,6 +6564,7 @@ function addBot(opts){
   const id='bot-'+botSeq+'-'+Math.floor(Math.random()*9000+1000);
   const usedNames=new Set(Object.values(players).map(p=>p.name));
   let nm=null; for(const n of shuffleCopy(BOT_NAMES)){ if(!usedNames.has('봇 '+n)){ nm='봇 '+n; break; } }
+  if(!nm){ for(let round=2; round<=40 && !nm; round++){ for(const n of shuffleCopy(BOT_NAMES)){ if(!usedNames.has('봇 '+n+round)){ nm='봇 '+n+round; break; } } } }       // all the names are in use: 제현2, 현진2 ... (the special bot 제현 is only ever the first one)
   if(!nm) nm='봇 '+botSeq;
   const usedColors=new Set(Object.values(players).map(p=>p.color));
   const color=COLORS.find(c=>!usedColors.has(c)) || COLORS[botSeq%COLORS.length];
@@ -6356,7 +6593,7 @@ function noteHumanJoined(){ lastHumanJoinAt=Date.now(); botFillAt=null; botFilli
 function botFillTick(){
   if(!isHost || started || !MAP || currentMode!=='online'){ botFillAt=null; botFilling=false; return; }
   if(!botSupported(gameMode) || humanPlayers().length===0){ botFillAt=null; botFilling=false; return; }
-  const cap=effectiveMaxPlayers(currentMapId, gameMode), target=Math.min(cap, BOT_FILL_MAX), count=Object.keys(players).length;
+  const cap=effectiveMaxPlayers(currentMapId, gameMode), target=botFillTargetFor(cap), count=Object.keys(players).length;
   if(count>=target){
     if(botFillAt!==null){ botFillAt=null; broadcastLobby(); }
     botFilling=false;
@@ -9769,7 +10006,7 @@ function render(fxDt){
   ctx.fillStyle='#0e1622'; ctx.fillRect(0,0,canvas.width,canvas.height);
   if(!started || !MAP) return;
   { const me0=players[myId];
-    if(me0 && me0.kills>lastKnownKills){ const gained=me0.kills-lastKnownKills; lastKnownKills=me0.kills; if(!practiceMode){ saveData.totalKills=(saveData.totalKills||0)+gained; addXP(gained*10); } } }
+    if(me0 && me0.kills>lastKnownKills){ const gained=me0.kills-lastKnownKills; lastKnownKills=me0.kills; if(!practiceMode){ saveData.totalKills=(saveData.totalKills||0)+gained; addXP(gained*KILL_XP); } } }
   if(killcamActive) killcamRenderFrame(); // advance replay playback before computing the camera this frame
   const th = MAP.theme;
   const cam=getCamera();
@@ -10056,7 +10293,7 @@ async function initAuthGate(){
     if(data && data.session && data.session.user){
       const uid=data.session.user.id;
       const { data: prof } = await sb.from('profiles').select('username').eq('id', uid).single();
-      if(prof){ await sbAfterLogin(uid, prof.username); showScreen('menuScreen'); return; }
+      if(prof){ let meta={}; try{ const gu=await sb.auth.getUser(); meta=(gu && gu.data && gu.data.user && gu.data.user.user_metadata) || (data.session.user.user_metadata) || {}; }catch(e){ meta=data.session.user.user_metadata||{}; } await sbAfterLogin(uid, prof.username, meta); showScreen('menuScreen'); return; }
     }
   }catch(e){ console.error('[auth gate] session check failed', e); }
   renderAuthGateForm();
@@ -10066,16 +10303,17 @@ function renderAuthGateForm(){
   box.innerHTML=
     '<input type="text" id="gateUserInput" placeholder="아이디 (영문/숫자, 3~16자)" maxlength="16">'+
     '<input type="password" id="gatePassInput" placeholder="비밀번호 (6자 이상)">'+
+    '<label class="pwOpt"><input type="checkbox" id="gateRememberPw" '+(pwOptionOn()?'checked':'')+'> 이 기기에서 내 비밀번호 보기 <span class="hint">(이 브라우저에만 저장돼요. 공용 컴퓨터에서는 끄세요)</span></label>'+
     '<div id="gateAuthMsg" class="hint" style="margin-bottom:8px;"></div>'+
     '<div class="row"><button class="btn-secondary" id="gateSignInBtn" style="flex:1;">로그인</button><button class="btn-primary" id="gateSignUpBtn" style="flex:1;">계정 만들기</button></div>';
   document.getElementById('gateSignInBtn').onclick=async ()=>{
     const msg=document.getElementById('gateAuthMsg'); msg.textContent='처리 중...';
-    const r=await sbSignIn(document.getElementById('gateUserInput').value, document.getElementById('gatePassInput').value);
-    if(r.error) msg.textContent=r.error; else showScreen('menuScreen');
+    const r=await sbSignIn(document.getElementById('gateUserInput').value, document.getElementById('gatePassInput').value, document.getElementById('gateRememberPw').checked);
+    if(r.error) msg.textContent=r.error+(r.detail?' ['+r.detail+']':''); else showScreen('menuScreen');
   };
   document.getElementById('gateSignUpBtn').onclick=async ()=>{
     const msg=document.getElementById('gateAuthMsg'); msg.textContent='처리 중...';
-    const r=await sbSignUp(document.getElementById('gateUserInput').value, document.getElementById('gatePassInput').value);
+    const r=await sbSignUp(document.getElementById('gateUserInput').value, document.getElementById('gatePassInput').value, document.getElementById('gateRememberPw').checked);
     if(r.error) msg.textContent=r.error; else showScreen('menuScreen');
   };
 }
