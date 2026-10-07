@@ -444,7 +444,7 @@
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-06-v111</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-06-v112</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -2802,17 +2802,6 @@ MAP_TEMPLATES['mega_arena'] = {
 };
 
 /* ================= STATE ================= */
-const RANDOM_NAMES = ['철수','영희','민수','지영','지훈','수민','현우','서연','도윤','하은',
-  '준서','예은','민재','수아','태윤','지우','시우','서준','유진','승민',
-  '재원','다인','성민','채원','우진','나은','건우','소율','현준','아린',
-  '동현','예린','승우','하린','정우','수빈','재윤','유나','민준','서윤',
-  '태민','다은','상현','은서','규민','채은','호준','지안','영수','미영',
-  '길동','철희', '순자','병철','말숙','영수','동식','미란','창민','보라'];
-function randomName(){
-  const base = RANDOM_NAMES[Math.floor(Math.random()*RANDOM_NAMES.length)];
-  const num = Math.floor(100000 + Math.random()*900000); // 6-digit suffix
-  return base+num;
-}
 
 let peer=null, isHost=false, roomCode="";
 let myId=null, myName="플레이어";
@@ -2897,7 +2886,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-06-v111';
+const GAME_BUILD='build 2026-10-06-v112';
 function roomIdFor(mapId,slot,modeId){ return 'online-'+(modeId||gameMode)+'-'+mapId+'-'+slot; }
 
 function renderMapPreview(mapId, canvas){
@@ -6532,7 +6521,7 @@ const BOT_JOIN_GAP_MS=450;   // bots then walk in one at a time instead of all a
 const BOT_FILL_MAX=10;       // a very big room (parkour holds 20) is only filled up to this many; the match then starts on its own
 const BOT_FILL_FULL_UP_TO=12; // a room that holds up to this many is filled COMPLETELY (the flag mode holds 12; with the old limit of 10 it stayed two short)
 function botFillTargetFor(cap){ return cap<=BOT_FILL_FULL_UP_TO ? cap : Math.min(cap, BOT_FILL_MAX); }
-const BOT_NAMES=['제현','현진','재민','이들','상원','서윤','휘찬','재웅','연후','연준'];       // (the names of the bots; one name is never used twice in a room - when more bots are needed than there are names, a number is added: 봇 제현2)
+const BOT_NAMES=['제현','현진','재민','이들','상원','서윤','휘찬','재웅','연후','연준','진표'];       // (the names of the bots; one name is never used twice in a room - when more bots are needed than there are names, a number is added: 봇 제현2)
 // 제현 is a bot with a character of its own by NAME (brilliant, whatever the room's bot level is).
 // The PERSONALITIES are not names: every other bot gets one (or none) when it joins and nothing on the screen tells which. They only change how it fights:
 //   coward: runs away when hurt (under half health) and fights from behind a team-mate         taunter: sticks to its enemy, hops and dashes around it, attacks less (picks a close-range character)
