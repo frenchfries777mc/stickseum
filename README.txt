@@ -1,12 +1,12 @@
-StickmanRumble 사이트 (정적 사이트: 서버 프로그램이 필요 없어요)
+Stickseum 사이트 (정적 사이트: 서버 프로그램이 필요 없어요)
 =========================================================
 
 모든 파일이 폴더 없이 한 곳에 있어요. 이 파일들을 그대로 GitHub 저장소에 올리면 돼요.
 
   index.html                 첫 화면 (바로 플레이 / 다운로드 / 버전 목록 / 도움말)
   versions.json              버전 목록 (새 버전을 낼 때 여기에 한 줄 추가)
-  StickmanRumble-v0.1 ~ v0.5.html 각 버전의 게임 파일
-  StickmanRumble-latest.html      최신 버전의 복사본 ("바로 플레이"가 이 파일을 열어요)
+  Stickseum-v0.1 ~ v0.6.html 각 버전의 게임 파일
+  Stickseum-latest.html      최신 버전의 복사본 ("바로 플레이"가 이 파일을 열어요)
 
 [ 올리는 방법: GitHub Pages ]
   1. 저장소 화면에서 Add file > Upload files
@@ -16,8 +16,8 @@ StickmanRumble 사이트 (정적 사이트: 서버 프로그램이 필요 없어
   5. 주소:  https://내아이디.github.io/저장소이름/    (1~2분 뒤 열려요, Ctrl+F5로 새로고침)
 
 [ 새 버전을 낼 때 ]
-  1. 새 게임 파일을 StickmanRumble-v0.6.html 처럼 올리기
-  2. 같은 내용을 StickmanRumble-latest.html 로도 덮어쓰기 (같은 이름으로 올리면 교체돼요)
+  1. 새 게임 파일을 Stickseum-v0.7.html 처럼 올리기
+  2. 같은 내용을 Stickseum-latest.html 로도 덮어쓰기 (같은 이름으로 올리면 교체돼요)
   3. versions.json 맨 위에 새 항목을 추가하고 이전 최신 항목의 "latest" 를 false 로, latest 값과 latestFile 을 바꾸기
      (저한테 새 버전을 알려 주시면 versions.json 까지 고친 파일을 만들어 드려요)
 
