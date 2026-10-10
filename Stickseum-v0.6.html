@@ -666,13 +666,13 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     <button class="menu-float-btn" id="goPrivateBtn">비공개 플레이</button>
     <button class="menu-float-btn" id="goPracticeBtn">연습 모드</button>
     <button class="menu-float-btn" id="goShopBtn">치장품 상점</button>
-    <button class="menu-float-btn" id="goRecordBtn">기록 · 하이라이트</button>
   </div>
 
   <div class="card" id="profileScreen" style="width:min(480px,94vw); max-height:86vh; overflow-y:auto;">
     <button class="backlink" id="profileBackBtn" style="position:absolute; top:14px; right:14px; margin:0;">&larr; 뒤로가기</button>
     <h2 style="margin:0;">🪪 프로필</h2>
     <div id="profileBody"></div>
+    <button class="btn-secondary" id="goRecordBtn" style="width:100%; margin-top:12px;">🎬 기록 · 하이라이트</button>
     <div style="font-size:12px; color:var(--text-dim); font-weight:700; margin:14px 0 6px;">소셜</div>
     <div id="socialBox"></div>
   </div>
@@ -847,7 +847,6 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   <div class="card" id="roomScreen">
     <div class="hint" id="roomModeLabel" style="margin-bottom:10px; font-weight:700; color:var(--text);"></div>
     <div id="codeDisplay" style="display:none;">------</div>
-    <button class="btn-secondary" id="inviteCopyBtn" style="display:none; margin:6px auto;">📋 초대 문구 복사</button>
     <canvas id="mapPreviewCanvas"></canvas>
     <div id="bigCount"><span id="pCount">1</span> / <span id="pMax">?</span></div>
     <div id="countdownMsg" style="display:none; text-align:center; font-weight:700; color:var(--accent); font-size:15px; margin-bottom:8px;"></div>
@@ -4589,19 +4588,9 @@ function renderRecord(){
   }
 }
 document.getElementById('goRecordBtn').onclick=()=>{ recTab='hl'; showScreen('recordScreen'); renderRecord(); };
-document.getElementById('recordBackBtn').onclick=()=>showScreen('menuScreen');
+document.getElementById('recordBackBtn').onclick=()=>{ showScreen('profileScreen'); renderProfile(); };
 document.getElementById('recTabHl').onclick=()=>{ recTab='hl'; renderRecord(); };
 document.getElementById('recTabRecent').onclick=()=>{ recTab='recent'; renderRecord(); };
-{ const cd=document.getElementById('codeDisplay'), ib=document.getElementById('inviteCopyBtn');
-  const sync=()=>{ ib.style.display=(cd.style.display==='none')?'none':''; };
-  new MutationObserver(sync).observe(cd,{attributes:true, attributeFilter:['style']}); sync();
-  ib.onclick=()=>{
-    const favs=lsGet(RP_KEY,[]).filter(r=>r.fav).map(r=>'@'+r.name).join(' ');
-    const txt='Stickseum 비공개 방 코드: '+cd.textContent.trim()+(favs?' · '+favs:'')+' 같이 해요!';
-    const done=()=>{ ib.textContent='✅ 복사됐어요'; setTimeout(()=>{ ib.textContent='📋 초대 문구 복사'; },1500); };
-    try{ navigator.clipboard.writeText(txt).then(done, ()=>{ window.prompt('복사해서 보내세요', txt); }); }catch(e){ window.prompt('복사해서 보내세요', txt); }
-  };
-}
 document.getElementById('goShopBtn').onclick=()=>{
   if(!myNameSet){ pendingDestination='shop'; showScreen('nameScreen'); return; }
   shopMaxGridHeight=0; showScreen('shopScreen');
