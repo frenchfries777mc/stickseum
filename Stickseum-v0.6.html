@@ -592,7 +592,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-12-v152</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-12-v155</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -3617,7 +3617,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-12-v152';
+const GAME_BUILD='build 2026-10-12-v155';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -7495,6 +7495,7 @@ function tryUltimate(p, tMs, aimX, aimY, viaClick){
   if(viaClick && ARM_FIRE_ULTS[p.weapon] && hasAim(aimX,aimY)) hostTimers.push({at:tSec+0.05, fn:(tt)=>{ if(p.alive && p.ultPending) tryFire(p, aimAngleOf(p,aimX,aimY), tt); }});   // (one tick later, so the armed shot is the one that flies)
   recordReplayEvent(p.id, 'ult', {weapon:p.weapon});
   pushFx('ult', p.x, p.y-40, tMs, {color:p.color, name:(ULTS[p.weapon]||{}).name||''});
+  if(p.weapon!=='samurai') pushFx('ultfx', p.x, p.y-34, tMs, {w:p.weapon});
   if(ULT_SFX[p.weapon]) pushFx('sfx', p.x, p.y-40, tMs, {name:ULT_SFX[p.weapon]}); // cast sound, heard by everyone like the weapon sounds
 }
 
@@ -9362,7 +9363,7 @@ function hostTick(dt,t){
       magicCircles:magicCircles.map(z=>({x:z.x,y:z.y,r:z.r,owner:z.owner,team:z.team,rem:z.until-t/1000})),
       hz:hzDraw,
       turrets:turrets.map(z=>({x:Math.round(z.x),y:Math.round(z.y),a:Math.round(z.ang*100)/100,owner:z.owner,team:z.team,rem:z.until-t/1000})),
-      effects:effects.map(e=>({x:e.x,y:e.y,type:e.type,born:e.born,id:e.id,color:e.color,ang:e.ang,v:e.v,dir:e.dir,face:e.face,doubled:e.doubled,name:e.name,k:e.k}))
+      effects:effects.map(e=>({x:e.x,y:e.y,type:e.type,born:e.born,id:e.id,color:e.color,ang:e.ang,v:e.v,dir:e.dir,face:e.face,doubled:e.doubled,name:e.name,k:e.k,x2:e.x2,y2:e.y2,r:e.r,w:e.w}))
     };
     { const now=Date.now(); chatOutbox=chatOutbox.filter(m=>now-m.at<CHAT_CARRY_MS); if(chatOutbox.length) snap.chat=chatOutbox.map(m=>({cid:m.cid, from:m.from, text:m.text, fromId:m.fromId})); }
     broadcastAll(snap);
@@ -10886,13 +10887,28 @@ function dmgText(x,y,v,col){
   if(otherSettings.damageNumbers===false) return; // convenience setting - some players prefer a cleaner screen without floating numbers
   addP({x:x+RND(-8,8),y:y-18,vx:RND(-22,22),vy:-95,drag:1.3,life:0.85,size:12+Math.min(13,v/3),color:'#ffffff',outline:col||'#000',shape:'text',add:false,text:String(Math.round(v))});
 }
+const ULT_THEMES={   // colours (3) + an extra flavour per character for the ultimate burst; f = the tint of the screen flash
+  _:{c:['#ffd23f','#ff6fb5','#35e0ff'],k:'',f:'255,235,180'},
+  pistol:{c:['#ffd23f','#ff8a2b','#fff1a8'],k:'',f:'255,225,150'}, rifle:{c:['#8dff5a','#ffd23f','#ff8a2b'],k:'fire',f:'220,255,170'},
+  smg:{c:['#35e0ff','#7fa6ff','#ffffff'],k:'',f:'190,240,255'}, magiccard:{c:['#b45cff','#ff6fd8','#ffd23f'],k:'card',f:'235,190,255'},
+  shuriken:{c:['#35ffd0','#9fe8ff','#ffffff'],k:'',f:'190,255,240'}, bat:{c:['#ff8a2b','#ff3d3d','#ffd23f'],k:'wave',f:'255,200,150'},
+  dagger:{c:['#b45cff','#ff3d9a','#5a2bff'],k:'',f:'220,170,255'}, dracula:{c:['#ff2b4d','#8a1030','#ff9bb0'],k:'wave',f:'255,150,170'},
+  gambler:{c:['#35e86a','#ffd23f','#ff3d4d'],k:'card',f:'200,255,200'}, wizard:{c:['#9a5cff','#35a8ff','#ff6fd8'],k:'wave',f:'205,185,255'},
+  sword:{c:['#ffd23f','#ffffff','#ff9a3d'],k:'wave',f:'255,240,190'}, horemheb:{c:['#ffc24d','#e08a2b','#fff0b0'],k:'wave',f:'255,230,170'},
+  lightsaber:{c:['#35a8ff','#9fe8ff','#b45cff'],k:'bolt',f:'180,220,255'}, bazooka:{c:['#ff3d3d','#ff8a2b','#ffd23f'],k:'fire',f:'255,180,130'},
+  bow:{c:['#ff8a2b','#ffd23f','#ff3d3d'],k:'fire',f:'255,210,150'}, boomerang:{c:['#b6ff3d','#ffd23f','#35e0a0'],k:'',f:'225,255,170'},
+  shotgun:{c:['#ff8a2b','#ff3d3d','#ffe08a'],k:'fire',f:'255,200,150'}, gloves:{c:['#ff3d3d','#ffd23f','#ffffff'],k:'wave',f:'255,190,170'},
+  grenade:{c:['#7dff4a','#ff8a2b','#ffd23f'],k:'fire',f:'210,255,170'}, flamethrower:{c:['#ff6a1f','#ffd23f','#ff2b2b'],k:'fire',f:'255,190,120'},
+  portalgun:{c:['#b45cff','#35e0ff','#ff9a3d'],k:'wave',f:'215,190,255'}, pirate:{c:['#ffd23f','#35c8ff','#ff5a3d'],k:'fire',f:'255,235,170'},
+  vacuum:{c:['#35e0ff','#9fe8ff','#b6ff3d'],k:'wave',f:'190,245,255'}
+};
 let samScreen={dimFrom:0, dimUntil:0, flashAt:0, flashA:0, flashCol:'255,255,255'};
 function samFlash(a,col){ if(otherSettings.screenShake===false) a*=0.5; samScreen.flashAt=performance.now(); samScreen.flashA=a; samScreen.flashCol=col||'255,255,255'; }
 function drawSamScreen(){          // screen-space: the dim of the ultimate (with a pale moon) and the white flashes of every cut
   const now=performance.now(), W=canvas.width, H=canvas.height;
   if(now<samScreen.dimUntil){ const tt=(now-samScreen.dimFrom)/(samScreen.dimUntil-samScreen.dimFrom), k=Math.min(1,tt*8,(1-tt)*6);
-    ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.fillStyle='rgba(6,10,34,'+(0.6*k)+')'; ctx.fillRect(0,0,W,H);
-    const g=ctx.createRadialGradient(W*0.5,H*0.2,0,W*0.5,H*0.2,Math.min(W,H)*0.28); g.addColorStop(0,'rgba(240,248,255,'+(0.95*k)+')'); g.addColorStop(0.35,'rgba(200,225,255,'+(0.55*k)+')'); g.addColorStop(1,'rgba(200,225,255,0)');
+    ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.fillStyle='rgba(28,8,48,'+(0.58*k)+')'; ctx.fillRect(0,0,W,H);
+    const g=ctx.createRadialGradient(W*0.5,H*0.2,0,W*0.5,H*0.2,Math.min(W,H)*0.28); g.addColorStop(0,'rgba(255,240,200,'+(0.95*k)+')'); g.addColorStop(0.3,'rgba(255,120,90,'+(0.6*k)+')'); g.addColorStop(0.65,'rgba(190,60,160,'+(0.3*k)+')'); g.addColorStop(1,'rgba(190,60,160,0)');
     ctx.fillStyle=g; ctx.fillRect(0,0,W,H); ctx.restore(); }
   const fa=samScreen.flashA*Math.max(0,1-(now-samScreen.flashAt)/260);
   if(fa>0.01){ ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.fillStyle='rgba('+samScreen.flashCol+','+fa+')'; ctx.fillRect(0,0,W,H); ctx.restore(); }
@@ -10916,45 +10932,56 @@ function spawnFx(e){
       if(e.v>0) dmgText(x,y,e.v,col);
       break; }
     case 'dmg': dmgText(x,y,e.v||0,col); break;
-    case 'iai': {                                                          // samurai skill: a huge white cut along the dash, a fan of blades, afterimages, speed lines, petals
-      const x2=e.x2, y2=e.y2, dir=(x2>=x)?1:-1, n=8, len=Math.hypot(x2-x,y2-y);
-      addP({x:x-dir*60,y:y,x2:x2+dir*90,y2:y2,life:.8,color:'#7fb8ff',shape:'slash',size:70});
-      addP({x:x-dir*40,y:y,x2:x2+dir*70,y2:y2,life:.6,color:'#ffffff',shape:'slash',size:34});
-      for(let k=-2;k<=2;k++){ if(!k) continue; addP({x:x+dir*20,y:y+k*16,x2:x2+dir*(40+Math.abs(k)*20),y2:y2+k*30,life:.5+0.05*Math.abs(k),color:k>0?'#ffb7d5':'#cfe8ff',shape:'slash',size:22}); }
-      for(let i=0;i<=n;i++){ const f=i/n; addP({x:x+(x2-x)*f,y:y+(y2-y)*f,life:.5+0.5*f,color:i%2?'#9fd0ff':'#e6f3ff',shape:'ghost',dir:dir}); addP({x:x+(x2-x)*f,y:y+(y2-y)*f-30,life:.3+0.3*(1-f),color:'#bfe3ff',shape:'flash',size:70}); }
-      burst((x+x2)/2,(y+y2)/2,Math.min(70,20+len/8),{a0:dir>0?Math.PI-0.5:-0.5,a1:dir>0?Math.PI+0.5:0.5,s0:300,s1:1100,l0:.25,l1:.6,z0:2,z1:4.5,colors:['#ffffff','#9fd0ff'],grav:0,drag:2.2,shape:'streak'});
-      burst((x+x2)/2,(y+y2)/2,50,{a0:0,a1:6.28,s0:60,s1:380,l0:.8,l1:1.7,z0:3,z1:6,colors:['#ffb7d5','#ff8fb8','#ffffff','#ffd6e6'],grav:110,drag:1.1});
-      addP({x:x,y:y,life:.45,color:'#9fd0ff',shape:'ring',r0:10,r1:110,lw:7});
-      for(let r=0;r<3;r++) addP({x:x2,y:y2,life:.35+r*0.12,color:r?'#ffb7d5':'#ffffff',shape:'ring',r0:6,r1:80+r*55,lw:6-r});
-      addP({x:x2,y:y2,life:.3,color:'#ffffff',shape:'flash',size:260});
-      addP({x:x2,y:y2-70,vy:-25,drag:1.5,life:1.0,color:'#ffffff',shape:'ktext',text:'一閃',size:76,rot0:-0.08});
-      samFlash(0.55,'235,245,255'); shakeFrom(x2,y2,14,1000); break; }
+    case 'iai': {                                                          // samurai skill: a single clean cut along the dash, a few afterimages, some petals (kept modest on purpose)
+      const x2=e.x2, y2=e.y2, dir=(x2>=x)?1:-1, n=3;
+      addP({x:x-dir*30,y:y,x2:x2+dir*50,y2:y2,life:.45,color:'#ff3d6e',shape:'slash',size:30});
+      addP({x:x-dir*20,y:y,x2:x2+dir*40,y2:y2,life:.38,color:'#ffd23f',shape:'slash',size:20});
+      addP({x:x-dir*10,y:y,x2:x2+dir*30,y2:y2,life:.3,color:'#ffffff',shape:'slash',size:9});
+      for(let i=0;i<=n;i++){ const f=i/n; addP({x:x+(x2-x)*f,y:y+(y2-y)*f,life:.3+0.2*f,color:['#35e0ff','#b45cff'][i%2],shape:'ghost',dir:dir}); }
+      burst((x+x2)/2,(y+y2)/2,14,{a0:0,a1:6.28,s0:60,s1:240,l0:.6,l1:1.1,z0:2.5,z1:4.5,colors:['#ff6fb5','#ffd23f','#35e0ff'],grav:100,drag:1.2});
+      addP({x:x2,y:y2,life:.3,color:'#ffd23f',shape:'ring',r0:6,r1:60,lw:4});
+      shakeFrom(x2,y2,4,800); break; }
     case 'samcut': {                                                       // one cut of the ultimate: a screen-long diagonal slash, a crossing pair, a kanji, a white flash
       const a0=(e.ang||0)+RND(-0.3,0.3), L=520;
-      addP({x:x-Math.cos(a0)*L,y:y-Math.sin(a0)*L,x2:x+Math.cos(a0)*L,y2:y+Math.sin(a0)*L,life:.55,color:'#ffffff',shape:'slash',size:62});
-      addP({x:x-Math.cos(a0)*L*0.8,y:y-Math.sin(a0)*L*0.8,x2:x+Math.cos(a0)*L*0.8,y2:y+Math.sin(a0)*L*0.8,life:.7,color:'#7fb8ff',shape:'slash',size:30});
+      addP({x:x-Math.cos(a0)*L,y:y-Math.sin(a0)*L,x2:x+Math.cos(a0)*L,y2:y+Math.sin(a0)*L,life:.55,color:'#ff3d6e',shape:'slash',size:66});
+      addP({x:x-Math.cos(a0)*L*0.8,y:y-Math.sin(a0)*L*0.8,x2:x+Math.cos(a0)*L*0.8,y2:y+Math.sin(a0)*L*0.8,life:.7,color:'#ffd23f',shape:'slash',size:40});
+      addP({x:x-Math.cos(a0)*L*0.9,y:y-Math.sin(a0)*L*0.9,x2:x+Math.cos(a0)*L*0.9,y2:y+Math.sin(a0)*L*0.9,life:.5,color:'#ffffff',shape:'slash',size:20});
       for(let k=0;k<2;k++){ const a=a0+(k?1.25:-0.3), l=RND(130,170), c=Math.cos(a)*l, d=Math.sin(a)*l;
-        addP({x:x-c,y:y-d,x2:x+c,y2:y+d,life:.5+k*0.1,color:k?'#ff4f8a':'#ffffff',shape:'slash',size:34}); }
-      addP({x:x,y:y,life:.2,color:'#ffffff',shape:'flash',size:260});
-      for(let r=0;r<3;r++) addP({x:x,y:y,life:.3+r*0.1,color:r?'#ff9bc0':'#ffffff',shape:'ring',r0:6,r1:70+r*45,lw:6-r});
-      burst(x,y,34,{a0:0,a1:6.28,s0:150,s1:700,l0:.3,l1:.8,z0:2.5,z1:5,colors:['#ffffff','#ffb7d5','#9fd0ff'],grav:240,drag:1.5,shape:'streak'});
-      burst(x,y,26,{a0:0,a1:6.28,s0:50,s1:260,l0:.9,l1:1.6,z0:3,z1:6.5,colors:['#ffb7d5','#ff8fb8','#ffd6e6'],grav:90,drag:1});
-      addP({x:x+RND(-30,30),y:y-60,vy:-30,drag:1.4,life:.9,color:'#ff6f9c',shape:'ktext',text:'斬',size:86,rot0:RND(-0.25,0.25)});
-      samFlash(0.5,'255,255,255'); shakeFrom(x,y,18,1100); break; }
+        addP({x:x-c,y:y-d,x2:x+c,y2:y+d,life:.5+k*0.1,color:k?'#b45cff':'#35e0ff',shape:'slash',size:38}); }
+      addP({x:x,y:y,life:.2,color:'#ffd9a0',shape:'flash',size:260});
+      for(let r=0;r<3;r++) addP({x:x,y:y,life:.3+r*0.1,color:['#ffd23f','#ff3d6e','#35e0ff'][r],shape:'ring',r0:6,r1:70+r*45,lw:6-r});
+      burst(x,y,34,{a0:0,a1:6.28,s0:150,s1:700,l0:.3,l1:.8,z0:2.5,z1:5,colors:['#ffd23f','#ff3d6e','#35e0ff','#b45cff','#ffffff'],grav:240,drag:1.5,shape:'streak'});
+      burst(x,y,26,{a0:0,a1:6.28,s0:50,s1:260,l0:.9,l1:1.6,z0:3,z1:6.5,colors:['#ff6fb5','#ffd23f','#5dff9a','#b45cff'],grav:90,drag:1});
+      addP({x:x+RND(-30,30),y:y-60,vy:-30,drag:1.4,life:.9,color:'#ff3d6e',shape:'ktext',text:'斬',size:86,rot0:RND(-0.25,0.25)});
+      samFlash(0.45,'255,210,160'); shakeFrom(x,y,18,1100); break; }
     case 'samult': {                                                       // the start of the ultimate: the screen dims under a pale moon, a ring of eight blades
       samScreen.dimFrom=performance.now(); samScreen.dimUntil=samScreen.dimFrom+2200;
-      for(let r=0;r<3;r++) addP({x:x,y:y,life:.55+r*0.2,color:r%2?'#ffffff':'#bfe3ff',shape:'ring',r0:10,r1:300+r*90,lw:9-r*2});
-      addP({x:x,y:y,life:.45,color:'#e8f4ff',shape:'flash',size:360});
-      for(let i=0;i<8;i++){ const a=i*Math.PI/4+0.2; addP({x:x+Math.cos(a)*40,y:y+Math.sin(a)*40,x2:x+Math.cos(a)*380,y2:y+Math.sin(a)*380,life:.55,color:i%2?'#ffb7d5':'#cfe8ff',shape:'slash',size:30}); }
-      burst(x,y,60,{a0:0,a1:6.28,s0:80,s1:500,l0:1,l1:2,z0:3,z1:6,colors:['#ffb7d5','#ffffff','#ff8fb8'],grav:70,drag:1});
-      addP({x:x,y:y-110,vy:-14,drag:1,life:1.2,color:'#cfe8ff',shape:'ktext',text:'心眼',size:84});
-      samFlash(0.45,'210,230,255'); shakeFrom(x,y,12,1000); break; }
+      for(let r=0;r<3;r++) addP({x:x,y:y,life:.55+r*0.2,color:['#b45cff','#35e0ff','#ffd23f'][r],shape:'ring',r0:10,r1:300+r*90,lw:9-r*2});
+      addP({x:x,y:y,life:.45,color:'#d9b8ff',shape:'flash',size:360});
+      for(let i=0;i<8;i++){ const a=i*Math.PI/4+0.2; addP({x:x+Math.cos(a)*40,y:y+Math.sin(a)*40,x2:x+Math.cos(a)*380,y2:y+Math.sin(a)*380,life:.55,color:[['#ffd23f','#ff3d6e','#35e0ff','#b45cff','#ff8a2b','#5dff9a']][i%6],shape:'slash',size:34}); }
+      burst(x,y,60,{a0:0,a1:6.28,s0:80,s1:500,l0:1,l1:2,z0:3,z1:6,colors:['#ffd23f','#ff3d6e','#35e0ff','#b45cff','#ff8a2b','#5dff9a'],grav:70,drag:1});
+      addP({x:x,y:y-110,vy:-14,drag:1,life:1.2,color:'#35e0ff',shape:'ktext',text:'心眼',size:84});
+      samFlash(0.45,'200,170,255'); shakeFrom(x,y,12,1000); break; }
     case 'samfin': {                                                       // the blade goes back into its sheath: one last big flash and a storm of petals
-      for(let r=0;r<4;r++) addP({x:x,y:y-30,life:.4+r*0.12,color:r%2?'#ffb7d5':'#ffffff',shape:'ring',r0:8,r1:120+r*60,lw:8-r});
-      addP({x:x,y:y-30,life:.4,color:'#ffffff',shape:'flash',size:340});
-      burst(x,y-30,90,{a0:0,a1:6.28,s0:100,s1:640,l0:.9,l1:2,z0:3,z1:7,colors:['#ffb7d5','#ff8fb8','#ffffff','#ffd6e6'],grav:120,drag:1.2});
-      addP({x:x,y:y-100,vy:-22,drag:1.4,life:1.1,color:'#ffffff',shape:'ktext',text:'納刀',size:70});
-      samFlash(0.6,'255,255,255'); shakeFrom(x,y,16,1100); break; }
+      for(let r=0;r<4;r++) addP({x:x,y:y-30,life:.4+r*0.12,color:['#ffd23f','#ff3d6e','#35e0ff','#b45cff'][r],shape:'ring',r0:8,r1:120+r*60,lw:8-r});
+      addP({x:x,y:y-30,life:.4,color:'#ffe28a',shape:'flash',size:340});
+      burst(x,y-30,90,{a0:0,a1:6.28,s0:100,s1:640,l0:.9,l1:2,z0:3,z1:7,colors:['#ffd23f','#ff3d6e','#35e0ff','#b45cff','#ff8a2b','#5dff9a'],grav:120,drag:1.2});
+      addP({x:x,y:y-100,vy:-22,drag:1.4,life:1.1,color:'#ffd23f',shape:'ktext',text:'納刀',size:70});
+      samFlash(0.55,'255,230,170'); shakeFrom(x,y,16,1100); break; }
+    case 'ultfx': {                                                        // every character's ultimate: a themed burst on top of the ability itself
+      const T=ULT_THEMES[e.w]||ULT_THEMES._, c=T.c, nm=(ULTS[e.w]||{}).name||'';
+      for(let r=0;r<3;r++) addP({x:x,y:y,life:.5+r*0.15,color:c[r%3],shape:'ring',r0:10,r1:200+r*80,lw:9-r*2});
+      addP({x:x,y:y,life:.4,color:c[0],shape:'flash',size:330});
+      addP({x:x,y:y,life:.3,color:'#ffffff',shape:'flash',size:150});
+      for(let i=0;i<12;i++){ const a=i*Math.PI/6+0.1; addP({x:x+Math.cos(a)*30,y:y+Math.sin(a)*30,x2:x+Math.cos(a)*(190+(i%2)*70),y2:y+Math.sin(a)*(190+(i%2)*70),life:.45,color:c[i%3],shape:'slash',size:20}); }
+      burst(x,y,40,{a0:0,a1:6.28,s0:150,s1:650,l0:.4,l1:.9,z0:2.5,z1:5,colors:c.concat(['#ffffff']),grav:T.k==='fire'?-60:200,drag:1.4,shape:'streak'});
+      burst(x,y,36,{a0:0,a1:6.28,s0:40,s1:300,l0:.9,l1:1.8,z0:3,z1:7,colors:c,grav:T.k==='fire'?-90:60,drag:1});
+      if(T.k==='bolt'){ for(let i=0;i<9;i++){ const a=RND(0,6.28), L=RND(150,320); addP({x:x,y:y,x2:x+Math.cos(a)*L,y2:y+Math.sin(a)*L,life:.35,color:c[i%3],shape:'bolt',size:4,amp:26,seedOff:i*7}); } }
+      if(T.k==='card'){ for(let i=0;i<28;i++) addP({x:x+RND(-120,120),y:y-RND(40,160),vx:RND(-90,90),vy:RND(-60,160),grav:260,life:RND(.9,1.5),size:RND(7,11),color:c[i%3],shape:'card',rot:RND(0,6.28),vr:RND(-8,8),add:false}); }
+      if(T.k==='fire'){ burst(x,y+10,40,{a0:-2.6,a1:-0.5,s0:120,s1:520,l0:.6,l1:1.3,z0:4,z1:9,colors:c,grav:-140,drag:1.2,shape:'fire'}); }
+      if(T.k==='wave'){ for(let r=0;r<2;r++) addP({x:x,y:y+20,life:.55+r*.15,color:c[r],shape:'ring',r0:20,r1:340+r*100,lw:5}); }
+      if(nm) addP({x:x,y:y-86,vy:-26,drag:1.4,life:1.15,color:c[0],shape:'ktext',text:nm,size:46,rot0:0});
+      samFlash(0.28,T.f); shakeFrom(x,y,10,1000); break; }
     case 'blink': {
       addP({x:x,y:y,life:.4,color:col,shape:'ring',r0:36,r1:4,lw:5});
       addP({x:x,y:y,life:.3,color:'#ffffff',shape:'ring',r0:6,r1:48,lw:3});
