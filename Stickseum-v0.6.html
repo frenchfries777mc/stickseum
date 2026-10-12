@@ -594,7 +594,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-12-v169</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-12-v171</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -3718,7 +3718,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-12-v169';
+const GAME_BUILD='build 2026-10-12-v171';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -5663,8 +5663,8 @@ function renderPublicProfileHtml(prof, rel){        // rel: {friend, outgoing, i
     const top=SELECTABLE_WEAPONS.map(w=>({w, k:(st.ck&&st.ck[w])||0, m:masteryLevelFor((st.wx&&st.wx[w])||0)})).filter(o=>o.k>0||o.m>1).sort((a,b)=>b.k-a.k||b.m-a.m).slice(0,5);
     html+='<div style="font-size:12px; color:var(--text-dim); font-weight:700; margin:12px 0 6px;">많이 쓴 캐릭터</div>';
     html+= top.length ? top.map(o=>row(WEAPONS[o.w].emoji+' '+WEAPONS[o.w].name+charTierHtml(o.k), o.k+'킬 · 숙련 Lv.'+o.m)).join('') : '<div class="hint">아직 기록이 없어요.</div>';
-    const modeRows=Object.keys(st.modes||{}).filter(m=>MODES[m]).sort((a,b)=>st.modes[b]-st.modes[a]).slice(0,6);
-    if(modeRows.length){ html+='<div style="font-size:12px; color:var(--text-dim); font-weight:700; margin:12px 0 6px;">모드별 플레이한 경기</div>'+modeRows.map(m=>row(MODES[m].name, st.modes[m]+'경기')).join(''); }
+    const modeRows=Object.keys(st.modes||{}).sort((a,b)=>st.modes[b]-st.modes[a]);
+    if(modeRows.length){ html+='<div style="font-size:12px; color:var(--text-dim); font-weight:700; margin:12px 0 6px;">모드별 플레이한 경기</div>'+modeRows.map(m=>row((MODES[m]&&MODES[m].name)||m, st.modes[m]+'경기')).join(''); }
   }
   html+='<div class="row" style="margin-top:14px;">';
   if(rel && rel.self) html+='';
@@ -5836,7 +5836,7 @@ function renderProfile(){
   const span=Math.max(1,nextFloor-curFloor);
   const frac=clamp((xp-curFloor)/span,0,1);
   const body=document.getElementById('profileBody');
-  const modeRows=MODE_ORDER.map(m=>'<div class="profRow"><span class="k">'+MODES[m].name+'</span><span class="v">'+((saveData.modeMatches&&saveData.modeMatches[m])||0)+'경기</span></div>').join('');
+  const modeRows=MODE_ORDER.concat(MINIGAME_ITEMS.map(it=>it.id)).map(m=>'<div class="profRow"><span class="k">'+((MODES[m]&&MODES[m].name)||m)+'</span><span class="v">'+((saveData.modeMatches&&saveData.modeMatches[m])||0)+'경기</span></div>').join('');
   body.innerHTML=
     '<div style="'+profHeaderStyle(myProfileDeco().pbg)+'">'+
     '<div style="text-align:center; margin-bottom:6px;"><canvas id="avatarBigCanvas" class="'+avatarFrameCls(myProfileDeco().pfr)+'" width="84" height="84" style="border-radius:14px; cursor:pointer; '+avatarFrameStyle(myProfileDeco().pfr)+'"></canvas>'+
@@ -7685,7 +7685,7 @@ function tryUltimate(p, tMs, aimX, aimY, viaClick){
   if(viaClick && ARM_FIRE_ULTS[p.weapon] && hasAim(aimX,aimY)) hostTimers.push({at:tSec+0.05, fn:(tt)=>{ if(p.alive && p.ultPending) tryFire(p, aimAngleOf(p,aimX,aimY), tt); }});   // (one tick later, so the armed shot is the one that flies)
   recordReplayEvent(p.id, 'ult', {weapon:p.weapon});
   pushFx('ult', p.x, p.y-40, tMs, {color:p.color, name:(ULTS[p.weapon]||{}).name||''});
-  if(p.weapon!=='samurai' && p.weapon!=='sword') pushFx('ultfx', p.x, p.y-34, tMs, {w:p.weapon});
+  if(p.weapon!=='samurai' && p.weapon!=='sword' && p.weapon!=='bazooka' && p.weapon!=='grenade') pushFx('ultfx', p.x, p.y-34, tMs, {w:p.weapon});
   if(ULT_SFX[p.weapon]) pushFx('sfx', p.x, p.y-40, tMs, {name:ULT_SFX[p.weapon]}); // cast sound, heard by everyone like the weapon sounds
 }
 
