@@ -594,7 +594,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-12-v160</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-12-v161</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -3658,7 +3658,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-12-v160';
+const GAME_BUILD='build 2026-10-12-v161';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -11015,17 +11015,31 @@ function spawnFx(e){
       if(FQ>0.3) samFlash(0.55*FQ,'255,230,170'); shakeFrom(x,y,16*FQ,1100); break; }
     case 'ultfx': {                                                        // every character's ultimate: a themed burst on top of the ability itself
       const T=ULT_THEMES[e.w]||ULT_THEMES._, c=T.c;
-      for(let r=0;r<RN;r++) addP({x:x,y:y,life:.5+r*0.15,color:c[r%3],shape:'ring',r0:10,r1:200+r*80,lw:9-r*2});
-      if(FQ>0.3) addP({x:x,y:y,life:.4,color:c[0],shape:'flash',size:330});
+      for(let r=0;r<(fxQuality>=2?2:1);r++) addP({x:x,y:y,life:.45+r*0.15,color:c[r%3],shape:'ring',r0:10,r1:170+r*70,lw:7-r*2});
+      if(FQ>0.3) addP({x:x,y:y,life:.4,color:c[0],shape:'flash',size:250});
       addP({x:x,y:y,life:.3,color:'#ffffff',shape:'flash',size:150});
-      for(let i=0;i<BL;i++){ const a=i*Math.PI/BL*2+0.1; addP({x:x+Math.cos(a)*30,y:y+Math.sin(a)*30,x2:x+Math.cos(a)*(190+(i%2)*70),y2:y+Math.sin(a)*(190+(i%2)*70),life:.45,color:c[i%3],shape:'slash',size:20}); }
-      bu(x,y,40,{a0:0,a1:6.28,s0:150,s1:650,l0:.4,l1:.9,z0:2.5,z1:5,colors:c.concat(['#ffffff']),grav:T.k==='fire'?-60:200,drag:1.4,shape:'streak'});
-      bu(x,y,36,{a0:0,a1:6.28,s0:40,s1:300,l0:.9,l1:1.8,z0:3,z1:7,colors:c,grav:T.k==='fire'?-90:60,drag:1});
-      if(T.k==='bolt'){ for(let i=0;i<Math.round(9*FQ);i++){ const a=RND(0,6.28), L=RND(150,320); addP({x:x,y:y,x2:x+Math.cos(a)*L,y2:y+Math.sin(a)*L,life:.35,color:c[i%3],shape:'bolt',size:4,amp:26,seedOff:i*7}); } }
-      if(T.k==='card'){ for(let i=0;i<Math.round(28*FQ);i++) addP({x:x+RND(-120,120),y:y-RND(40,160),vx:RND(-90,90),vy:RND(-60,160),grav:260,life:RND(.9,1.5),size:RND(7,11),color:c[i%3],shape:'card',rot:RND(0,6.28),vr:RND(-8,8),add:false}); }
-      if(T.k==='fire'){ bu(x,y+10,40,{a0:-2.6,a1:-0.5,s0:120,s1:520,l0:.6,l1:1.3,z0:4,z1:9,colors:c,grav:-140,drag:1.2,shape:'fire'}); }
+      const BL2=fxQuality>=2?8:(fxQuality===1?6:4);
+      for(let i=0;i<BL2;i++){ const a=i*Math.PI/BL2*2+0.1; addP({x:x+Math.cos(a)*30,y:y+Math.sin(a)*30,x2:x+Math.cos(a)*(150+(i%2)*50),y2:y+Math.sin(a)*(150+(i%2)*50),life:.45,color:c[i%3],shape:'slash',size:16}); }
+      bu(x,y,26,{a0:0,a1:6.28,s0:150,s1:650,l0:.4,l1:.9,z0:2.5,z1:5,colors:c.concat(['#ffffff']),grav:T.k==='fire'?-60:200,drag:1.4,shape:'streak'});
+      bu(x,y,22,{a0:0,a1:6.28,s0:40,s1:260,l0:.9,l1:1.8,z0:3,z1:7,colors:c,grav:T.k==='fire'?-90:60,drag:1});
+      if(T.k==='bolt'){ for(let i=0;i<Math.round(6*FQ);i++){ const a=RND(0,6.28), L=RND(150,320); addP({x:x,y:y,x2:x+Math.cos(a)*L,y2:y+Math.sin(a)*L,life:.35,color:c[i%3],shape:'bolt',size:4,amp:26,seedOff:i*7}); } }
+      if(T.k==='card'){ for(let i=0;i<Math.round(18*FQ);i++) addP({x:x+RND(-120,120),y:y-RND(40,160),vx:RND(-90,90),vy:RND(-60,160),grav:260,life:RND(.9,1.5),size:RND(7,11),color:c[i%3],shape:'card',rot:RND(0,6.28),vr:RND(-8,8),add:false}); }
+      if(T.k==='fire'){ bu(x,y+10,26,{a0:-2.6,a1:-0.5,s0:120,s1:520,l0:.6,l1:1.3,z0:4,z1:9,colors:c,grav:-140,drag:1.2,shape:'fire'}); }
       if(T.k==='wave'){ for(let r=0;r<(FQ>0.3?2:1);r++) addP({x:x,y:y+20,life:.55+r*.15,color:c[r],shape:'ring',r0:20,r1:340+r*100,lw:5}); }
-      if(FQ>0.3) samFlash(0.28*FQ,T.f); shakeFrom(x,y,10*FQ,1000); break; }
+      if(FQ>0.3) samFlash(0.16*FQ,T.f); shakeFrom(x,y,6*FQ,1000); break; }
+    case 'swordfall': {                                                    // the knight's ultimate: a warning circle, then a giant sword plunging from the sky
+      const dur=e.dur||0.7;
+      addP({x:x,y:y,life:dur,color:'#ffd23f',shape:'ring',r0:100,r1:30,lw:4});
+      addP({x:x,y:y,life:dur,color:'#ffffff',shape:'ring',r0:30,r1:95,lw:2});
+      addP({x:x,y:y,life:dur,color:'#ffd23f',shape:'bigsword',y1:y,add:false,st:0});
+      break; }
+    case 'swordhit': {
+      addP({x:x,y:y,life:.6,color:'#ffd23f',shape:'bigsword',y1:y,add:false,st:1});
+      for(let r=0;r<2;r++) addP({x:x,y:y,life:.4+r*0.15,color:r?'#ffd23f':'#ffffff',shape:'ring',r0:10,r1:150+r*70,lw:7-r*2});
+      addP({x:x,y:y,life:.25,color:'#fff0b0',shape:'flash',size:260});
+      bu(x,y,26,{a0:-3.3,a1:0.15,s0:150,s1:600,l0:.4,l1:.9,z0:2.5,z1:5,colors:['#ffd23f','#ffffff','#ff9a3d'],grav:600,drag:1.2,shape:'streak'});
+      bu(x,y,14,{a0:-3.3,a1:0.15,s0:60,s1:240,l0:.8,l1:1.4,z0:4,z1:8,colors:['#c9a463','#8a6a3a'],grav:500,drag:1,shape:'square',add:false});
+      shakeFrom(x,y,14*FQ,1100); break; }
     case 'blink': {
       addP({x:x,y:y,life:.4,color:col,shape:'ring',r0:36,r1:4,lw:5});
       addP({x:x,y:y,life:.3,color:'#ffffff',shape:'ring',r0:6,r1:48,lw:3});
@@ -11323,6 +11337,16 @@ function drawParticles(){
           ctx.lineJoin='round'; stroke(q.size*3.4, hexA(q.color,0.35), a); stroke(q.size*1.6, q.color, a); stroke(q.size*0.6, '#ffffff', a);
           if(R()<0.5){ const k=1+Math.floor(R()*(n-2)), s=R()<0.5?-1:1; ctx.globalAlpha=a*0.8; ctx.strokeStyle=q.color; ctx.lineWidth=q.size*0.7; ctx.beginPath(); ctx.moveTo(pts[k][0],pts[k][1]); ctx.lineTo(pts[k][0]+nx*s*30+dx/len*14, pts[k][1]+ny*s*30+dy/len*14); ctx.stroke(); }
           break; }
+        case 'bigsword': { const t01=1-q.life/q.max, fall=q.st?1:Math.min(1,t01/0.9), e2=fall*fall*fall, tipY=q.y1-820*(1-e2), al=q.st?Math.min(1,q.life/q.max*2.2):Math.min(1,t01*8);   // (a cubic ease: it accelerates like a falling blade)
+          ctx.save(); ctx.globalAlpha=al*0.22; const cg=ctx.createLinearGradient(0,q.y1-340,0,q.y1+60); cg.addColorStop(0,'rgba(255,230,150,0)'); cg.addColorStop(1,'rgba(255,230,150,1)'); ctx.fillStyle=cg; ctx.fillRect(q.x-95,q.y1-340,190,400);   // the danger column
+          ctx.globalAlpha=al; ctx.translate(q.x,tipY);
+          if(!q.st){ ctx.globalAlpha=al*0.35*(1-fall); ctx.fillStyle='#ffffff'; ctx.fillRect(-14,-760,28,740); ctx.globalAlpha=al; }                  // speed trail above the blade
+          const bg=ctx.createLinearGradient(-26,0,26,0); bg.addColorStop(0,'#9fb4d6'); bg.addColorStop(0.5,'#ffffff'); bg.addColorStop(1,'#8aa0c8');
+          ctx.fillStyle=bg; ctx.strokeStyle='#5a6f99'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(-26,-300); ctx.lineTo(-26,-345); ctx.lineTo(26,-345); ctx.lineTo(26,-300); ctx.closePath(); ctx.fill(); ctx.stroke();
+          ctx.strokeStyle='rgba(90,111,153,0.6)'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(0,-14); ctx.lineTo(0,-330); ctx.stroke();
+          ctx.fillStyle='#ffd23f'; ctx.strokeStyle='#8a6a1a'; ctx.lineWidth=3; ctx.fillRect(-70,-362,140,20); ctx.strokeRect(-70,-362,140,20);
+          ctx.fillStyle='#6b3f1d'; ctx.fillRect(-9,-440,18,78); ctx.fillStyle='#ffd23f'; ctx.beginPath(); ctx.arc(0,-448,15,0,7); ctx.fill(); ctx.stroke();
+          ctx.restore(); break; }
         case 'ghost': { ctx.globalAlpha=a*0.7; ctx.strokeStyle=q.color; ctx.fillStyle=q.color; ctx.lineWidth=4; ctx.lineCap='round'; const f=q.dir||1;       // an afterimage of the swordsman, caught mid-dash
           ctx.beginPath(); ctx.arc(q.x,q.y-52,8,0,7); ctx.fill();
           ctx.beginPath(); ctx.moveTo(q.x,q.y-44); ctx.lineTo(q.x+f*8,q.y-20); ctx.moveTo(q.x+f*8,q.y-20); ctx.lineTo(q.x+f*26,q.y-4); ctx.moveTo(q.x+f*8,q.y-20); ctx.lineTo(q.x-f*18,q.y-2);
