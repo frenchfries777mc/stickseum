@@ -592,7 +592,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-12-v155</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-12-v156</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -3617,7 +3617,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-12-v155';
+const GAME_BUILD='build 2026-10-12-v156';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -10969,7 +10969,7 @@ function spawnFx(e){
       addP({x:x,y:y-100,vy:-22,drag:1.4,life:1.1,color:'#ffd23f',shape:'ktext',text:'納刀',size:70});
       samFlash(0.55,'255,230,170'); shakeFrom(x,y,16,1100); break; }
     case 'ultfx': {                                                        // every character's ultimate: a themed burst on top of the ability itself
-      const T=ULT_THEMES[e.w]||ULT_THEMES._, c=T.c, nm=(ULTS[e.w]||{}).name||'';
+      const T=ULT_THEMES[e.w]||ULT_THEMES._, c=T.c;
       for(let r=0;r<3;r++) addP({x:x,y:y,life:.5+r*0.15,color:c[r%3],shape:'ring',r0:10,r1:200+r*80,lw:9-r*2});
       addP({x:x,y:y,life:.4,color:c[0],shape:'flash',size:330});
       addP({x:x,y:y,life:.3,color:'#ffffff',shape:'flash',size:150});
@@ -10980,7 +10980,6 @@ function spawnFx(e){
       if(T.k==='card'){ for(let i=0;i<28;i++) addP({x:x+RND(-120,120),y:y-RND(40,160),vx:RND(-90,90),vy:RND(-60,160),grav:260,life:RND(.9,1.5),size:RND(7,11),color:c[i%3],shape:'card',rot:RND(0,6.28),vr:RND(-8,8),add:false}); }
       if(T.k==='fire'){ burst(x,y+10,40,{a0:-2.6,a1:-0.5,s0:120,s1:520,l0:.6,l1:1.3,z0:4,z1:9,colors:c,grav:-140,drag:1.2,shape:'fire'}); }
       if(T.k==='wave'){ for(let r=0;r<2;r++) addP({x:x,y:y+20,life:.55+r*.15,color:c[r],shape:'ring',r0:20,r1:340+r*100,lw:5}); }
-      if(nm) addP({x:x,y:y-86,vy:-26,drag:1.4,life:1.15,color:c[0],shape:'ktext',text:nm,size:46,rot0:0});
       samFlash(0.28,T.f); shakeFrom(x,y,10,1000); break; }
     case 'blink': {
       addP({x:x,y:y,life:.4,color:col,shape:'ring',r0:36,r1:4,lw:5});
