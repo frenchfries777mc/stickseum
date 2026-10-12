@@ -594,7 +594,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-12-v166</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-12-v168</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -1081,7 +1081,7 @@ const KILL_GOLD=10, ASSIST_GOLD=3, ASSIST_WINDOW=10;
    To rename it change the name / icon / colour right here - every text, the shop and the kill feed read it from this one place. */
 const SOUL={name:'영혼석', icon:'💜', color:'#b86bff'};
 const SOUL_PER_KILL=1;
-const ASSIST_XP=5;                    // an assist also gives player xp (a kill gives 10) ...
+const ASSIST_XP=10;                    // an assist also gives player xp (a kill gives 10) ...
 let matchAssists=0;                   // ... and counts for the weapon xp at the end of the match: the assists I got in the match that is running
 let gold=0;
 let lastKnownKills=0;
@@ -1095,7 +1095,7 @@ let saveData={owned:{}, equipped:{name:null, skin:{}}, xp:0, totalKills:0, total
    Both systems earn XP at the same pace (10 per kill, 5 per assist, 5 per match) and from their knee on need the very same XP for the next level. */
 /* the xp of the player (the profile level): a kill gives KILL_XP, a win gives WIN_XP on top of the 5 xp that every finished match gives.
    Both are 1.8 times what they were (a kill 10 -> 18; there was no xp for a win before: it is now 18, the same as a kill). */
-const XP_MULT=1.8, KILL_XP=Math.round(10*XP_MULT), WIN_XP=Math.round(10*XP_MULT), FINISH_XP=5;
+const XP_MULT=3.6, KILL_XP=Math.round(10*XP_MULT), WIN_XP=Math.round(10*XP_MULT), FINISH_XP=10;   // (all player xp doubled)
 const XP_FLAT=950, PLAYER_KNEE=10;      // 950 = what the old curve charged for Lv.10 -> 11, so the curve continues without a jump and nobody loses a level
 function xpForLevel(lv){ lv=Math.max(1,Math.floor(lv||1)); if(lv<=PLAYER_KNEE) return 50*(lv-1)*(lv-1); return 50*(PLAYER_KNEE-1)*(PLAYER_KNEE-1)+(lv-PLAYER_KNEE)*XP_FLAT; }
 function levelFromXp(xp){ xp=Math.max(0,+xp||0); const kx=xpForLevel(PLAYER_KNEE); if(xp<kx) return Math.floor(Math.sqrt(xp/50))+1; return PLAYER_KNEE+Math.floor((xp-kx)/XP_FLAT); }
@@ -1753,9 +1753,9 @@ function missionsClaimable(){ const ms=ensureMissions(); let n=0; for(const sc o
 const SEASON_TIERS=20, SEASON_TIER_XP=300;
 const SEASON_REWARDS=[
   {kind:'gold',amount:50},{kind:'soul',amount:3},{kind:'box',amount:1},{kind:'gold',amount:80},{kind:'cos',id:'kfx_stars'},
-  {kind:'playerxp',amount:60},{kind:'soul',amount:5},{kind:'gold',amount:100},{kind:'box',amount:1},{kind:'title',id:'season_vet'},
+  {kind:'playerxp',amount:120},{kind:'soul',amount:5},{kind:'gold',amount:100},{kind:'box',amount:1},{kind:'title',id:'season_vet'},
   {kind:'gold',amount:120},{kind:'charxp',amount:80},{kind:'soul',amount:8},{kind:'box',amount:1},{kind:'cos',id:'kfx_ice'},
-  {kind:'gold',amount:150},{kind:'playerxp',amount:100},{kind:'soul',amount:10},{kind:'box',amount:2},{kind:'title',id:'season_master'}
+  {kind:'gold',amount:150},{kind:'playerxp',amount:200},{kind:'soul',amount:10},{kind:'box',amount:2},{kind:'title',id:'season_master'}
 ];
 function ensureSeason(){
   const k=seasonKeyOf(); let s=saveData.season;
@@ -1991,11 +1991,11 @@ const SHOP_CATS=[['skin','스킨'],['new','🆕 신상'],['tier','🎖️ 티어
 const BOX_PRICE=10, BOX_SKIN_MAX_PRICE=400, BOX_XP=40, DAILY_XP=30, DAILY_GOLD=30;       // BOX_PRICE: in souls (the purple currency), not in gold
 const BOX_REWARDS=[
   {kind:'gold', amount:10, w:14}, {kind:'gold', amount:20, w:12}, {kind:'gold', amount:30, w:9}, {kind:'gold', amount:50, w:6},
-  {kind:'charxp', amount:BOX_XP, w:10}, {kind:'playerxp', amount:BOX_XP, w:10},
+  {kind:'charxp', amount:BOX_XP, w:10}, {kind:'playerxp', amount:BOX_XP*2, w:10},
   {kind:'soul', amount:5, w:13}, {kind:'soul', amount:10, w:9}, {kind:'soul', amount:15, w:7},
   {kind:'skin', w:10}          // the skin: 10% (the other nine gifts share the remaining 90%)
 ];
-const DAILY_REWARDS=[ {kind:'gold', amount:DAILY_GOLD, w:30}, {kind:'charxp', amount:DAILY_XP, w:25}, {kind:'playerxp', amount:DAILY_XP, w:25}, {kind:'box', amount:1, w:20} ];
+const DAILY_REWARDS=[ {kind:'gold', amount:DAILY_GOLD, w:30}, {kind:'charxp', amount:DAILY_XP, w:25}, {kind:'playerxp', amount:DAILY_XP*2, w:25}, {kind:'box', amount:1, w:20} ];
 function pickWeighted(list, rand){ let tot=0; for(const r of list) tot+=r.w; let x=(rand||Math.random)()*tot; for(const r of list){ x-=r.w; if(x<0) return r; } return list[list.length-1]; }
 function rewardChancePct(list, r){ let tot=0; for(const q of list) tot+=q.w; return Math.round(100*r.w/tot*10)/10; }
 function boxSkinCandidates(){ return Object.keys(COSMETICS).filter(id=>{ const it=COSMETICS[id]; return it.cat==='skin' && !it.tier && !it.isNew && it.price>0 && it.price<=BOX_SKIN_MAX_PRICE && !cosOwned(id); }); }
@@ -2516,6 +2516,7 @@ function markHit(target, attackerId, t, dmg){
 /* xp for reaching a goal (bringing the flag home ...): player xp and xp for the character; a guest is told by message ({t:'xp'}) */
 function grantObjectiveXp(pxp, wxp, wid, label){
   pxp=Math.max(0,Math.min(200,Math.floor(+pxp||0))); wxp=Math.max(0,Math.min(200,Math.floor(+wxp||0)));
+  pxp*=2;                                  // (all player xp doubled)
   if(pxp>0) addXP(pxp);
   let extra='';
   if(wxp>0 && SELECTABLE_WEAPONS.includes(wid)){ const m=grantWeaponXp(wid, wxp); persistSave(); updateGoldUI(); if(m.newLv>m.oldLv) extra=' · '+(WEAPON_PERSONA_NAME[wid]||wid)+' 숙련 Lv.'+m.newLv+'!'; }
@@ -3665,7 +3666,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-12-v166';
+const GAME_BUILD='build 2026-10-12-v168';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -11122,6 +11123,151 @@ function spawnFx(e){
       if(T.k==='fire'){ bu(x,y+10,26,{a0:-2.6,a1:-0.5,s0:120,s1:520,l0:.6,l1:1.3,z0:4,z1:9,colors:c,grav:-140,drag:1.2,shape:'fire'}); }
       if(T.k==='wave'){ for(let r=0;r<(FQ>0.3?2:1);r++) addP({x:x,y:y+20,life:.55+r*.15,color:c[r],shape:'ring',r0:20,r1:340+r*100,lw:5}); }
       if(FQ>0.3) samFlash(0.16*FQ,T.f); shakeFrom(x,y,6*FQ,1000); break; }
+    case 'ult': {
+      addP({x:x,y:y,life:.55,color:'#ffd34d',shape:'ring',r0:10,r1:150,lw:8});
+      addP({x:x,y:y,life:.4,color:'#ffffff',shape:'ring',r0:6,r1:95,lw:4});
+      addP({x:x,y:y,life:.2,color:'#ffe08a',shape:'flash',size:100});
+      burst(x,y,24,{a0:0,a1:6.28,s0:80,s1:380,l0:.5,l1:.95,z0:2,z1:4.5,colors:['#ffd34d','#ffffff','#ff9d2e'],drag:1.8});
+      if(e.name) addP({x:x,y:y-34,vx:0,vy:-45,drag:0.9,life:1.5,size:20,color:'#ffe08a',outline:'#7a5a00',shape:'text',add:false,text:e.name});
+      shakeFrom(x,y,5,500);
+      break; }
+    case 'warn': addP({x:x,y:y,life:e.dur||1,color:'#ff4d4d',shape:'warn'}); break;
+    case 'batform':
+      addP({x:x,y:y,life:.4,color:'#8b0000',shape:'ring',r0:6,r1:90,lw:6});
+      addP({x:x,y:y,life:.18,color:'#15161c',shape:'flash',size:80});
+      burst(x,y,20,{a0:0,a1:6.28,s0:80,s1:340,l0:.4,l1:.8,z0:3,z1:6,colors:['#15161c','#2a2b31','#8b0000'],grav:-40,drag:1.2,shape:'smoke',add:false});
+      break;
+    case 'bombpass':
+      addP({x:x,y:y,life:.25,color:'#ffd34d',shape:'ring',r0:4,r1:28,lw:3});
+      burst(x,y,8,{a0:0,a1:6.28,s0:60,s1:140,l0:.2,l1:.35,z0:2,z1:3,colors:['#ffd34d','#fff'],grav:0,drag:2});
+      break;
+    case 'sv_lightning': {                                          // a bolt hits the ground
+      const k=e.sub?0.6:1;
+      playSfx('beam', x, y); svFlash(0.5*k, '235,240,255');
+      addP({x:x,y:y-6,life:.3,color:'#ffffff',shape:'flash',size:230*k});
+      addP({x:x,y:y-4,life:.55,color:'#fff27a',shape:'ring',r0:8,r1:(e.r||80)*1.5,lw:9});
+      addP({x:x,y:y-4,life:.8,color:'#8fa8ff',shape:'ring',r0:6,r1:(e.r||80)*2.1,lw:4});
+      burst(x,y-8,34,{a0:-3.1,a1:-0.05,s0:180,s1:760,l0:.35,l1:.85,z0:2,z1:4.4,colors:['#ffffff','#fff27a','#9db4ff'],grav:520,drag:1.1,shape:'streak'});
+      burst(x,y-6,10,{a0:-2.8,a1:-0.3,s0:60,s1:220,l0:.8,l1:1.4,z0:10,z1:22,colors:['#4a4f66','#2c2f40'],grav:-40,drag:1.4,shape:'smoke',add:false});
+      burst(x,y-2,14,{a0:-3.0,a1:-0.1,s0:100,s1:420,l0:.5,l1:1.0,z0:3,z1:6,colors:['#3a3a44','#6b6b74'],grav:900,drag:.5,shape:'square',add:false});
+      shakeFrom(x,y,12*k,1500); break; }
+    case 'sv_meteor': {                                             // the meteorite lands
+      const k=e.sub?0.6:1;
+      playSfx('explosion', x, y); svFlash(0.62*k, '255,200,120');
+      addP({x:x,y:y-10,life:.35,color:'#fff2c8',shape:'flash',size:420*k});
+      addP({x:x,y:y-4,life:.7,color:'#ffb347',shape:'ring',r0:12,r1:(e.r||105)*2.6,lw:16});
+      addP({x:x,y:y-4,life:1.0,color:'#ff6b2c',shape:'ring',r0:8,r1:(e.r||105)*3.3,lw:7});
+      addP({x:x,y:y-4,life:1.3,color:'#ffffff',shape:'ring',r0:4,r1:(e.r||105)*4.2,lw:3});
+      burst(x,y-10,46,{a0:-3.14,a1:0,s0:80,s1:520,l0:.5,l1:1.1,z0:12,z1:30,colors:['#ff5a1f','#ff9b2e','#ffd34d','#ff3d00'],drag:2.6,shape:'fire'});
+      burst(x,y-10,80,{a0:-3.14,a1:0,s0:260,s1:1000,l0:.6,l1:1.4,z0:2,z1:5,colors:['#ffe08a','#ffb347','#ffffff'],grav:620,drag:.8,shape:'streak'});
+      burst(x,y-6,34,{a0:-3.0,a1:-0.1,s0:200,s1:820,l0:.9,l1:1.8,z0:4,z1:10,colors:['#3b3025','#5a4a3a','#7a6a58'],grav:1100,drag:.35,shape:'square',add:false});
+      burst(x,y-14,18,{a0:-2.5,a1:-0.6,s0:30,s1:190,l0:1.4,l1:2.4,z0:26,z1:56,colors:['#4a4440','#38332f'],grav:-60,drag:1.2,shape:'smoke',add:false});
+      shakeFrom(x,y,30*k,2200); break; }
+    case 'sv_bomb': {
+      const k=e.sub?0.6:1;
+      playSfx('explosion', x, y); svFlash(0.4*k, '255,150,110');
+      addP({x:x,y:y-8,life:.3,color:'#fff4d6',shape:'flash',size:300*k});
+      addP({x:x,y:y-4,life:.6,color:'#ff6a2b',shape:'ring',r0:10,r1:(e.r||100)*2.2,lw:13});
+      addP({x:x,y:y-4,life:.9,color:'#ffd34d',shape:'ring',r0:6,r1:(e.r||100)*1.5,lw:5});
+      burst(x,y-8,30,{a0:-3.14,a1:0,s0:80,s1:420,l0:.4,l1:.9,z0:10,z1:24,colors:['#ff4d1f','#ffb347','#ffe08a'],drag:2.8,shape:'fire'});
+      burst(x,y-8,46,{a0:-3.14,a1:0,s0:240,s1:860,l0:.5,l1:1.1,z0:2,z1:4.4,colors:['#ffe08a','#ffffff'],grav:560,drag:.9,shape:'streak'});
+      burst(x,y-6,20,{a0:-3.0,a1:-0.1,s0:160,s1:620,l0:.8,l1:1.5,z0:3,z1:8,colors:['#2b2b30','#4a4a52'],grav:1000,drag:.4,shape:'square',add:false});
+      burst(x,y-12,12,{a0:-2.6,a1:-0.5,s0:30,s1:150,l0:1.2,l1:2,z0:22,z1:44,colors:['#15151a','#2a2a30'],grav:-70,drag:1.3,shape:'smoke',add:false});
+      shakeFrom(x,y,22*k,1900); break; }
+    case 'sv_volcano': {
+      const k=e.sub?0.6:1;
+      playSfx('explosion', x, y); svFlash(0.3*k, '255,120,40');
+      addP({x:x,y:y-4,life:.55,color:'#ff7a2b',shape:'ring',r0:8,r1:(e.r||88)*2.1,lw:10});
+      addP({x:x,y:y-6,life:.3,color:'#ffe9a8',shape:'flash',size:260*k});
+      burst(x,y-10,46,{a0:-2.3,a1:-0.84,s0:360,s1:1150,l0:.9,l1:1.9,z0:5,z1:12,colors:['#ffd34d','#ff8a2b','#ff4d1f'],grav:720,drag:.3,shape:'fire'});       // lava thrown up and out
+      burst(x,y-10,30,{a0:-2.7,a1:-0.45,s0:260,s1:760,l0:1.1,l1:2.0,z0:2.5,z1:4.5,colors:['#ffe08a','#ffffff'],grav:620,drag:.25,shape:'streak'});
+      burst(x,y-6,22,{a0:-3.0,a1:-0.1,s0:100,s1:420,l0:1,l1:1.8,z0:14,z1:36,colors:['#3a2a24','#241a16'],grav:-90,drag:1,shape:'smoke',add:false});
+      shakeFrom(x,y,20*k,2000); break; }
+    case 'sv_zombie':                                               // a zombie claws its way out of the ground
+      playSfx('explosion', x, y);
+      addP({x:x,y:y-2,life:.7,color:'#6bff7a',shape:'ring',r0:6,r1:70,lw:6});
+      burst(x,y-4,24,{a0:-3.0,a1:-0.15,s0:60,s1:300,l0:.6,l1:1.2,z0:3,z1:7,colors:['#6bff7a','#2fae45','#1f6b2e'],grav:620,drag:.7,shape:'dot'});
+      burst(x,y-6,10,{a0:-2.8,a1:-0.3,s0:30,s1:130,l0:1,l1:1.7,z0:14,z1:30,colors:['rgba(90,220,100,0.45)'],grav:-40,drag:1.3,shape:'smoke',add:false});
+      shakeFrom(x,y,6,900); break;
+    case 'sandstorm': {                                              // a wall of sand blown forward: fast grains, big soft dust clouds and swirling streaks, and a shake
+      const dir=(e.dir>=0)?1:-1, len=e.len||460, hh=e.h||240;
+      const sand=['#e8c27a','#d9a85b','#f3dba0','#b98a4a','#fff0c8'];
+      for(let i=0;i<160;i++) addP({x:x+dir*RND(14,len*0.7),y:y+RND(-hh/2,hh/2),vx:dir*RND(700,1700),vy:RND(-90,90),life:RND(.5,1.1),size:RND(1.6,3.6),color:sand[i%5],drag:0.8,shape:'dot',add:false});
+      for(let i=0;i<26;i++) addP({x:x+dir*RND(10,len*0.85),y:y+RND(-hh/2,hh/2),vx:dir*RND(450,1000),vy:RND(-60,60),life:RND(.6,1.1),size:RND(18,34),color:'#d9b46a',shape:'smoke',add:false,drag:1.2});
+      for(let i=0;i<40;i++) addP({x:x+dir*RND(10,len*0.7),y:y+RND(-hh/2,hh/2),vx:dir*RND(1000,2000),vy:RND(-50,50),life:RND(.3,.7),size:RND(1.6,2.8),color:'#fff0c8',drag:0.5,shape:'streak'});
+      shakeFrom(x,y,7,1100); break; }
+    case 'forcelightning': {                                         // from the hand to the head of the target, then crackling at both ends
+      const tx=e.tx, ty=e.ty, dur=e.dur||0.55, c2=e.color||'#9fb4ff';
+      playSfx('beam', x, y);
+      for(let k=0;k<3;k++) addP({x:x,y:y,x2:tx,y2:ty,life:dur*(1-0.12*k),color:k===0?c2:'#c9d4ff',shape:'bolt',size:k===0?3.4:2.2,amp:k===0?20:30,seedOff:k*977,vx:0,vy:0,grav:0,drag:0,add:true});
+      addP({x:x,y:y,life:.3,color:'#e9edff',shape:'flash',size:60});
+      addP({x:tx,y:ty,life:.4,color:'#bcd0ff',shape:'flash',size:120});
+      addP({x:tx,y:ty,life:.45,color:c2,shape:'ring',r0:6,r1:70,lw:5});
+      burst(tx,ty,18,{a0:0,a1:6.28,s0:80,s1:420,l0:.25,l1:.6,z0:2,z1:3.6,colors:['#ffffff','#9fb4ff','#c9d4ff'],drag:2,shape:'streak'});
+      burst(x,y,8,{a0:0,a1:6.28,s0:40,s1:200,l0:.2,l1:.45,z0:2,z1:3.4,colors:['#ffffff','#9fb4ff'],drag:2.4,shape:'dot'});
+      shakeFrom(tx,ty,7,1200); break; }
+    case 'bombexplode':
+      playSfx('explosion', x, y);
+      addP({x:x,y:y,life:.45,color:'#ff6a2b',shape:'ring',r0:8,r1:80,lw:8});
+      addP({x:x,y:y,life:.3,color:'#fff4d6',shape:'flash',size:70});
+      burst(x,y,36,{a0:0,a1:6.28,s0:140,s1:420,l0:.4,l1:.8,z0:3,z1:7,colors:['#ff4d1f','#ffb347','#ffe08a','#555'],grav:80,drag:1.3});
+      break;
+    case 'dustblast':
+      { const ang=e.ang||0, ca=Math.cos(ang), sa=Math.sin(ang);
+        burst(x,y,22,{a0:ang-0.5,a1:ang+0.5,s0:220,s1:520,l0:.35,l1:.7,z0:3,z1:6,colors:['#cbb98a','#e8dcb5','#a89468'],grav:60,drag:1.2});
+        addP({x:x,y:y,life:.3,color:'#cbb98a',shape:'ring',r0:4,r1:40,lw:4});
+      }
+      break;
+    case 'portalopen':
+      addP({x:x,y:y,life:.4,color:'#a855f7',shape:'ring',r0:6,r1:50,lw:5});
+      burst(x,y,16,{a0:0,a1:6.28,s0:40,s1:180,l0:.3,l1:.6,z0:2,z1:5,colors:['#a855f7','#e9d5ff'],grav:-10,drag:1.6});
+      break;
+    case 'portalwarp':
+      playSfx('portalwarp', x, y); // only ever pushed at the moment someone actually steps through a portal (exit point)
+      addP({x:x,y:y,life:.3,color:'#e9d5ff',shape:'flash',size:46});
+      burst(x,y,14,{a0:0,a1:6.28,s0:60,s1:220,l0:.25,l1:.5,z0:2,z1:4,colors:['#a855f7','#e9d5ff'],grav:0,drag:1.8});
+      break;
+    case 'shieldup':
+      addP({x:x,y:y,life:.3,color:'#ffd34d',shape:'ring',r0:6,r1:60,lw:5});
+      burst(x,y,14,{a0:0,a1:6.28,s0:60,s1:220,l0:.3,l1:.6,z0:2,z1:4,colors:['#ff6a2b','#ffd34d'],grav:-20,drag:1.6});
+      break;
+    case 'flamepuff': {
+      const ang=e.ang||0, ca=Math.cos(ang), sa=Math.sin(ang);
+      const n=26+Math.floor(Math.random()*10);
+      for(let i=0;i<n;i++){
+        const dist=Math.random()*FLAME_RANGE; // scattered anywhere from the muzzle out to max range, so the stream visually reaches as far as it can actually hit
+        const centerBias=(Math.random()+Math.random()+Math.random())/3-0.5; // averaged random clusters much closer to 0 than a flat spread would
+        const jitter=centerBias*2*FLAME_HALF_ANGLE*0.22*dist; // even tighter, denser core along the aim line
+        const px=x+ca*dist-sa*jitter, py=y+sa*dist+ca*jitter;
+        const sizeFalloff=1-0.55*(dist/FLAME_RANGE); // stays clearly visible even at max range instead of fading to a speck
+        addP({x:px,y:py,vx:ca*RND(20,50)+RND(-15,15),vy:sa*RND(20,50)+RND(-25,-5),life:RND(.3,.55),size:RND(5,9)*sizeFalloff,color:['#ff5a1f','#ffb347','#ffe08a'][Math.floor(Math.random()*3)],shape:'fire',drag:1.8,add:true});
+      }
+      break;
+    }
+    case 'smokeveil':
+      burst(x,y,22,{a0:0,a1:6.28,s0:30,s1:140,l0:.6,l1:1.1,z0:6,z1:13,colors:['#0c0c10','#1c1d22','#2a2b31'],grav:-30,drag:1.1,shape:'smoke',add:false});
+      addP({x:x,y:y,life:.3,color:'#15161c',shape:'flash',size:70});
+      break;
+    case 'dice':
+      showDiceBanner(e.name||'?', e.face, e.doubled);
+      break;
+    case 'dice6':
+      addP({x:x,y:y,life:.4,color:'#ffd34d',shape:'ring',r0:6,r1:70,lw:5});
+      burst(x,y,16,{a0:0,a1:6.28,s0:80,s1:280,l0:.4,l1:.7,z0:2,z1:4,colors:['#ffd34d','#ffffff'],drag:1.8});
+      break;
+    case 'magiccircle':
+      addP({x:x,y:y,life:.6,color:'#c85aff',shape:'ring',r0:10,r1:WIZ_CIRCLE_R,lw:6});
+      addP({x:x,y:y,life:.3,color:'#ffd34d',shape:'flash',size:120});
+      burst(x,y,24,{a0:0,a1:6.28,s0:100,s1:380,l0:.5,l1:.9,z0:2,z1:4,colors:['#c85aff','#ffd34d','#ffffff'],drag:1.5});
+      shakeFrom(x,y,6,600);
+      break;
+    case 'slow':
+      burst(x,y,10,{a0:1.2,a1:1.9,s0:20,s1:60,l0:.6,l1:1.0,z0:3,z1:5,colors:['#7c9eff','#3b4a7a'],grav:60,drag:1.2,shape:'dot',add:false});
+      break;
+    case 'stun':
+      addP({x:x,y:y+16,life:.35,color:'#ffe066',shape:'ring',r0:6,r1:44,lw:4});
+      burst(x,y+10,12,{a0:0,a1:6.28,s0:50,s1:150,l0:.3,l1:.6,z0:2,z1:4,colors:['#ffe066','#ffffff'],grav:0,drag:2.2,shape:'dot',add:true});
+      break;
     case 'swordfall':
       addP({x:x,y:y,life:e.dur||0.7,color:'#dfe9ff',shape:'bigsword',add:false});
       addP({x:x,y:y,life:e.dur||0.7,color:'#7c9eff',shape:'warn'});
@@ -11133,6 +11279,35 @@ function spawnFx(e){
       burst(x,y,12,{a0:-3.1,a1:-0.04,s0:60,s1:260,l0:.7,l1:1.2,z0:8,z1:18,colors:['#8a8f99','#6b6f78'],grav:-30,drag:1.4,shape:'smoke',add:false});
       shakeFrom(x,y,14,800);
       break;
+    case 'skill': {
+      addP({x:x,y:y-26,vx:0,vy:-46,drag:1.1,life:0.95,size:13,color:'#ffffff',outline:col,shape:'text',add:false,text:e.name||''});
+      addP({x:x,y:y+12,life:.35,color:col,shape:'ring',r0:6,r1:40,lw:3});
+      break; }
+    case 'skillring': {
+      addP({x:x,y:y,life:.4,color:col,shape:'ring',r0:10,r1:(e.r||120),lw:5});
+      break; }
+    case 'heal': {
+      burst(x,y+10,14,{a0:-2.3,a1:-0.85,s0:50,s1:200,l0:.6,l1:1.0,z0:2,z1:4,colors:['#5fff8a','#ffffff'],grav:-60,drag:1.4});
+      addP({x:x,y:y-6,vx:0,vy:-70,drag:1.2,life:1.0,size:16,color:'#7dffa3',outline:'#1c7a3a',shape:'text',add:false,text:'+'+(e.v||0)});
+      break; }
+    case 'explosion': {
+      playSfx('explosion', x, y); // grenade / bazooka / missile splash and the bat home run
+      addP({x:x,y:y,life:.24,color:'#fff6c8',shape:'flash',size:140});
+      addP({x:x,y:y,life:.55,color:'#ffb347',shape:'ring',r0:10,r1:200,lw:10});
+      addP({x:x,y:y,life:.85,color:'#ff6b2c',shape:'ring',r0:6,r1:260,lw:5});
+      burst(x,y,20,{a0:0,a1:6.28,s0:40,s1:300,l0:.4,l1:.8,z0:8,z1:18,colors:['#ff5a1f','#ff9b2e','#ffd34d','#ff3d00'],drag:3.2,shape:'fire'});
+      burst(x,y,36,{a0:0,a1:6.28,s0:200,s1:780,l0:.45,l1:1.0,z0:2,z1:4.2,colors:['#ffe08a','#ffb347','#ffffff'],grav:520,drag:1.1,shape:'streak'});
+      burst(x,y,10,{a0:0,a1:6.28,s0:120,s1:540,l0:.8,l1:1.3,z0:3,z1:6,colors:['#3b3025','#5a4a3a'],grav:900,drag:.3,shape:'square',add:false});
+      burst(x,y-6,14,{a0:-2.4,a1:-0.7,s0:30,s1:150,l0:1.0,l1:1.5,z0:12,z1:24,colors:['#6b6b70','#4a4a50'],grav:-40,drag:1.4,shape:'smoke',add:false});
+      shakeFrom(x,y,16,800);
+      break; }
+    case 'combo': {
+      addP({x:x,y:y,life:.5,color:'#c17bff',shape:'ring',r0:8,r1:120,lw:8});
+      addP({x:x,y:y,life:.2,color:'#ffffff',shape:'flash',size:100});
+      burst(x,y,20,{a0:0,a1:6.28,s0:160,s1:520,l0:.6,l1:1.0,z0:5,z1:9,colors:['#ffffff','#d62839','#1d1f27'],grav:420,drag:1.2,shape:'card',add:false});
+      burst(x,y,18,{a0:0,a1:6.28,s0:200,s1:620,l0:.35,l1:.7,z0:2,z1:3.4,colors:['#ffffff','#c17bff','#ff8fd9'],drag:1.6,shape:'streak'});
+      shakeFrom(x,y,7,600);
+      break; }
     case 'blink': {
       addP({x:x,y:y,life:.4,color:col,shape:'ring',r0:36,r1:4,lw:5});
       addP({x:x,y:y,life:.3,color:'#ffffff',shape:'ring',r0:6,r1:48,lw:3});
