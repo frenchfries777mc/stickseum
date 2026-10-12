@@ -257,8 +257,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   #modeHud .mhVs{ font-weight:800; font-size:16px; margin-top:2px; } #modeHud .mhVs b{ color:#3fe0c5; }
   #modeHud .mhBar{ height:12px; border-radius:7px; background:#2a2f3b; overflow:hidden; margin:6px 0 4px; border:1px solid #3a4152; } #modeHud .mhBar i{ display:block; height:100%; background:linear-gradient(90deg,#ff4d4d,#ff9b3d); }
   #modeHud .mhSub{ font-size:11.5px; color:var(--text-dim); }
-  #dailyBadge{ position:fixed; top:16px; left:108px; z-index:6; display:none; width:38px; height:38px; border-radius:50%; border:none; background:rgba(20,22,28,0.85); color:#fff; font-size:18px; cursor:pointer; align-items:center; justify-content:center; }
-  #missionBadge{ position:fixed; top:16px; left:154px; z-index:6; display:none; width:38px; height:38px; border-radius:50%; border:none; background:rgba(20,22,28,0.85); color:#fff; font-size:18px; cursor:pointer; align-items:center; justify-content:center; }
+  #dailyBadge{ position:fixed; top:16px; left:154px; z-index:6; display:none; width:38px; height:38px; border-radius:50%; border:none; background:rgba(20,22,28,0.85); color:#fff; font-size:18px; cursor:pointer; align-items:center; justify-content:center; }
+  #missionBadge{ position:fixed; top:16px; left:200px; z-index:6; display:none; width:38px; height:38px; border-radius:50%; border:none; background:rgba(20,22,28,0.85); color:#fff; font-size:18px; cursor:pointer; align-items:center; justify-content:center; }
   #missionBadge .dot{ position:absolute; top:-2px; right:-2px; width:12px; height:12px; border-radius:50%; background:#c17bff; border:2px solid #14161c; display:none; animation:dailyPulse 1.4s infinite; }
   #missionBadge.ready .dot{ display:block; }
   #missionBadge.ready{ box-shadow:0 0 0 2px rgba(193,123,255,.7); }
@@ -592,7 +592,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-12-v148</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-12-v149</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -3617,7 +3617,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-12-v148';
+const GAME_BUILD='build 2026-10-12-v149';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
