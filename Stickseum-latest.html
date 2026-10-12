@@ -592,7 +592,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-12-v150</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-12-v152</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -1706,8 +1706,8 @@ function claimMission(scope, idx){
   return true;
 }
 function missionsClaimable(){ const ms=ensureMissions(); let n=0; for(const sc of ['daily','weekly']) for(const m of ms[sc]) if(!m.c && m.p>=m.n) n++; return n; }
-// ---- the season pass: 20 tiers, 100 season xp each; progress resets every month ----
-const SEASON_TIERS=20, SEASON_TIER_XP=100;
+// ---- the season pass: 20 tiers, 300 season xp each; progress resets every month ----
+const SEASON_TIERS=20, SEASON_TIER_XP=300;
 const SEASON_REWARDS=[
   {kind:'gold',amount:50},{kind:'soul',amount:3},{kind:'box',amount:1},{kind:'gold',amount:80},{kind:'cos',id:'kfx_stars'},
   {kind:'playerxp',amount:60},{kind:'soul',amount:5},{kind:'gold',amount:100},{kind:'box',amount:1},{kind:'title',id:'season_vet'},
@@ -3617,7 +3617,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-12-v150';
+const GAME_BUILD='build 2026-10-12-v152';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -7391,7 +7391,7 @@ const ULT_IMPL = {
         for(const sx of [side,-side]){ const x=tg.x+sx*44; if(skillSpotFree(x,tg.y)){ pushFx('blink', p.x, p.y-30, tt, {color:'#eef2f8'}); p.x=x; p.y=tg.y; p.vx=p.vy=p.kbX=0; p.angle=(x<tg.x)?0:Math.PI; break; } }
         skillDamage(p, tg, 25, tt, {kb:120, up:120}); pushFx('spark', tg.x, tg.y-34, tt, {ang:Math.random()*6.28, color:'#ffffff'}); pushFx('samcut', tg.x, tg.y-34, tt, {ang:Math.random()*3.14}); } });
     }
-    hostTimers.push({at:tSec+0.1+(list.length+1)*0.22, fn:(tt)=>{ if(!p.alive) return; if(skillSpotFree(home.x,home.y)){ pushFx('blink', p.x, p.y-30, tt, {color:'#eef2f8'}); pushFx('iai', p.x, p.y-34, tt, {x2:home.x, y2:home.y-34}); p.x=home.x; p.y=home.y; p.vx=p.vy=p.kbX=0; } }});
+    hostTimers.push({at:tSec+0.1+(list.length+1)*0.22, fn:(tt)=>{ if(!p.alive) return; if(skillSpotFree(home.x,home.y)){ pushFx('blink', p.x, p.y-30, tt, {color:'#eef2f8'}); pushFx('iai', p.x, p.y-34, tt, {x2:home.x, y2:home.y-34}); pushFx('samfin', home.x, home.y, tt, {}); p.x=home.x; p.y=home.y; p.vx=p.vy=p.kbX=0; } }});
     return true; },
   pirate(p,tSec,tMs){ turrets=turrets.filter(z=>z.owner!==p.id); turrets.push({owner:p.id, team:p.team, x:p.x, y:p.y, until:tSec+PIRATE_TURRET_SEC, next:tSec+0.7, ang:(Math.cos(p.angle||0)>=0)?-0.6:Math.PI+0.6}); pushFx('skillring', p.x, p.y-24, tMs, {color:'#ffb347', r:60}); pushFx('sfx', p.x, p.y-30, tMs, {name:'explosion'}); },
   wizard(p,tSec,tMs,ax,ay){ const sp=wizardCircleSpot(p, ax, ay); magicCircles.push({owner:p.id, team:p.team, x:sp.x, y:sp.y, r:WIZ_CIRCLE_R, until:tSec+WIZ_CIRCLE_SEC}); pushFx('magiccircle', sp.x, sp.y, tMs, {}); },
@@ -10886,6 +10886,17 @@ function dmgText(x,y,v,col){
   if(otherSettings.damageNumbers===false) return; // convenience setting - some players prefer a cleaner screen without floating numbers
   addP({x:x+RND(-8,8),y:y-18,vx:RND(-22,22),vy:-95,drag:1.3,life:0.85,size:12+Math.min(13,v/3),color:'#ffffff',outline:col||'#000',shape:'text',add:false,text:String(Math.round(v))});
 }
+let samScreen={dimFrom:0, dimUntil:0, flashAt:0, flashA:0, flashCol:'255,255,255'};
+function samFlash(a,col){ if(otherSettings.screenShake===false) a*=0.5; samScreen.flashAt=performance.now(); samScreen.flashA=a; samScreen.flashCol=col||'255,255,255'; }
+function drawSamScreen(){          // screen-space: the dim of the ultimate (with a pale moon) and the white flashes of every cut
+  const now=performance.now(), W=canvas.width, H=canvas.height;
+  if(now<samScreen.dimUntil){ const tt=(now-samScreen.dimFrom)/(samScreen.dimUntil-samScreen.dimFrom), k=Math.min(1,tt*8,(1-tt)*6);
+    ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.fillStyle='rgba(6,10,34,'+(0.6*k)+')'; ctx.fillRect(0,0,W,H);
+    const g=ctx.createRadialGradient(W*0.5,H*0.2,0,W*0.5,H*0.2,Math.min(W,H)*0.28); g.addColorStop(0,'rgba(240,248,255,'+(0.95*k)+')'); g.addColorStop(0.35,'rgba(200,225,255,'+(0.55*k)+')'); g.addColorStop(1,'rgba(200,225,255,0)');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H); ctx.restore(); }
+  const fa=samScreen.flashA*Math.max(0,1-(now-samScreen.flashAt)/260);
+  if(fa>0.01){ ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.fillStyle='rgba('+samScreen.flashCol+','+fa+')'; ctx.fillRect(0,0,W,H); ctx.restore(); }
+}
 function spawnFx(e){
   const x=e.x, y=e.y, col=e.color||'#ffd34d';
   switch(e.type){
@@ -10905,214 +10916,45 @@ function spawnFx(e){
       if(e.v>0) dmgText(x,y,e.v,col);
       break; }
     case 'dmg': dmgText(x,y,e.v||0,col); break;
-    case 'iai': {                                                          // samurai skill: a long white cut along the dash, afterimages, petals
-      const x2=e.x2, y2=e.y2, n=7;
-      addP({x:x,y:y,x2:x2,y2:y2,life:.45,color:'#9fd0ff',shape:'slash',size:26});
-      addP({x:x,y:y,x2:x2,y2:y2,life:.3,color:'#ffffff',shape:'slash',size:12});
-      for(let i=0;i<=n;i++){ const f=i/n; addP({x:x+(x2-x)*f,y:y+(y2-y)*f,life:.22+0.34*(1-f),color:'#bfe3ff',shape:'flash',size:46}); }
-      burst((x+x2)/2,(y+y2)/2,26,{a0:0,a1:6.28,s0:60,s1:260,l0:.5,l1:1.1,z0:2.5,z1:5,colors:['#ffb7d5','#ff8fb8','#ffffff'],grav:90,drag:1.2});
-      addP({x:x2,y:y2,life:.35,color:'#ffffff',shape:'ring',r0:6,r1:70,lw:5});
-      shakeFrom(x2,y2,5,900); break; }
-    case 'samcut': {                                                       // one cut of the ultimate: a crossing pair of slashes on the target
-      const a0=(e.ang||0)+RND(-0.3,0.3), L=RND(80,110);
-      for(let k=0;k<2;k++){ const a=a0+(k?1.15:-0.15), c=Math.cos(a)*L, d=Math.sin(a)*L;
-        addP({x:x-c,y:y-d,x2:x+c,y2:y+d,life:.38+k*0.08,color:k?'#ff6f9c':'#cfe8ff',shape:'slash',size:20}); }
-      addP({x:x,y:y,life:.16,color:'#ffffff',shape:'flash',size:90});
-      addP({x:x,y:y,life:.3,color:'#ffffff',shape:'ring',r0:6,r1:60,lw:4});
-      burst(x,y,16,{a0:0,a1:6.28,s0:100,s1:380,l0:.3,l1:.7,z0:2,z1:4,colors:['#ffffff','#ffb7d5','#9fd0ff'],grav:200,drag:1.6,shape:'streak'});
-      burst(x,y,10,{a0:0,a1:6.28,s0:40,s1:160,l0:.7,l1:1.3,z0:3,z1:6,colors:['#ffb7d5','#ff8fb8'],grav:80,drag:1});
-      shakeFrom(x,y,9,900); break; }
-    case 'samult': {                                                       // the start of the ultimate: a moonlit ring and an eight-way cut
-      addP({x:x,y:y,life:.55,color:'#bfe3ff',shape:'ring',r0:10,r1:260,lw:8});
-      addP({x:x,y:y,life:.4,color:'#ffffff',shape:'ring',r0:10,r1:170,lw:4});
-      addP({x:x,y:y,life:.3,color:'#e8f4ff',shape:'flash',size:200});
-      for(let i=0;i<8;i++){ const a=i*Math.PI/4+0.2; addP({x:x+Math.cos(a)*30,y:y+Math.sin(a)*30,x2:x+Math.cos(a)*210,y2:y+Math.sin(a)*210,life:.4,color:i%2?'#ffb7d5':'#cfe8ff',shape:'slash',size:14}); }
-      shakeFrom(x,y,8,900); break; }
-    case 'ult': {
-      addP({x:x,y:y,life:.55,color:'#ffd34d',shape:'ring',r0:10,r1:150,lw:8});
-      addP({x:x,y:y,life:.4,color:'#ffffff',shape:'ring',r0:6,r1:95,lw:4});
-      addP({x:x,y:y,life:.2,color:'#ffe08a',shape:'flash',size:100});
-      burst(x,y,24,{a0:0,a1:6.28,s0:80,s1:380,l0:.5,l1:.95,z0:2,z1:4.5,colors:['#ffd34d','#ffffff','#ff9d2e'],drag:1.8});
-      if(e.name) addP({x:x,y:y-34,vx:0,vy:-45,drag:0.9,life:1.5,size:20,color:'#ffe08a',outline:'#7a5a00',shape:'text',add:false,text:e.name});
-      shakeFrom(x,y,5,500);
-      break; }
-    case 'warn': addP({x:x,y:y,life:e.dur||1,color:'#ff4d4d',shape:'warn'}); break;
-    case 'batform':
-      addP({x:x,y:y,life:.4,color:'#8b0000',shape:'ring',r0:6,r1:90,lw:6});
-      addP({x:x,y:y,life:.18,color:'#15161c',shape:'flash',size:80});
-      burst(x,y,20,{a0:0,a1:6.28,s0:80,s1:340,l0:.4,l1:.8,z0:3,z1:6,colors:['#15161c','#2a2b31','#8b0000'],grav:-40,drag:1.2,shape:'smoke',add:false});
-      break;
-    case 'bombpass':
-      addP({x:x,y:y,life:.25,color:'#ffd34d',shape:'ring',r0:4,r1:28,lw:3});
-      burst(x,y,8,{a0:0,a1:6.28,s0:60,s1:140,l0:.2,l1:.35,z0:2,z1:3,colors:['#ffd34d','#fff'],grav:0,drag:2});
-      break;
-    case 'sv_lightning': {                                          // a bolt hits the ground
-      const k=e.sub?0.6:1;
-      playSfx('beam', x, y); svFlash(0.5*k, '235,240,255');
-      addP({x:x,y:y-6,life:.3,color:'#ffffff',shape:'flash',size:230*k});
-      addP({x:x,y:y-4,life:.55,color:'#fff27a',shape:'ring',r0:8,r1:(e.r||80)*1.5,lw:9});
-      addP({x:x,y:y-4,life:.8,color:'#8fa8ff',shape:'ring',r0:6,r1:(e.r||80)*2.1,lw:4});
-      burst(x,y-8,34,{a0:-3.1,a1:-0.05,s0:180,s1:760,l0:.35,l1:.85,z0:2,z1:4.4,colors:['#ffffff','#fff27a','#9db4ff'],grav:520,drag:1.1,shape:'streak'});
-      burst(x,y-6,10,{a0:-2.8,a1:-0.3,s0:60,s1:220,l0:.8,l1:1.4,z0:10,z1:22,colors:['#4a4f66','#2c2f40'],grav:-40,drag:1.4,shape:'smoke',add:false});
-      burst(x,y-2,14,{a0:-3.0,a1:-0.1,s0:100,s1:420,l0:.5,l1:1.0,z0:3,z1:6,colors:['#3a3a44','#6b6b74'],grav:900,drag:.5,shape:'square',add:false});
-      shakeFrom(x,y,12*k,1500); break; }
-    case 'sv_meteor': {                                             // the meteorite lands
-      const k=e.sub?0.6:1;
-      playSfx('explosion', x, y); svFlash(0.62*k, '255,200,120');
-      addP({x:x,y:y-10,life:.35,color:'#fff2c8',shape:'flash',size:420*k});
-      addP({x:x,y:y-4,life:.7,color:'#ffb347',shape:'ring',r0:12,r1:(e.r||105)*2.6,lw:16});
-      addP({x:x,y:y-4,life:1.0,color:'#ff6b2c',shape:'ring',r0:8,r1:(e.r||105)*3.3,lw:7});
-      addP({x:x,y:y-4,life:1.3,color:'#ffffff',shape:'ring',r0:4,r1:(e.r||105)*4.2,lw:3});
-      burst(x,y-10,46,{a0:-3.14,a1:0,s0:80,s1:520,l0:.5,l1:1.1,z0:12,z1:30,colors:['#ff5a1f','#ff9b2e','#ffd34d','#ff3d00'],drag:2.6,shape:'fire'});
-      burst(x,y-10,80,{a0:-3.14,a1:0,s0:260,s1:1000,l0:.6,l1:1.4,z0:2,z1:5,colors:['#ffe08a','#ffb347','#ffffff'],grav:620,drag:.8,shape:'streak'});
-      burst(x,y-6,34,{a0:-3.0,a1:-0.1,s0:200,s1:820,l0:.9,l1:1.8,z0:4,z1:10,colors:['#3b3025','#5a4a3a','#7a6a58'],grav:1100,drag:.35,shape:'square',add:false});
-      burst(x,y-14,18,{a0:-2.5,a1:-0.6,s0:30,s1:190,l0:1.4,l1:2.4,z0:26,z1:56,colors:['#4a4440','#38332f'],grav:-60,drag:1.2,shape:'smoke',add:false});
-      shakeFrom(x,y,30*k,2200); break; }
-    case 'sv_bomb': {
-      const k=e.sub?0.6:1;
-      playSfx('explosion', x, y); svFlash(0.4*k, '255,150,110');
-      addP({x:x,y:y-8,life:.3,color:'#fff4d6',shape:'flash',size:300*k});
-      addP({x:x,y:y-4,life:.6,color:'#ff6a2b',shape:'ring',r0:10,r1:(e.r||100)*2.2,lw:13});
-      addP({x:x,y:y-4,life:.9,color:'#ffd34d',shape:'ring',r0:6,r1:(e.r||100)*1.5,lw:5});
-      burst(x,y-8,30,{a0:-3.14,a1:0,s0:80,s1:420,l0:.4,l1:.9,z0:10,z1:24,colors:['#ff4d1f','#ffb347','#ffe08a'],drag:2.8,shape:'fire'});
-      burst(x,y-8,46,{a0:-3.14,a1:0,s0:240,s1:860,l0:.5,l1:1.1,z0:2,z1:4.4,colors:['#ffe08a','#ffffff'],grav:560,drag:.9,shape:'streak'});
-      burst(x,y-6,20,{a0:-3.0,a1:-0.1,s0:160,s1:620,l0:.8,l1:1.5,z0:3,z1:8,colors:['#2b2b30','#4a4a52'],grav:1000,drag:.4,shape:'square',add:false});
-      burst(x,y-12,12,{a0:-2.6,a1:-0.5,s0:30,s1:150,l0:1.2,l1:2,z0:22,z1:44,colors:['#15151a','#2a2a30'],grav:-70,drag:1.3,shape:'smoke',add:false});
-      shakeFrom(x,y,22*k,1900); break; }
-    case 'sv_volcano': {
-      const k=e.sub?0.6:1;
-      playSfx('explosion', x, y); svFlash(0.3*k, '255,120,40');
-      addP({x:x,y:y-4,life:.55,color:'#ff7a2b',shape:'ring',r0:8,r1:(e.r||88)*2.1,lw:10});
-      addP({x:x,y:y-6,life:.3,color:'#ffe9a8',shape:'flash',size:260*k});
-      burst(x,y-10,46,{a0:-2.3,a1:-0.84,s0:360,s1:1150,l0:.9,l1:1.9,z0:5,z1:12,colors:['#ffd34d','#ff8a2b','#ff4d1f'],grav:720,drag:.3,shape:'fire'});       // lava thrown up and out
-      burst(x,y-10,30,{a0:-2.7,a1:-0.45,s0:260,s1:760,l0:1.1,l1:2.0,z0:2.5,z1:4.5,colors:['#ffe08a','#ffffff'],grav:620,drag:.25,shape:'streak'});
-      burst(x,y-6,22,{a0:-3.0,a1:-0.1,s0:100,s1:420,l0:1,l1:1.8,z0:14,z1:36,colors:['#3a2a24','#241a16'],grav:-90,drag:1,shape:'smoke',add:false});
-      shakeFrom(x,y,20*k,2000); break; }
-    case 'sv_zombie':                                               // a zombie claws its way out of the ground
-      playSfx('explosion', x, y);
-      addP({x:x,y:y-2,life:.7,color:'#6bff7a',shape:'ring',r0:6,r1:70,lw:6});
-      burst(x,y-4,24,{a0:-3.0,a1:-0.15,s0:60,s1:300,l0:.6,l1:1.2,z0:3,z1:7,colors:['#6bff7a','#2fae45','#1f6b2e'],grav:620,drag:.7,shape:'dot'});
-      burst(x,y-6,10,{a0:-2.8,a1:-0.3,s0:30,s1:130,l0:1,l1:1.7,z0:14,z1:30,colors:['rgba(90,220,100,0.45)'],grav:-40,drag:1.3,shape:'smoke',add:false});
-      shakeFrom(x,y,6,900); break;
-    case 'sandstorm': {                                              // a wall of sand blown forward: fast grains, big soft dust clouds and swirling streaks, and a shake
-      const dir=(e.dir>=0)?1:-1, len=e.len||460, hh=e.h||240;
-      const sand=['#e8c27a','#d9a85b','#f3dba0','#b98a4a','#fff0c8'];
-      for(let i=0;i<160;i++) addP({x:x+dir*RND(14,len*0.7),y:y+RND(-hh/2,hh/2),vx:dir*RND(700,1700),vy:RND(-90,90),life:RND(.5,1.1),size:RND(1.6,3.6),color:sand[i%5],drag:0.8,shape:'dot',add:false});
-      for(let i=0;i<26;i++) addP({x:x+dir*RND(10,len*0.85),y:y+RND(-hh/2,hh/2),vx:dir*RND(450,1000),vy:RND(-60,60),life:RND(.6,1.1),size:RND(18,34),color:'#d9b46a',shape:'smoke',add:false,drag:1.2});
-      for(let i=0;i<40;i++) addP({x:x+dir*RND(10,len*0.7),y:y+RND(-hh/2,hh/2),vx:dir*RND(1000,2000),vy:RND(-50,50),life:RND(.3,.7),size:RND(1.6,2.8),color:'#fff0c8',drag:0.5,shape:'streak'});
-      shakeFrom(x,y,7,1100); break; }
-    case 'forcelightning': {                                         // from the hand to the head of the target, then crackling at both ends
-      const tx=e.tx, ty=e.ty, dur=e.dur||0.55, c2=e.color||'#9fb4ff';
-      playSfx('beam', x, y);
-      for(let k=0;k<3;k++) addP({x:x,y:y,x2:tx,y2:ty,life:dur*(1-0.12*k),color:k===0?c2:'#c9d4ff',shape:'bolt',size:k===0?3.4:2.2,amp:k===0?20:30,seedOff:k*977,vx:0,vy:0,grav:0,drag:0,add:true});
-      addP({x:x,y:y,life:.3,color:'#e9edff',shape:'flash',size:60});
-      addP({x:tx,y:ty,life:.4,color:'#bcd0ff',shape:'flash',size:120});
-      addP({x:tx,y:ty,life:.45,color:c2,shape:'ring',r0:6,r1:70,lw:5});
-      burst(tx,ty,18,{a0:0,a1:6.28,s0:80,s1:420,l0:.25,l1:.6,z0:2,z1:3.6,colors:['#ffffff','#9fb4ff','#c9d4ff'],drag:2,shape:'streak'});
-      burst(x,y,8,{a0:0,a1:6.28,s0:40,s1:200,l0:.2,l1:.45,z0:2,z1:3.4,colors:['#ffffff','#9fb4ff'],drag:2.4,shape:'dot'});
-      shakeFrom(tx,ty,7,1200); break; }
-    case 'bombexplode':
-      playSfx('explosion', x, y);
-      addP({x:x,y:y,life:.45,color:'#ff6a2b',shape:'ring',r0:8,r1:80,lw:8});
-      addP({x:x,y:y,life:.3,color:'#fff4d6',shape:'flash',size:70});
-      burst(x,y,36,{a0:0,a1:6.28,s0:140,s1:420,l0:.4,l1:.8,z0:3,z1:7,colors:['#ff4d1f','#ffb347','#ffe08a','#555'],grav:80,drag:1.3});
-      break;
-    case 'dustblast':
-      { const ang=e.ang||0, ca=Math.cos(ang), sa=Math.sin(ang);
-        burst(x,y,22,{a0:ang-0.5,a1:ang+0.5,s0:220,s1:520,l0:.35,l1:.7,z0:3,z1:6,colors:['#cbb98a','#e8dcb5','#a89468'],grav:60,drag:1.2});
-        addP({x:x,y:y,life:.3,color:'#cbb98a',shape:'ring',r0:4,r1:40,lw:4});
-      }
-      break;
-    case 'portalopen':
-      addP({x:x,y:y,life:.4,color:'#a855f7',shape:'ring',r0:6,r1:50,lw:5});
-      burst(x,y,16,{a0:0,a1:6.28,s0:40,s1:180,l0:.3,l1:.6,z0:2,z1:5,colors:['#a855f7','#e9d5ff'],grav:-10,drag:1.6});
-      break;
-    case 'portalwarp':
-      playSfx('portalwarp', x, y); // only ever pushed at the moment someone actually steps through a portal (exit point)
-      addP({x:x,y:y,life:.3,color:'#e9d5ff',shape:'flash',size:46});
-      burst(x,y,14,{a0:0,a1:6.28,s0:60,s1:220,l0:.25,l1:.5,z0:2,z1:4,colors:['#a855f7','#e9d5ff'],grav:0,drag:1.8});
-      break;
-    case 'shieldup':
-      addP({x:x,y:y,life:.3,color:'#ffd34d',shape:'ring',r0:6,r1:60,lw:5});
-      burst(x,y,14,{a0:0,a1:6.28,s0:60,s1:220,l0:.3,l1:.6,z0:2,z1:4,colors:['#ff6a2b','#ffd34d'],grav:-20,drag:1.6});
-      break;
-    case 'flamepuff': {
-      const ang=e.ang||0, ca=Math.cos(ang), sa=Math.sin(ang);
-      const n=26+Math.floor(Math.random()*10);
-      for(let i=0;i<n;i++){
-        const dist=Math.random()*FLAME_RANGE; // scattered anywhere from the muzzle out to max range, so the stream visually reaches as far as it can actually hit
-        const centerBias=(Math.random()+Math.random()+Math.random())/3-0.5; // averaged random clusters much closer to 0 than a flat spread would
-        const jitter=centerBias*2*FLAME_HALF_ANGLE*0.22*dist; // even tighter, denser core along the aim line
-        const px=x+ca*dist-sa*jitter, py=y+sa*dist+ca*jitter;
-        const sizeFalloff=1-0.55*(dist/FLAME_RANGE); // stays clearly visible even at max range instead of fading to a speck
-        addP({x:px,y:py,vx:ca*RND(20,50)+RND(-15,15),vy:sa*RND(20,50)+RND(-25,-5),life:RND(.3,.55),size:RND(5,9)*sizeFalloff,color:['#ff5a1f','#ffb347','#ffe08a'][Math.floor(Math.random()*3)],shape:'fire',drag:1.8,add:true});
-      }
-      break;
-    }
-    case 'smokeveil':
-      burst(x,y,22,{a0:0,a1:6.28,s0:30,s1:140,l0:.6,l1:1.1,z0:6,z1:13,colors:['#0c0c10','#1c1d22','#2a2b31'],grav:-30,drag:1.1,shape:'smoke',add:false});
-      addP({x:x,y:y,life:.3,color:'#15161c',shape:'flash',size:70});
-      break;
-    case 'dice':
-      showDiceBanner(e.name||'?', e.face, e.doubled);
-      break;
-    case 'dice6':
-      addP({x:x,y:y,life:.4,color:'#ffd34d',shape:'ring',r0:6,r1:70,lw:5});
-      burst(x,y,16,{a0:0,a1:6.28,s0:80,s1:280,l0:.4,l1:.7,z0:2,z1:4,colors:['#ffd34d','#ffffff'],drag:1.8});
-      break;
-    case 'magiccircle':
-      addP({x:x,y:y,life:.6,color:'#c85aff',shape:'ring',r0:10,r1:WIZ_CIRCLE_R,lw:6});
-      addP({x:x,y:y,life:.3,color:'#ffd34d',shape:'flash',size:120});
-      burst(x,y,24,{a0:0,a1:6.28,s0:100,s1:380,l0:.5,l1:.9,z0:2,z1:4,colors:['#c85aff','#ffd34d','#ffffff'],drag:1.5});
-      shakeFrom(x,y,6,600);
-      break;
-    case 'slow':
-      burst(x,y,10,{a0:1.2,a1:1.9,s0:20,s1:60,l0:.6,l1:1.0,z0:3,z1:5,colors:['#7c9eff','#3b4a7a'],grav:60,drag:1.2,shape:'dot',add:false});
-      break;
-    case 'stun':
-      addP({x:x,y:y+16,life:.35,color:'#ffe066',shape:'ring',r0:6,r1:44,lw:4});
-      burst(x,y+10,12,{a0:0,a1:6.28,s0:50,s1:150,l0:.3,l1:.6,z0:2,z1:4,colors:['#ffe066','#ffffff'],grav:0,drag:2.2,shape:'dot',add:true});
-      break;
-    case 'swordfall':
-      addP({x:x,y:y,life:e.dur||0.7,color:'#dfe9ff',shape:'bigsword',add:false});
-      addP({x:x,y:y,life:e.dur||0.7,color:'#7c9eff',shape:'warn'});
-      break;
-    case 'swordhit':
-      addP({x:x,y:y,life:.28,color:'#ffffff',shape:'flash',size:160});
-      addP({x:x,y:y,life:.55,color:'#9fc2ff',shape:'ring',r0:8,r1:190,lw:9});
-      burst(x,y,26,{a0:-3.3,a1:0.15,s0:120,s1:620,l0:.4,l1:.9,z0:2,z1:4,colors:['#ffffff','#9fc2ff','#dfe9ff'],grav:700,drag:1.2,shape:'streak'});
-      burst(x,y,12,{a0:-3.1,a1:-0.04,s0:60,s1:260,l0:.7,l1:1.2,z0:8,z1:18,colors:['#8a8f99','#6b6f78'],grav:-30,drag:1.4,shape:'smoke',add:false});
-      shakeFrom(x,y,14,800);
-      break;
-    case 'skill': {
-      addP({x:x,y:y-26,vx:0,vy:-46,drag:1.1,life:0.95,size:13,color:'#ffffff',outline:col,shape:'text',add:false,text:e.name||''});
-      addP({x:x,y:y+12,life:.35,color:col,shape:'ring',r0:6,r1:40,lw:3});
-      break; }
-    case 'skillring': {
-      addP({x:x,y:y,life:.4,color:col,shape:'ring',r0:10,r1:(e.r||120),lw:5});
-      break; }
-    case 'heal': {
-      burst(x,y+10,14,{a0:-2.3,a1:-0.85,s0:50,s1:200,l0:.6,l1:1.0,z0:2,z1:4,colors:['#5fff8a','#ffffff'],grav:-60,drag:1.4});
-      addP({x:x,y:y-6,vx:0,vy:-70,drag:1.2,life:1.0,size:16,color:'#7dffa3',outline:'#1c7a3a',shape:'text',add:false,text:'+'+(e.v||0)});
-      break; }
-    case 'explosion': {
-      playSfx('explosion', x, y); // grenade / bazooka / missile splash and the bat home run
-      addP({x:x,y:y,life:.24,color:'#fff6c8',shape:'flash',size:140});
-      addP({x:x,y:y,life:.55,color:'#ffb347',shape:'ring',r0:10,r1:200,lw:10});
-      addP({x:x,y:y,life:.85,color:'#ff6b2c',shape:'ring',r0:6,r1:260,lw:5});
-      burst(x,y,20,{a0:0,a1:6.28,s0:40,s1:300,l0:.4,l1:.8,z0:8,z1:18,colors:['#ff5a1f','#ff9b2e','#ffd34d','#ff3d00'],drag:3.2,shape:'fire'});
-      burst(x,y,36,{a0:0,a1:6.28,s0:200,s1:780,l0:.45,l1:1.0,z0:2,z1:4.2,colors:['#ffe08a','#ffb347','#ffffff'],grav:520,drag:1.1,shape:'streak'});
-      burst(x,y,10,{a0:0,a1:6.28,s0:120,s1:540,l0:.8,l1:1.3,z0:3,z1:6,colors:['#3b3025','#5a4a3a'],grav:900,drag:.3,shape:'square',add:false});
-      burst(x,y-6,14,{a0:-2.4,a1:-0.7,s0:30,s1:150,l0:1.0,l1:1.5,z0:12,z1:24,colors:['#6b6b70','#4a4a50'],grav:-40,drag:1.4,shape:'smoke',add:false});
-      shakeFrom(x,y,16,800);
-      break; }
-    case 'combo': {
-      addP({x:x,y:y,life:.5,color:'#c17bff',shape:'ring',r0:8,r1:120,lw:8});
-      addP({x:x,y:y,life:.2,color:'#ffffff',shape:'flash',size:100});
-      burst(x,y,20,{a0:0,a1:6.28,s0:160,s1:520,l0:.6,l1:1.0,z0:5,z1:9,colors:['#ffffff','#d62839','#1d1f27'],grav:420,drag:1.2,shape:'card',add:false});
-      burst(x,y,18,{a0:0,a1:6.28,s0:200,s1:620,l0:.35,l1:.7,z0:2,z1:3.4,colors:['#ffffff','#c17bff','#ff8fd9'],drag:1.6,shape:'streak'});
-      shakeFrom(x,y,7,600);
-      break; }
+    case 'iai': {                                                          // samurai skill: a huge white cut along the dash, a fan of blades, afterimages, speed lines, petals
+      const x2=e.x2, y2=e.y2, dir=(x2>=x)?1:-1, n=8, len=Math.hypot(x2-x,y2-y);
+      addP({x:x-dir*60,y:y,x2:x2+dir*90,y2:y2,life:.8,color:'#7fb8ff',shape:'slash',size:70});
+      addP({x:x-dir*40,y:y,x2:x2+dir*70,y2:y2,life:.6,color:'#ffffff',shape:'slash',size:34});
+      for(let k=-2;k<=2;k++){ if(!k) continue; addP({x:x+dir*20,y:y+k*16,x2:x2+dir*(40+Math.abs(k)*20),y2:y2+k*30,life:.5+0.05*Math.abs(k),color:k>0?'#ffb7d5':'#cfe8ff',shape:'slash',size:22}); }
+      for(let i=0;i<=n;i++){ const f=i/n; addP({x:x+(x2-x)*f,y:y+(y2-y)*f,life:.5+0.5*f,color:i%2?'#9fd0ff':'#e6f3ff',shape:'ghost',dir:dir}); addP({x:x+(x2-x)*f,y:y+(y2-y)*f-30,life:.3+0.3*(1-f),color:'#bfe3ff',shape:'flash',size:70}); }
+      burst((x+x2)/2,(y+y2)/2,Math.min(70,20+len/8),{a0:dir>0?Math.PI-0.5:-0.5,a1:dir>0?Math.PI+0.5:0.5,s0:300,s1:1100,l0:.25,l1:.6,z0:2,z1:4.5,colors:['#ffffff','#9fd0ff'],grav:0,drag:2.2,shape:'streak'});
+      burst((x+x2)/2,(y+y2)/2,50,{a0:0,a1:6.28,s0:60,s1:380,l0:.8,l1:1.7,z0:3,z1:6,colors:['#ffb7d5','#ff8fb8','#ffffff','#ffd6e6'],grav:110,drag:1.1});
+      addP({x:x,y:y,life:.45,color:'#9fd0ff',shape:'ring',r0:10,r1:110,lw:7});
+      for(let r=0;r<3;r++) addP({x:x2,y:y2,life:.35+r*0.12,color:r?'#ffb7d5':'#ffffff',shape:'ring',r0:6,r1:80+r*55,lw:6-r});
+      addP({x:x2,y:y2,life:.3,color:'#ffffff',shape:'flash',size:260});
+      addP({x:x2,y:y2-70,vy:-25,drag:1.5,life:1.0,color:'#ffffff',shape:'ktext',text:'一閃',size:76,rot0:-0.08});
+      samFlash(0.55,'235,245,255'); shakeFrom(x2,y2,14,1000); break; }
+    case 'samcut': {                                                       // one cut of the ultimate: a screen-long diagonal slash, a crossing pair, a kanji, a white flash
+      const a0=(e.ang||0)+RND(-0.3,0.3), L=520;
+      addP({x:x-Math.cos(a0)*L,y:y-Math.sin(a0)*L,x2:x+Math.cos(a0)*L,y2:y+Math.sin(a0)*L,life:.55,color:'#ffffff',shape:'slash',size:62});
+      addP({x:x-Math.cos(a0)*L*0.8,y:y-Math.sin(a0)*L*0.8,x2:x+Math.cos(a0)*L*0.8,y2:y+Math.sin(a0)*L*0.8,life:.7,color:'#7fb8ff',shape:'slash',size:30});
+      for(let k=0;k<2;k++){ const a=a0+(k?1.25:-0.3), l=RND(130,170), c=Math.cos(a)*l, d=Math.sin(a)*l;
+        addP({x:x-c,y:y-d,x2:x+c,y2:y+d,life:.5+k*0.1,color:k?'#ff4f8a':'#ffffff',shape:'slash',size:34}); }
+      addP({x:x,y:y,life:.2,color:'#ffffff',shape:'flash',size:260});
+      for(let r=0;r<3;r++) addP({x:x,y:y,life:.3+r*0.1,color:r?'#ff9bc0':'#ffffff',shape:'ring',r0:6,r1:70+r*45,lw:6-r});
+      burst(x,y,34,{a0:0,a1:6.28,s0:150,s1:700,l0:.3,l1:.8,z0:2.5,z1:5,colors:['#ffffff','#ffb7d5','#9fd0ff'],grav:240,drag:1.5,shape:'streak'});
+      burst(x,y,26,{a0:0,a1:6.28,s0:50,s1:260,l0:.9,l1:1.6,z0:3,z1:6.5,colors:['#ffb7d5','#ff8fb8','#ffd6e6'],grav:90,drag:1});
+      addP({x:x+RND(-30,30),y:y-60,vy:-30,drag:1.4,life:.9,color:'#ff6f9c',shape:'ktext',text:'斬',size:86,rot0:RND(-0.25,0.25)});
+      samFlash(0.5,'255,255,255'); shakeFrom(x,y,18,1100); break; }
+    case 'samult': {                                                       // the start of the ultimate: the screen dims under a pale moon, a ring of eight blades
+      samScreen.dimFrom=performance.now(); samScreen.dimUntil=samScreen.dimFrom+2200;
+      for(let r=0;r<3;r++) addP({x:x,y:y,life:.55+r*0.2,color:r%2?'#ffffff':'#bfe3ff',shape:'ring',r0:10,r1:300+r*90,lw:9-r*2});
+      addP({x:x,y:y,life:.45,color:'#e8f4ff',shape:'flash',size:360});
+      for(let i=0;i<8;i++){ const a=i*Math.PI/4+0.2; addP({x:x+Math.cos(a)*40,y:y+Math.sin(a)*40,x2:x+Math.cos(a)*380,y2:y+Math.sin(a)*380,life:.55,color:i%2?'#ffb7d5':'#cfe8ff',shape:'slash',size:30}); }
+      burst(x,y,60,{a0:0,a1:6.28,s0:80,s1:500,l0:1,l1:2,z0:3,z1:6,colors:['#ffb7d5','#ffffff','#ff8fb8'],grav:70,drag:1});
+      addP({x:x,y:y-110,vy:-14,drag:1,life:1.2,color:'#cfe8ff',shape:'ktext',text:'心眼',size:84});
+      samFlash(0.45,'210,230,255'); shakeFrom(x,y,12,1000); break; }
+    case 'samfin': {                                                       // the blade goes back into its sheath: one last big flash and a storm of petals
+      for(let r=0;r<4;r++) addP({x:x,y:y-30,life:.4+r*0.12,color:r%2?'#ffb7d5':'#ffffff',shape:'ring',r0:8,r1:120+r*60,lw:8-r});
+      addP({x:x,y:y-30,life:.4,color:'#ffffff',shape:'flash',size:340});
+      burst(x,y-30,90,{a0:0,a1:6.28,s0:100,s1:640,l0:.9,l1:2,z0:3,z1:7,colors:['#ffb7d5','#ff8fb8','#ffffff','#ffd6e6'],grav:120,drag:1.2});
+      addP({x:x,y:y-100,vy:-22,drag:1.4,life:1.1,color:'#ffffff',shape:'ktext',text:'納刀',size:70});
+      samFlash(0.6,'255,255,255'); shakeFrom(x,y,16,1100); break; }
     case 'blink': {
       addP({x:x,y:y,life:.4,color:col,shape:'ring',r0:36,r1:4,lw:5});
       addP({x:x,y:y,life:.3,color:'#ffffff',shape:'ring',r0:6,r1:48,lw:3});
@@ -11410,6 +11252,14 @@ function drawParticles(){
           ctx.lineJoin='round'; stroke(q.size*3.4, hexA(q.color,0.35), a); stroke(q.size*1.6, q.color, a); stroke(q.size*0.6, '#ffffff', a);
           if(R()<0.5){ const k=1+Math.floor(R()*(n-2)), s=R()<0.5?-1:1; ctx.globalAlpha=a*0.8; ctx.strokeStyle=q.color; ctx.lineWidth=q.size*0.7; ctx.beginPath(); ctx.moveTo(pts[k][0],pts[k][1]); ctx.lineTo(pts[k][0]+nx*s*30+dx/len*14, pts[k][1]+ny*s*30+dy/len*14); ctx.stroke(); }
           break; }
+        case 'ghost': { ctx.globalAlpha=a*0.7; ctx.strokeStyle=q.color; ctx.fillStyle=q.color; ctx.lineWidth=4; ctx.lineCap='round'; const f=q.dir||1;       // an afterimage of the swordsman, caught mid-dash
+          ctx.beginPath(); ctx.arc(q.x,q.y-52,8,0,7); ctx.fill();
+          ctx.beginPath(); ctx.moveTo(q.x,q.y-44); ctx.lineTo(q.x+f*8,q.y-20); ctx.moveTo(q.x+f*8,q.y-20); ctx.lineTo(q.x+f*26,q.y-4); ctx.moveTo(q.x+f*8,q.y-20); ctx.lineTo(q.x-f*18,q.y-2);
+          ctx.moveTo(q.x+f*2,q.y-38); ctx.lineTo(q.x+f*30,q.y-40); ctx.moveTo(q.x+f*2,q.y-38); ctx.lineTo(q.x-f*20,q.y-30); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(q.x+f*30,q.y-40); ctx.lineTo(q.x+f*62,q.y-52); ctx.stroke(); break; }
+        case 'ktext': { ctx.globalAlpha=Math.min(1,a*2); const sc=1+0.35*(1-Math.min(1,t*5)); ctx.save(); ctx.translate(q.x,q.y); ctx.scale(sc,sc); ctx.rotate(q.rot0||0);
+          ctx.font='900 '+Math.round(q.size)+'px "Malgun Gothic","Noto Sans CJK KR","Noto Serif CJK JP","Yu Mincho",serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+          ctx.lineWidth=7; ctx.strokeStyle='rgba(10,10,30,0.85)'; ctx.strokeText(q.text,0,0); ctx.fillStyle=q.color; ctx.fillText(q.text,0,0); ctx.restore(); break; }
         case 'slash': { const dx=q.x2-q.x, dy=q.y2-q.y, len=Math.max(1,Math.hypot(dx,dy)), nx=-dy/len, ny=dx/len, w=q.size*(1-t)*(1-0.0*t), mx=(q.x+q.x2)/2, my=(q.y+q.y2)/2;   // a tapered blade-shaped streak: fat in the middle, sharp at both ends
           ctx.globalAlpha=a; ctx.fillStyle=q.color; ctx.beginPath(); ctx.moveTo(q.x,q.y); ctx.quadraticCurveTo(mx+nx*w,my+ny*w,q.x2,q.y2); ctx.quadraticCurveTo(mx-nx*w,my-ny*w,q.x,q.y); ctx.fill();
           ctx.globalAlpha=a*0.6; ctx.fillStyle='#ffffff'; ctx.beginPath(); ctx.moveTo(q.x,q.y); ctx.quadraticCurveTo(mx+nx*w*0.4,my+ny*w*0.4,q.x2,q.y2); ctx.quadraticCurveTo(mx-nx*w*0.4,my-ny*w*0.4,q.x,q.y); ctx.fill(); break; }
@@ -11944,6 +11794,7 @@ function render(fxDt){
   if(gameMode==='survival' && !(killcamActive && killcamReplay && killcamReplay.sceneNow)) safeDraw(drawSurvivalOverlay);
   ctx.restore();
   if(hzDraw && hzDraw.dark>0 && !kcScene) safeDraw(()=>drawMineDark(getCamera()));
+  safeDraw(drawSamScreen);
   if(gameMode==='hideseek' && hideseekPhase==='hide' && players[myId] && players[myId].isSeeker){
     const remain=Math.max(0, (hideseekPhaseEndsAt-Date.now())/1000);
     ctx.fillStyle='#000'; ctx.fillRect(0,0,canvas.width,canvas.height);
