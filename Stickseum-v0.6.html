@@ -592,7 +592,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-12-v149</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-12-v150</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -3617,7 +3617,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-12-v149';
+const GAME_BUILD='build 2026-10-12-v150';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -7385,12 +7385,13 @@ const ULT_IMPL = {
     const list=enemiesOf(p).filter(o=>!o.swordCharge && Math.hypot(o.x-p.x,o.y-p.y)<=800).sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y)).slice(0,5);
     if(!list.length) return false;
     const home={x:p.x,y:p.y}; let k=0;
+    pushFx('samult', p.x, p.y-34, tMs, {});
     for(const tg of list){ k++;
       hostTimers.push({at:tSec+0.05+k*0.22, fn:(tt)=>{ if(!p.alive || !tg.alive) return; const side=(tg.x>=p.x)?-1:1;
         for(const sx of [side,-side]){ const x=tg.x+sx*44; if(skillSpotFree(x,tg.y)){ pushFx('blink', p.x, p.y-30, tt, {color:'#eef2f8'}); p.x=x; p.y=tg.y; p.vx=p.vy=p.kbX=0; p.angle=(x<tg.x)?0:Math.PI; break; } }
-        skillDamage(p, tg, 25, tt, {kb:120, up:120}); pushFx('spark', tg.x, tg.y-34, tt, {ang:Math.random()*6.28, color:'#ffffff'}); pushFx('spark', tg.x, tg.y-34, tt, {ang:Math.random()*6.28, color:'#cfe3ff'}); } });
+        skillDamage(p, tg, 25, tt, {kb:120, up:120}); pushFx('spark', tg.x, tg.y-34, tt, {ang:Math.random()*6.28, color:'#ffffff'}); pushFx('samcut', tg.x, tg.y-34, tt, {ang:Math.random()*3.14}); } });
     }
-    hostTimers.push({at:tSec+0.1+(list.length+1)*0.22, fn:(tt)=>{ if(!p.alive) return; if(skillSpotFree(home.x,home.y)){ pushFx('blink', p.x, p.y-30, tt, {color:'#eef2f8'}); p.x=home.x; p.y=home.y; p.vx=p.vy=p.kbX=0; } }});
+    hostTimers.push({at:tSec+0.1+(list.length+1)*0.22, fn:(tt)=>{ if(!p.alive) return; if(skillSpotFree(home.x,home.y)){ pushFx('blink', p.x, p.y-30, tt, {color:'#eef2f8'}); pushFx('iai', p.x, p.y-34, tt, {x2:home.x, y2:home.y-34}); p.x=home.x; p.y=home.y; p.vx=p.vy=p.kbX=0; } }});
     return true; },
   pirate(p,tSec,tMs){ turrets=turrets.filter(z=>z.owner!==p.id); turrets.push({owner:p.id, team:p.team, x:p.x, y:p.y, until:tSec+PIRATE_TURRET_SEC, next:tSec+0.7, ang:(Math.cos(p.angle||0)>=0)?-0.6:Math.PI+0.6}); pushFx('skillring', p.x, p.y-24, tMs, {color:'#ffb347', r:60}); pushFx('sfx', p.x, p.y-30, tMs, {name:'explosion'}); },
   wizard(p,tSec,tMs,ax,ay){ const sp=wizardCircleSpot(p, ax, ay); magicCircles.push({owner:p.id, team:p.team, x:sp.x, y:sp.y, r:WIZ_CIRCLE_R, until:tSec+WIZ_CIRCLE_SEC}); pushFx('magiccircle', sp.x, sp.y, tMs, {}); },
@@ -7720,6 +7721,7 @@ const SKILL_IMPL={
     for(const o of enemiesOf(p)){ if(o.swordCharge || o.x<lo || o.x>hi || Math.abs(o.y-y0)>85) continue; skillDamage(p, o, 30, tMs, {kb:160, up:160}); }
     pushFx('blink', x0, y0-30, tMs, {color:'#eef2f8'}); p.x=x1; p.y=best.y; p.vx=0; p.vy=0; p.kbX=0; pushFx('blink', p.x, p.y-30, tMs, {color:'#eef2f8'});
     pushFx('spark', (x0+x1)/2, y0-34, tMs, {ang:dir>0?0:Math.PI, color:'#ffffff'});
+    pushFx('iai', x0, y0-34, tMs, {x2:x1, y2:best.y-34});
     return true; },
   pirate(p,tSec,tMs,ax,ay){      // climb into a cannon and be fired: a parabola (gravity does the arc), 36 damage to the first enemy it hits
     const v=pirateFlyVel(p, ax, ay);
@@ -10903,6 +10905,29 @@ function spawnFx(e){
       if(e.v>0) dmgText(x,y,e.v,col);
       break; }
     case 'dmg': dmgText(x,y,e.v||0,col); break;
+    case 'iai': {                                                          // samurai skill: a long white cut along the dash, afterimages, petals
+      const x2=e.x2, y2=e.y2, n=7;
+      addP({x:x,y:y,x2:x2,y2:y2,life:.45,color:'#9fd0ff',shape:'slash',size:26});
+      addP({x:x,y:y,x2:x2,y2:y2,life:.3,color:'#ffffff',shape:'slash',size:12});
+      for(let i=0;i<=n;i++){ const f=i/n; addP({x:x+(x2-x)*f,y:y+(y2-y)*f,life:.22+0.34*(1-f),color:'#bfe3ff',shape:'flash',size:46}); }
+      burst((x+x2)/2,(y+y2)/2,26,{a0:0,a1:6.28,s0:60,s1:260,l0:.5,l1:1.1,z0:2.5,z1:5,colors:['#ffb7d5','#ff8fb8','#ffffff'],grav:90,drag:1.2});
+      addP({x:x2,y:y2,life:.35,color:'#ffffff',shape:'ring',r0:6,r1:70,lw:5});
+      shakeFrom(x2,y2,5,900); break; }
+    case 'samcut': {                                                       // one cut of the ultimate: a crossing pair of slashes on the target
+      const a0=(e.ang||0)+RND(-0.3,0.3), L=RND(80,110);
+      for(let k=0;k<2;k++){ const a=a0+(k?1.15:-0.15), c=Math.cos(a)*L, d=Math.sin(a)*L;
+        addP({x:x-c,y:y-d,x2:x+c,y2:y+d,life:.38+k*0.08,color:k?'#ff6f9c':'#cfe8ff',shape:'slash',size:20}); }
+      addP({x:x,y:y,life:.16,color:'#ffffff',shape:'flash',size:90});
+      addP({x:x,y:y,life:.3,color:'#ffffff',shape:'ring',r0:6,r1:60,lw:4});
+      burst(x,y,16,{a0:0,a1:6.28,s0:100,s1:380,l0:.3,l1:.7,z0:2,z1:4,colors:['#ffffff','#ffb7d5','#9fd0ff'],grav:200,drag:1.6,shape:'streak'});
+      burst(x,y,10,{a0:0,a1:6.28,s0:40,s1:160,l0:.7,l1:1.3,z0:3,z1:6,colors:['#ffb7d5','#ff8fb8'],grav:80,drag:1});
+      shakeFrom(x,y,9,900); break; }
+    case 'samult': {                                                       // the start of the ultimate: a moonlit ring and an eight-way cut
+      addP({x:x,y:y,life:.55,color:'#bfe3ff',shape:'ring',r0:10,r1:260,lw:8});
+      addP({x:x,y:y,life:.4,color:'#ffffff',shape:'ring',r0:10,r1:170,lw:4});
+      addP({x:x,y:y,life:.3,color:'#e8f4ff',shape:'flash',size:200});
+      for(let i=0;i<8;i++){ const a=i*Math.PI/4+0.2; addP({x:x+Math.cos(a)*30,y:y+Math.sin(a)*30,x2:x+Math.cos(a)*210,y2:y+Math.sin(a)*210,life:.4,color:i%2?'#ffb7d5':'#cfe8ff',shape:'slash',size:14}); }
+      shakeFrom(x,y,8,900); break; }
     case 'ult': {
       addP({x:x,y:y,life:.55,color:'#ffd34d',shape:'ring',r0:10,r1:150,lw:8});
       addP({x:x,y:y,life:.4,color:'#ffffff',shape:'ring',r0:6,r1:95,lw:4});
@@ -11385,6 +11410,9 @@ function drawParticles(){
           ctx.lineJoin='round'; stroke(q.size*3.4, hexA(q.color,0.35), a); stroke(q.size*1.6, q.color, a); stroke(q.size*0.6, '#ffffff', a);
           if(R()<0.5){ const k=1+Math.floor(R()*(n-2)), s=R()<0.5?-1:1; ctx.globalAlpha=a*0.8; ctx.strokeStyle=q.color; ctx.lineWidth=q.size*0.7; ctx.beginPath(); ctx.moveTo(pts[k][0],pts[k][1]); ctx.lineTo(pts[k][0]+nx*s*30+dx/len*14, pts[k][1]+ny*s*30+dy/len*14); ctx.stroke(); }
           break; }
+        case 'slash': { const dx=q.x2-q.x, dy=q.y2-q.y, len=Math.max(1,Math.hypot(dx,dy)), nx=-dy/len, ny=dx/len, w=q.size*(1-t)*(1-0.0*t), mx=(q.x+q.x2)/2, my=(q.y+q.y2)/2;   // a tapered blade-shaped streak: fat in the middle, sharp at both ends
+          ctx.globalAlpha=a; ctx.fillStyle=q.color; ctx.beginPath(); ctx.moveTo(q.x,q.y); ctx.quadraticCurveTo(mx+nx*w,my+ny*w,q.x2,q.y2); ctx.quadraticCurveTo(mx-nx*w,my-ny*w,q.x,q.y); ctx.fill();
+          ctx.globalAlpha=a*0.6; ctx.fillStyle='#ffffff'; ctx.beginPath(); ctx.moveTo(q.x,q.y); ctx.quadraticCurveTo(mx+nx*w*0.4,my+ny*w*0.4,q.x2,q.y2); ctx.quadraticCurveTo(mx-nx*w*0.4,my-ny*w*0.4,q.x,q.y); ctx.fill(); break; }
         case 'dot': ctx.globalAlpha=a; ctx.fillStyle=q.color; ctx.beginPath(); ctx.arc(q.x,q.y,q.size*(1-0.5*t),0,7); ctx.fill(); break;
         case 'fire': ctx.globalAlpha=Math.min(1,a*1.3); ctx.fillStyle=q.color; ctx.beginPath(); ctx.arc(q.x,q.y,q.size*(1-0.75*t),0,7); ctx.fill(); break;
         case 'streak': ctx.globalAlpha=a; ctx.strokeStyle=q.color; ctx.lineWidth=q.size*(1-0.4*t); ctx.beginPath(); ctx.moveTo(q.x,q.y); ctx.lineTo(q.x-q.vx*0.045,q.y-q.vy*0.045); ctx.stroke(); break;
