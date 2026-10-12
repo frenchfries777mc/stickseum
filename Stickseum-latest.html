@@ -594,7 +594,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-12-v168</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-12-v169</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -3086,6 +3086,8 @@ const THEMES = {
   mine:       {name:'지하 광산', bgA:'#2a1f18', bgB:'#0c0806', ground:'#3a2a1e', plat:'#6b5a45', platEdge:'#2e241a', stripe:'#ffb84d'},
   stormship:  {name:'폭풍 해적선', bgA:'#1b3552', bgB:'#08121e', ground:'#5a3a1e', plat:'#7b5230', platEdge:'#3a2410', stripe:'#6fd0ff'},
   pipefactory:{name:'파이프 공장', bgA:'#3a3d40', bgB:'#121416', ground:'#2b2e31', plat:'#5b6168', platEdge:'#2a2d31', stripe:'#ffb300'},
+  icelake:    {name:'얼음 호수', bgA:'#2a4a66', bgB:'#0c1a2a', ground:'#7fb7d6', plat:'#a9d8ee', platEdge:'#5d97b8', stripe:'#e8fbff'},
+  dungeon:    {name:'지하 감옥', bgA:'#2b2a33', bgB:'#0b0b10', ground:'#3a3944', plat:'#5a5866', platEdge:'#26252d', stripe:'#8a8a9c'},
   steampunk:  {name:'스팀펑크',   bgA:'#3a2f28', bgB:'#120e0a', ground:'#4a3626', plat:'#7a5c38', platEdge:'#3d2a18', stripe:'#d4a24c'}
 };
 
@@ -3203,6 +3205,25 @@ MAP_TEMPLATES['mine'] = {
   ]),
   spawns:[{x:250,y:890},{x:600,y:890},{x:950,y:890},{x:1650,y:890},{x:2000,y:890},{x:2350,y:890},{x:280,y:760},{x:2320,y:760}]
 };
+MAP_TEMPLATES['icelake'] = {
+  id:'icelake', name:THEMES.icelake.name, maxPlayers:8, arenaW:2400, arenaH:1000, theme:THEMES.icelake, hazard:'icelake',
+  platforms:[{x:0,y:900,w:2400,h:100}].concat(mirrorPl(2400,[
+    {x:180,y:770,w:220,h:24},{x:560,y:770,w:180,h:24},{x:380,y:640,w:200,h:24},{x:800,y:640,w:160,h:24},{x:150,y:510,w:200,h:24},{x:620,y:510,w:180,h:24},{x:380,y:380,w:220,h:24}
+  ])).concat([{x:1070,y:700,w:260,h:24},{x:1100,y:520,w:200,h:24}]),
+  spawns:[{x:250,y:890},{x:600,y:890},{x:950,y:890},{x:1450,y:890},{x:1800,y:890},{x:2150,y:890},{x:280,y:760},{x:2120,y:760}]
+};
+const ICE_ZONE={x:1200,r:170}, ICE_CYCLE=16, ICE_CRACK_FROM=9, ICE_BREAK_FROM=11;
+const DUN_PERIOD=8, DUN_WARN=1.2;
+MAP_TEMPLATES['dungeon'] = {
+  id:'dungeon', name:THEMES.dungeon.name, maxPlayers:8, arenaW:2400, arenaH:1000, theme:THEMES.dungeon, hazard:'dungeon',
+  platforms:[{x:0,y:900,w:2400,h:100}].concat(mirrorPl(2400,[
+    {x:150,y:770,w:200,h:24},{x:600,y:770,w:160,h:24},{x:200,y:640,w:180,h:24},{x:640,y:640,w:170,h:24},{x:150,y:510,w:200,h:24},{x:600,y:510,w:180,h:24},{x:380,y:380,w:200,h:24}
+  ])).concat([{x:1070,y:640,w:260,h:24},{x:1100,y:510,w:200,h:24},{x:1000,y:380,w:400,h:24}]),
+  gates:mirrorPl(2400,[
+    {x:400,y:770,w:170,h:24,g:0},{x:830,y:770,w:160,h:24,g:1},{x:420,y:640,w:190,h:24,g:1},{x:850,y:640,w:140,h:24,g:0},{x:380,y:510,w:190,h:24,g:0},{x:820,y:510,w:160,h:24,g:1}
+  ]).concat([{x:1020,y:770,w:150,h:24,g:1},{x:1230,y:770,w:150,h:24,g:0}]),
+  spawns:[{x:250,y:890},{x:600,y:890},{x:950,y:890},{x:1450,y:890},{x:1800,y:890},{x:2150,y:890},{x:250,y:760},{x:2150,y:760}]
+};
 // ---- map hazards (host-driven; the state rides in the snapshot as `hz` so every screen draws the same thing) ----
 let hzDraw=null;       // {w: wave front x or null, dir, v:[[x,y,0|1|2],...]}
 function mapHazardTick(dt,t){
@@ -3223,6 +3244,17 @@ function mapHazardTick(dt,t){
       if(Math.abs(p.x-cx)<C.w/2+PLAYER_W/2){ const dir=(p.x>cx)?1:(p.x<cx?-1:hz.cd); p.kbX=dir*1150; p.vy=-460; p.grounded=false;
         if(!(p.cartHitAt>ts-1.2)){ p.cartHitAt=ts; const dealt=absorbIntoShield(p, 50); p.hp-=dealt; pushFx('hit', p.x, p.y-PLAYER_H/2, t, {color:'#ffb84d', ang:dir>0?0:Math.PI, v:Math.round(dealt)}); if(p.hp<=0) handleDeath(p, null, t, '광차'); } } }
     const cc=ts%MINE_DARK_EVERY; hz.dark=cc>=MINE_DARK_FROM?1:(cc>=MINE_DARK_FROM-1?0.5:0);
+  } else if(MAP.hazard==='icelake'){
+    const c=ts%ICE_CYCLE, st=c<ICE_CRACK_FROM?0:(c<ICE_BREAK_FROM?1:2); hz.ic=st;
+    if(st===2){ const gy=MAP.platforms[0].y;
+      for(const id in players){ const p=players[id]; if(!p.alive || p.x===undefined || p.y<gy-6) continue;
+        if(Math.abs(p.x-ICE_ZONE.x)<ICE_ZONE.r){ const dir=p.x>=ICE_ZONE.x?1:-1; p.kbX=dir*700; p.vy=-560; p.grounded=false;
+          if(!(p.waterHitAt>ts-1.2)){ p.waterHitAt=ts; const dealt=absorbIntoShield(p, 25); p.hp-=dealt; pushFx('hit', p.x, p.y-PLAYER_H/2, t, {color:'#7fd0ff', ang:-Math.PI/2, v:Math.round(dealt)}); if(p.hp<=0) handleDeath(p, null, t, '얼음물'); } } } }
+  } else if(MAP.hazard==='dungeon'){
+    if(!MAP.basePlats){ MAP.basePlats=MAP.platforms; MAP.gateGp=-1; }
+    const c=ts%(DUN_PERIOD), gp=c<DUN_PERIOD/2?0:1, left=(DUN_PERIOD/2)-(c%(DUN_PERIOD/2));
+    hz.gp=gp; hz.gw=left<DUN_WARN?1:0;
+    if(MAP.gateGp!==gp){ MAP.gateGp=gp; MAP.platforms=MAP.basePlats.concat(MAP.gates.filter(g=>g.g===gp)); }
   } else if(MAP.hazard==='pipefactory'){
     for(const pl of MAP.platforms){ if(!pl.conv) continue;
       for(const id in players){ const p=players[id]; if(!p.alive || p.x===undefined || !p.grounded || p.teleportChannel) continue;
@@ -3267,6 +3299,26 @@ function drawMapHazards(){
       if(st===1){ ctx.fillStyle='rgba(255,255,255,0.35)'; for(let i=0;i<4;i++){ ctx.beginPath(); ctx.arc(x+Math.sin(now/90+i*2)*8,y-14-i*14-((now/12)%10),5+i,0,7); ctx.fill(); } }
       if(st===2){ const g=ctx.createLinearGradient(0,y,0,y-VENT_H); g.addColorStop(0,'rgba(235,245,255,0.75)'); g.addColorStop(1,'rgba(235,245,255,0)'); ctx.fillStyle=g; ctx.fillRect(x-VENT_W,y-VENT_H,VENT_W*2,VENT_H); }
     }
+    ctx.restore();
+  } else if(MAP.hazard==='icelake'){
+    ctx.save(); const W=MAP.arenaW, gy=900, st=hz?(hz.ic||0):0, Z=ICE_ZONE;
+    ctx.fillStyle='rgba(235,250,255,0.35)'; ctx.fillRect(0,gy,W,5);
+    for(let i=0;i<40;i++){ const x=(i*97+((now/40)%97))%W; ctx.fillStyle='rgba(255,255,255,'+(0.25+0.25*Math.sin(now/300+i))+')'; ctx.fillRect(x,gy+8+(i%5)*10,14+(i%3)*6,2); }
+    if(st===0){ ctx.strokeStyle='rgba(255,255,255,0.35)'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(Z.x-Z.r,gy+4); ctx.lineTo(Z.x+Z.r,gy+4); ctx.stroke(); }
+    if(st===1){ ctx.strokeStyle='rgba(255,255,255,0.9)'; ctx.lineWidth=2; ctx.beginPath(); for(let i=-4;i<=4;i++){ ctx.moveTo(Z.x+i*38,gy); ctx.lineTo(Z.x+i*38+(i%2?10:-10),gy+16); ctx.lineTo(Z.x+i*38+(i%2?-6:6),gy+34); } ctx.stroke();
+      ctx.fillStyle='rgba(255,255,255,'+(0.08+0.08*Math.sin(now/70))+')'; ctx.fillRect(Z.x-Z.r,gy-60,Z.r*2,60); }
+    if(st===2){ ctx.fillStyle='#0f3b66'; ctx.fillRect(Z.x-Z.r,gy,Z.r*2,100);
+      ctx.fillStyle='#2a8fd6'; ctx.beginPath(); ctx.moveTo(Z.x-Z.r,gy+6); for(let x=-Z.r;x<=Z.r;x+=20) ctx.lineTo(Z.x+x,gy+2+Math.sin(x/18+now/180)*5); ctx.lineTo(Z.x+Z.r,gy+100); ctx.lineTo(Z.x-Z.r,gy+100); ctx.closePath(); ctx.fill();
+      ctx.fillStyle='rgba(200,235,255,0.7)'; for(let i=0;i<5;i++){ ctx.beginPath(); ctx.arc(Z.x-120+i*60+Math.sin(now/200+i)*6, gy-((now/9+i*40)%50), 4, 0, 7); ctx.fill(); } }
+    ctx.restore();
+  } else if(MAP.hazard==='dungeon'){
+    ctx.save(); const gp=hz?hz.gp:0, warn=hz&&hz.gw;
+    for(const g of (MAP.gates||[])){
+      const closed=(g.g===gp), flick=closed&&warn&&(Math.floor(now/110)%2===0);
+      ctx.strokeStyle=closed?(flick?'#ff6a5a':'#9a9aae'):'rgba(120,120,140,0.25)'; ctx.lineWidth=closed?4:2;
+      if(closed){ ctx.fillStyle='rgba(60,58,72,0.9)'; ctx.fillRect(g.x,g.y,g.w,6); }
+      for(let x=g.x+6;x<g.x+g.w;x+=16){ ctx.beginPath(); ctx.moveTo(x,g.y); ctx.lineTo(x,g.y+(closed?g.h:10)); ctx.stroke(); }
+      if(closed){ ctx.fillStyle=flick?'#ff6a5a':'#8a8a9c'; ctx.fillRect(g.x,g.y,g.w,3); } }
     ctx.restore();
   } else if(MAP.hazard==='mine'){
     ctx.save(); const gy=MAP.platforms[0].y, C=MINE_CART;
@@ -3666,7 +3718,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-12-v168';
+const GAME_BUILD='build 2026-10-12-v169';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -3853,6 +3905,7 @@ function stepPhysics(p, input, dt){
   spd*=roomRules.spd;                       // (custom room rule)
   if(input.left) vx-=spd;
   if(input.right) vx+=spd;
+  if(MAP.hazard==='icelake' && !batting && p.grounded && !p.chargeDir){ p.iceV=(p.iceV||0)+(vx-(p.iceV||0))*Math.min(1,dt*1.8); vx=p.iceV; } else p.iceV=vx;      // the ice: you slide
   p.kbX = (p.kbX||0) * Math.pow(0.02, dt); // exponential decay, frame-rate independent (~0.3-0.4s to settle)
   if(Math.abs(p.kbX) < 2) p.kbX = 0;
   if(p.chargeDir){ vx=p.chargeDir*SWORD_CHARGE_SPEED; p.kbX=0; }
@@ -3868,7 +3921,7 @@ function stepPhysics(p, input, dt){
       if(rectsOverlap(box,pl)){
         if(totalVx>0) p.x = pl.x - PLAYER_W/2 - 0.01;
         else if(totalVx<0) p.x = pl.x+pl.w + PLAYER_W/2 + 0.01;
-        p.kbX = 0; // hit a wall mid-knockback, stop sliding into it
+        p.kbX = 0; p.iceV=0; // hit a wall mid-knockback, stop sliding into it
         box=getBox(p);
       }
     }
@@ -5893,12 +5946,12 @@ let mapOrder=[], mapCarouselIdx=0;
 function buildMapOrder(){
   mapOrder=[];
   for(const shapeId in SHAPE_THEMES) for(const themeKey of SHAPE_THEMES[shapeId]) mapOrder.push(shapeId+'_'+themeKey);
-  mapOrder.push('steampunk'); mapOrder.push('skyport'); mapOrder.push('colosseum'); mapOrder.push('lifttower'); mapOrder.push('stormship'); mapOrder.push('pipefactory'); mapOrder.push('mine');
+  mapOrder.push('steampunk'); mapOrder.push('skyport'); mapOrder.push('colosseum'); mapOrder.push('lifttower'); mapOrder.push('stormship'); mapOrder.push('pipefactory'); mapOrder.push('mine'); mapOrder.push('icelake'); mapOrder.push('dungeon');
   mapOrder.push('mega_arena');
 }
-const shapeLabel={canyon:'4인 맵',tower:'6인 맵',grid:'8인 맵',steampunk:'6인 맵',skyport:'8인 맵',colosseum:'8인 맵',lifttower:'8인 맵',stormship:'8인 맵',pipefactory:'8인 맵',mine:'8인 맵',parkour1:'파쿠르',parkour2:'파쿠르',parkour3:'파쿠르',parkour4:'파쿠르'};
+const shapeLabel={canyon:'4인 맵',tower:'6인 맵',grid:'8인 맵',steampunk:'6인 맵',skyport:'8인 맵',colosseum:'8인 맵',lifttower:'8인 맵',stormship:'8인 맵',pipefactory:'8인 맵',mine:'8인 맵',icelake:'8인 맵',dungeon:'8인 맵',parkour1:'파쿠르',parkour2:'파쿠르',parkour3:'파쿠르',parkour4:'파쿠르'};
 const mapSelectBtn=document.getElementById('mapSelectBtn');
-const MAP_GIMMICKS={stormship:['🌊 흔들리는 갑판','🌊 파도'], pipefactory:['➡️ 컨베이어','💨 증기 분출'], mine:['🛒 광차 (50 피해)','🔦 정전'], steampunk:['⚙️ 움직이는 발판'], skyport:['↔️ 움직이는 발판'], lifttower:['↔️ 움직이는 발판'], colosseum:['🏟️ 계단식 구조']};
+const MAP_GIMMICKS={stormship:['🌊 흔들리는 갑판','🌊 파도'], pipefactory:['➡️ 컨베이어','💨 증기 분출'], mine:['🛒 광차 (50 피해)','🔦 정전'], icelake:['🧊 미끄러운 얼음','💧 얼음 깨짐'], dungeon:['🚪 철창 문 개폐'], steampunk:['⚙️ 움직이는 발판'], skyport:['↔️ 움직이는 발판'], lifttower:['↔️ 움직이는 발판'], colosseum:['🏟️ 계단식 구조']};
 function mapGimmickTags(id){
   const t=MAP_TEMPLATES[id]; if(!t) return [];
   if(MAP_GIMMICKS[id]) return MAP_GIMMICKS[id];
