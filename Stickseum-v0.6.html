@@ -594,7 +594,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-12-v171</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-12-v173</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -620,6 +620,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   <div id="cqLabel" style="display:none; position:absolute; top:56px; left:50%; transform:translateX(-50%); font-family:'JetBrains Mono',monospace; font-weight:700; font-size:14px; color:var(--text); background:rgba(20,23,31,.8); border:1px solid var(--line); border-radius:8px; padding:5px 14px; white-space:nowrap;"></div>
   <div id="matchTimerLabel" style="display:none; position:absolute; top:56px; left:50%; transform:translateX(-50%); font-family:'JetBrains Mono',monospace; font-weight:700; font-size:14px; color:var(--text); background:rgba(20,23,31,.8); border:1px solid var(--line); border-radius:8px; padding:5px 14px;"></div>
   <div id="survivalLabel" style="display:none; position:absolute; top:56px; left:50%; transform:translateX(-50%); font-family:'JetBrains Mono',monospace; font-weight:700; font-size:14px; color:var(--text); background:rgba(20,23,31,.85); border:1px solid var(--line); border-radius:8px; padding:5px 14px; text-align:center;"></div>
+  <div id="xmLabel" style="display:none; position:absolute; top:56px; left:50%; transform:translateX(-50%); font-family:'JetBrains Mono',monospace; font-weight:700; font-size:14px; color:var(--text); background:rgba(20,23,31,.85); border:1px solid var(--line); border-radius:8px; padding:5px 14px; white-space:nowrap; z-index:5;"></div>
   <div id="ctfLabel" style="display:none; position:absolute; top:56px; left:50%; transform:translateX(-50%); font-family:'JetBrains Mono',monospace; font-weight:700; font-size:14px; color:var(--text); background:rgba(20,23,31,.85); border:1px solid var(--line); border-radius:8px; padding:5px 14px; text-align:center;"></div>
   <canvas id="ctfMini" width="320" height="110" style="display:none; position:absolute; top:56px; left:12px; background:rgba(14,18,26,.72); border:1px solid var(--line); border-radius:8px;"></canvas>
   <div id="diceBannerContainer" style="position:absolute; top:98px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:8px; pointer-events:none;"></div>
@@ -1031,7 +1032,7 @@ function stunPlayer(t, sec, tMs){
   t.teleportChannel=null; t.flaming=false; t.flameHeldSince=null; swordEnd(t);      // a stun interrupts whatever was being channelled
   pushFx('stun', t.x, t.y-PLAYER_H-8, tMs, {});
 }
-const NO_REGEN_MODES={survival:1};
+const NO_REGEN_MODES={survival:1, oneshot:1};
 let ULT_CD = 20;   // (a `let` only so the practice mode can shorten it)
 let practiceMode=false;   // the offline practice mode: no rewards of any kind, endless, no match end
 const PRACTICE_ULT_CD=3, PRACTICE_TELEPORT_CD=2, PRACTICE_RESPAWN_SEC=2, PRACTICE_MAX_OPPONENTS=8;
@@ -2555,7 +2556,17 @@ const MODES = {
   survival: {id:'survival', name:'서바이벌', desc:'8인 이상 맵에서만 가능 · 최소 6명 · 무기선택·순간이동·캐릭터 없음(대쉬는 있음) · 체력 1: 재해에 한 번이라도 맞으면 탈락 · 9초 대기 후 번개·해일·화산·산성비·홍수·운석·폭탄·좀비 중 하나가 랜덤으로 12초간 발생, 버티면 사라지고 다시 9초 대기 · 라운드가 갈수록 재해가 더 자주·더 넓게·더 빠르게 몰아침 · 총 5번의 재해에서 살아남으면 승리, 먼저 죽으면 관전하거나 나갈 수 있음', teams:false, extra:0, elim:true, isMinigame:true, noWeapon:true, noTeleport:true, minPlayers:6, mapFilterMinPlayers:8}, // noTeleport made explicit here (previously implied only indirectly through noWeapon) to match the mode's own description, which promises no teleport
   ctf: {id:'ctf', name:'깃발 뺏기', desc:'전용 대형 맵 4종 중 선택 · 두 팀이 상대 기지의 깃발을 가져와 우리 기지에 가져오면 1점(우리 깃발이 기지에 있어야 득점) · 깃발을 든 사람은 조금 느려지고 순간이동을 못 씀 · 든 사람이 죽으면 깃발이 떨어지고 10초 뒤 기지로 돌아감(우리 팀이 닿으면 바로 복귀) · 먼저 3점 또는 8분 안에 더 많이 득점한 팀 승리, 동점이면 다음 득점이 결승점 · 처치당하면 5초 후 우리 기지에서 부활 · 최소 4명(비공개 방에서는 봇 추가 가능)', teams:true, teamSize:'half', extra:0, elim:false, isMinigame:true, isCtfMode:true, minPlayers:4, respawnTime:5},
   raid: {id:'raid', name:'보스 레이드', desc:'8인 이상 맵에서만 가능 · 4명 고정 · 모두가 한 팀이 되어 거대한 보스 한 마리를 쓰러뜨리는 협동 모드 · 보스는 인원에 맞춰 체력이 늘어나고, 주기적으로 바닥을 내려쳐요(빨간 원이 번쩍이면 점프!) · 팀 목숨이 정해져 있고 쓰러지면 6초 뒤 부활 · 3분 안에 보스를 잡으면 성공', teams:true, teamSize:'half', soloTeam:true, extra:0, fixedPlayers:4, elim:false, isMinigame:true, mapFilterMinPlayers:8, respawnTime:6},
-  tournament: {id:'tournament', name:'토너먼트', desc:'8명이 1대1 3판 2선승제로 겨루는 단판 토너먼트(8강 → 4강 → 결승) · 차례가 아닌 사람은 경기를 관전 · 끝까지 살아남은 한 명이 우승', teams:false, fixedPlayers:8, elim:true, isMinigame:true, mapFilterMinPlayers:8}
+  tournament: {id:'tournament', name:'토너먼트', desc:'8명이 1대1 3판 2선승제로 겨루는 단판 토너먼트(8강 → 4강 → 결승) · 차례가 아닌 사람은 경기를 관전 · 끝까지 살아남은 한 명이 우승', teams:false, fixedPlayers:8, elim:true, isMinigame:true, mapFilterMinPlayers:8},
+  vip:      {id:'vip', name:'왕 지키기', desc:'두 팀으로 나뉘고 팀마다 왕이 한 명(머리 위 왕관) · 상대 팀의 왕을 먼저 쓰러뜨리면 승리 · 왕이 아닌 사람은 5초 뒤 부활 · 5분이 지나면 왕의 남은 체력이 많은 팀이 승리', teams:true, teamSize:'half', extra:2, elim:false, respawnTime:5, special:true},
+  koth:     {id:'koth', name:'언덕의 왕', desc:'모두가 각자 싸우는 모드 · 맵 위의 거점을 혼자 차지하면 초당 1점(둘 이상이면 점수 정지) · 거점은 20초마다 다른 발판으로 옮겨가요 · 먼저 60점을 채우면 승리, 6분이 지나면 점수가 높은 사람이 승리', teams:false, extra:0, elim:false, respawnTime:4, special:true},
+  relay:    {id:'relay', name:'무기 릴레이', desc:'모두가 같은 순서의 캐릭터 10개를 받아요 · 킬을 하면 다음 캐릭터로 바뀌고, 10번째 캐릭터까지 킬을 달성하면 승리 · 6분이 지나면 가장 앞선 사람이 승리', teams:false, extra:0, elim:false, respawnTime:3, autoWeapon:true, special:true},
+  freeze:   {id:'freeze', name:'얼음땡', desc:'두 팀으로 나뉘어요 · 죽으면 그 자리에서 얼어붙고, 얼어붙은 아군에게 1.4초 동안 닿아 있으면 체력 60%로 풀려나요 · 상대 팀을 모두 얼리면 승리, 4분이 지나면 얼어붙은 사람이 적은 팀이 승리', teams:true, teamSize:'half', extra:2, elim:false, special:true},
+  rush:     {id:'rush', name:'보물 약탈', desc:'맵 곳곳에 금화가 계속 나타나요 · 죽으면 모은 금화의 절반을 떨어뜨리고 누구나 주울 수 있어요 · 4분 뒤 금화가 가장 많은 사람이 승리', teams:false, extra:0, elim:false, respawnTime:4, special:true},
+  roulette: {id:'roulette', name:'무기 룰렛', desc:'12초마다 모두의 캐릭터가 랜덤으로 바뀌어요(쿨타임도 새로 시작) · 5분 동안 킬이 가장 많은 사람이 승리', teams:false, extra:0, elim:false, respawnTime:3, autoWeapon:true, special:true},
+  oneshot:  {id:'oneshot', name:'한 방 승부', desc:'모두의 체력이 1 · 한 대만 맞아도 쓰러져요(3초 뒤 부활) · 먼저 12킬을 달성하면 승리, 4분이 지나면 킬이 많은 사람이 승리', teams:false, extra:0, elim:false, respawnTime:3, special:true},
+  turf:     {id:'turf', name:'색칠 전쟁', desc:'두 팀으로 나뉘어요 · 발판을 밟으면 그 칸이 우리 팀 색으로 칠해져요 · 칠한 칸이 많을수록 점수가 빨리 올라가고, 먼저 150점이거나 4분 뒤 점수가 높은 팀이 승리', teams:true, teamSize:'half', extra:2, elim:false, respawnTime:4, special:true},
+  bounty:   {id:'bounty', name:'현상금 사냥', desc:'킬하면 1점 · 점수 선두(3점 이상)에게는 현상금이 붙어요(빨간 표시) · 현상금 대상을 잡으면 4점 · 먼저 20점이거나 5분 뒤 점수가 높은 사람이 승리', teams:false, extra:0, elim:false, respawnTime:4, special:true},
+  lowg:     {id:'lowg', name:'저중력 난투', desc:'중력이 약하고 넉백이 강한 난투 · 높이 날아오르고 멀리 튕겨나가요 · 4분 동안 킬이 가장 많은 사람이 승리', teams:false, extra:0, elim:false, respawnTime:3, rules:{grav:0.6, kb:2}, special:true}
 };
 const MODE_ORDER = ['ffa','br','duo','team','duel','conquest'];
 const ZOMBIE_DURATION = 120, ZOMBIE_COLOR = '#1f6b2e';
@@ -2572,7 +2583,7 @@ const SURVIVAL_DISASTER_NAMES = {lightning:'번개', tsunami:'해일', volcano:'
 const SURVIVAL_WAVE_WARN_SEC = 2.2;
 const SURVIVAL_ZOMBIE_COUNT = 4, SURVIVAL_ZOMBIE_SPEED_MULT = 1.12, SURVIVAL_ZOMBIE_HIT_R = 44, SURVIVAL_ZOMBIE_HIT_DY = 70, SURVIVAL_ZOMBIE_HIT_COOLDOWN = 1.0, SURVIVAL_ZOMBIE_WAKE_SEC = 1.3;
 const SURVIVAL_HIT_COOLDOWN = 0.6; // per-player, per-hazard-type minimum gap between hits so one overlapping effect can't multi-tick someone in a single frame
-function maxHpFor(p){ if(p && p.isBoss) return p.bossMaxHp||3000; if(p && p.isMinion) return 150; return (p && p.isZombie) ? ZOMBIE_MAX_HP : (gameMode==='survival' ? SURVIVAL_HP : ruleHp()); }
+function maxHpFor(p){ if(p && p.isBoss) return p.bossMaxHp||3000; if(p && p.isMinion) return 150; if(gameMode==='oneshot') return 1; return (p && p.isZombie) ? ZOMBIE_MAX_HP : (gameMode==='survival' ? SURVIVAL_HP : ruleHp()); }
 function effectiveMaxPlayers(mapId, modeId){
   const base = MAP_TEMPLATES[mapId].maxPlayers;
   const mode = MODES[modeId] || MODES.ffa;
@@ -2693,6 +2704,280 @@ function conquestTick(dt){
   if(cq.holder>=0 && cq.scores[cq.holder]>=CQ_TARGET){
     announceMatchEnd('팀 '+(cq.holder+1)+' 우승! ('+cq.scores[0]+' : '+cq.scores[1]+')', Object.values(players).filter(p=>p.team===cq.holder).map(p=>p.id));
   }
+}
+/* ================= 특별 모드 10종: 왕 지키기 · 언덕의 왕 · 무기 릴레이 · 얼음땡 · 보물 약탈 · 무기 룰렛 · 한 방 승부 · 색칠 전쟁 · 현상금 사냥 · 저중력 난투 ================= */
+const SPECIAL_ITEMS=[
+  {id:'vip',     icon:'👑', name:'왕 지키기',   mapId:'tower_palace',      weapons:['blade','arrow'],  desc:'팀마다 왕이 한 명, 상대 왕을 먼저 쓰러뜨려요'},
+  {id:'koth',    icon:'⛰️', name:'언덕의 왕',   mapId:'canyon_desert',     weapons:['bullet','club'],  desc:'움직이는 거점을 혼자 차지하면 점수를 얻어요'},
+  {id:'relay',   icon:'🔁', name:'무기 릴레이', mapId:'grid_programming',  weapons:['pellet','blade'], desc:'킬할 때마다 캐릭터가 바뀌고, 끝까지 가면 승리'},
+  {id:'freeze',  icon:'🧊', name:'얼음땡',      mapId:'tower_space',       weapons:['fist','bullet'],  desc:'죽으면 얼어붙고, 아군이 닿아서 녹여줘요'},
+  {id:'rush',    icon:'💰', name:'보물 약탈',   mapId:'grid_sea',          weapons:['dagger','bullet'],desc:'금화를 모으고, 죽으면 절반을 떨어뜨려요'},
+  {id:'roulette',icon:'🎲', name:'무기 룰렛',   mapId:'canyon_grassland',  weapons:['club','arrow'],   desc:'12초마다 모두의 캐릭터가 랜덤으로 바뀌어요'},
+  {id:'oneshot', icon:'☝️', name:'한 방 승부',  mapId:'tower_cyber',       weapons:['bullet','pellet'],desc:'체력 1, 한 대 맞으면 끝! 12킬 선취'},
+  {id:'turf',    icon:'🎨', name:'색칠 전쟁',   mapId:'grid_school',       weapons:['bullet','fist'],  desc:'밟은 발판이 우리 색으로, 더 많이 칠한 팀이 승리'},
+  {id:'bounty',  icon:'🎯', name:'현상금 사냥', mapId:'canyon_volcano',    weapons:['blade','dagger'], desc:'선두에게 현상금이 붙어요, 잡으면 +4점'},
+  {id:'lowg',    icon:'🪐', name:'저중력 난투', mapId:'tower_space',       weapons:['fist','bullet'],  desc:'중력이 약하고 넉백이 강한 난투'}
+];
+const SPECIAL_IDS=SPECIAL_ITEMS.map(i=>i.id);
+const XM_END={vip:300,koth:360,relay:360,freeze:240,rush:240,roulette:300,oneshot:240,turf:240,bounty:300,lowg:240};
+const XM_TARGET={koth:60,oneshot:12,turf:150,bounty:20,relay:10};
+const XM_SWAP_SEC=12, XM_ZONE_SEC=20, XM_RUSH_MAX=18;
+let xm=null, xmV=null;        // xm: the host's own state of a special mode; xmV: the small view of it that rides in every snapshot (everybody draws and reads the HUD from this)
+function xmPlayers(){ return Object.values(players).filter(p=>!p.isBoss && !p.isMinion); }
+function xmTeamMembers(tm){ return xmPlayers().filter(p=>p.team===tm); }
+function turfSegs(m){
+  const segs=[];
+  m.platforms.forEach(pl=>{
+    if(pl.move || pl.isGoal) return;
+    if(pl.h>40){ const n=Math.max(2,Math.round(pl.w/420)), w=pl.w/n; for(let k=0;k<n;k++) segs.push({x:pl.x+k*w,y:pl.y,w}); }
+    else segs.push({x:pl.x,y:pl.y,w:pl.w});
+  });
+  return segs;
+}
+function xmPickZone(prev){
+  const c=MAP.platforms.filter((pl,i)=>i>0 && !pl.move && pl.w>=110 && pl.h<=40);
+  const list=c.length?c:[MAP.platforms[0]];
+  let pl=list[0];
+  for(let k=0;k<8;k++){ pl=list[Math.floor(Math.random()*list.length)]; if(!prev || Math.abs(pl.x+pl.w/2-prev.x)>120 || Math.abs(pl.y-prev.y)>40) break; }
+  return {x:pl.x+pl.w/2, y:pl.y, w:Math.min(260,pl.w+40)};
+}
+function xmSetWeapon(p,w,t){
+  p.weapon=w; p.chips=0; p.vacuumStacks=0; p.flaming=false; p.flameHeldSince=null; p.ultOn=false; p.ultPending=null; p.batting=false; p.batUntil=0;
+  p.lastUlt=t/1000; p.lastSkill=t/1000;
+  if(p.alive) pushFx('spark', p.x, p.y-44, t, {ang:-Math.PI/2, color:'#ffd34d'});
+}
+function xmStart(){
+  const mode=MODES[gameMode];
+  if(!mode || !mode.special){ xm=null; xmV=null; return; }
+  const now=Date.now(), id=gameMode;
+  xm={id, endsAt:now+XM_END[id]*1000};
+  const P=xmPlayers();
+  for(const p of P){ p.alive=true; p.respawnAt=0; p.hp=maxHpFor(p); }
+  if(id==='vip'){
+    xm.kings=[null,null];
+    for(const tm of [0,1]){ const mem=xmTeamMembers(tm).sort((a,b)=>(a.joinOrder||0)-(b.joinOrder||0)); xm.kings[tm]=mem.length?mem[0].id:null; }
+  } else if(id==='koth'){
+    xm.scF={}; xm.zone=xmPickZone(null); xm.zoneAt=now+XM_ZONE_SEC*1000; xm.holder=null;
+  } else if(id==='relay'){
+    const pool=SELECTABLE_WEAPONS.slice(); for(let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const x=pool[i]; pool[i]=pool[j]; pool[j]=x; }
+    xm.seq=pool.slice(0,XM_TARGET.relay); xm.ri={};
+    for(const p of P){ xm.ri[p.id]=0; p.weapon=xm.seq[0]; }
+  } else if(id==='freeze'){ xm.fz={};
+  } else if(id==='rush'){ xm.coins=[]; xm.sc={}; xm.nextCoin=now+600;
+  } else if(id==='roulette'){ xm.nextSwap=now+XM_SWAP_SEC*1000;
+  } else if(id==='turf'){ xm.segs=turfSegs(MAP); xm.own=xm.segs.map(()=>-1); xm.scF=[0,0];
+  } else if(id==='bounty'){ xm.sc={}; xm.tgt=null; }
+  xmV=buildXmView(performance.now());
+}
+function xmWin(text, ids){ announceMatchEnd(text, ids||[]); }
+function xmTopBy(map, label){
+  const list=xmPlayers(); if(!list.length){ xmWin('경기 종료'); return; }
+  const best=Math.max(...list.map(p=>map(p))), w=list.filter(p=>map(p)===best);
+  if(w.length===1) xmWin(w[0].name+' 우승! ('+label+' '+best+')', [w[0].id]);
+  else xmWin('무승부! ('+w.map(p=>p.name).join(', ')+' · '+label+' '+best+')', w.map(p=>p.id));
+}
+function xmTimeUp(){
+  const id=xm.id;
+  if(id==='vip'){
+    const pc=tm=>{ const k=players[xm.kings[tm]]; return k&&k.alive?k.hp/maxHpFor(k):0; };
+    const a=pc(0), b=pc(1);
+    if(Math.abs(a-b)<0.005) xmWin('무승부! 왕의 체력이 같아요', []);
+    else { const w=a>b?0:1; xmWin('팀 '+(w+1)+' 승리! (시간 종료 · 왕의 체력이 더 많아요)', xmTeamMembers(w).map(p=>p.id)); }
+  } else if(id==='koth') xmTopBy(p=>Math.floor(xm.scF[p.id]||0), '점수');
+  else if(id==='relay') xmTopBy(p=>(xm.ri[p.id]||0)*100+(p.kills||0), '단계');
+  else if(id==='freeze'){
+    const fr=tm=>xmTeamMembers(tm).filter(p=>!p.alive).length, a=fr(0), b=fr(1);
+    if(a===b) xmWin('무승부! 얼어붙은 사람 수가 같아요', []);
+    else { const w=a<b?0:1; xmWin('팀 '+(w+1)+' 승리! (시간 종료 · 얼어붙은 사람이 더 적어요)', xmTeamMembers(w).map(p=>p.id)); }
+  }
+  else if(id==='rush') xmTopBy(p=>xm.sc[p.id]||0, '금화');
+  else if(id==='turf'){
+    const a=Math.floor(xm.scF[0]), b=Math.floor(xm.scF[1]);
+    if(a===b) xmWin('무승부! ('+a+' : '+b+')', []);
+    else { const w=a>b?0:1; xmWin('팀 '+(w+1)+' 승리! ('+a+' : '+b+')', xmTeamMembers(w).map(p=>p.id)); }
+  }
+  else if(id==='bounty') xmTopBy(p=>xm.sc[p.id]||0, '점수');
+  else endFFAMatchByKills();       // roulette / oneshot / lowg: the most kills
+}
+function xmTick(dt,t){
+  if(!xm || matchEnded) return;
+  const now=Date.now(), id=xm.id;
+  if(xm.endsAt && now>=xm.endsAt){ xmTimeUp(); xmV=buildXmView(t); return; }
+  const P=xmPlayers();
+  if(id==='vip'){
+    for(const tm of [0,1]){ if(!players[xm.kings[tm]]){ const mem=xmTeamMembers(tm); xm.kings[tm]=mem.length?mem[0].id:null; } }
+  } else if(id==='koth'){
+    if(now>=xm.zoneAt){ xm.zone=xmPickZone(xm.zone); xm.zoneAt=now+XM_ZONE_SEC*1000; pushFx('skillring', xm.zone.x, xm.zone.y-30, t, {color:'#ffd34d', r:170}); }
+    const z=xm.zone, on=[];
+    for(const p of P){ if(p.alive && p.x!==undefined && Math.abs(p.x-z.x)<=z.w/2 && p.y<=z.y+12 && p.y>=z.y-CQ_ZONE_H) on.push(p); }
+    xm.holder = on.length===1 ? on[0].id : (on.length>1 ? 'c' : null);
+    if(on.length===1){
+      const k=on[0].id; xm.scF[k]=(xm.scF[k]||0)+dt;
+      if(xm.scF[k]>=XM_TARGET.koth){ xmWin(on[0].name+' 우승! ('+XM_TARGET.koth+'점 달성)', [k]); }
+    }
+  } else if(id==='freeze'){
+    for(const fid in xm.fz){
+      const f=xm.fz[fid], pl=players[fid]; if(!pl){ delete xm.fz[fid]; continue; }
+      let near=false;
+      for(const o of P){ if(!o.alive || o.id===fid || o.team!==pl.team || o.x===undefined) continue; if(Math.abs(o.x-f.x)<72 && Math.abs(o.y-f.y)<90){ near=true; break; } }
+      f.p = near ? f.p+dt/1.4 : Math.max(0,f.p-dt*0.6);
+      if(f.p>=1){ delete xm.fz[fid]; pl.alive=true; pl.respawnAt=0; pl.x=f.x; pl.y=f.y; pl.vx=0; pl.vy=0; pl.kbX=0; pl.hp=Math.round(maxHpFor(pl)*0.6); pushFx('respawn', pl.x, pl.y-30, t, {color:'#9fe3ff'}); }
+    }
+    for(const tm of [0,1]){
+      const mem=xmTeamMembers(tm);
+      if(mem.length && mem.every(m=>!m.alive)){ const w=1-tm; xmWin('팀 '+(w+1)+' 승리! 상대 팀이 모두 얼어붙었어요', xmTeamMembers(w).map(p=>p.id)); break; }
+    }
+  } else if(id==='rush'){
+    if(now>=xm.nextCoin && xm.coins.length<XM_RUSH_MAX){
+      xm.nextCoin=now+900;
+      const pls=MAP.platforms.filter(pl=>!pl.move && pl.w>=60 && pl.h<=100), pl=pls[Math.floor(Math.random()*pls.length)] || MAP.platforms[0];
+      xm.coins.push({x:pl.x+24+Math.random()*Math.max(1,pl.w-48), y:pl.y-26});
+    }
+    for(const p of P){ if(!p.alive || p.x===undefined) continue;
+      for(let i=xm.coins.length-1;i>=0;i--){ const c=xm.coins[i]; if(Math.hypot(p.x-c.x,(p.y-30)-c.y)<42){ xm.sc[p.id]=(xm.sc[p.id]||0)+1; xm.coins.splice(i,1); pushFx('bombpass', c.x, c.y, t, {}); } } }
+  } else if(id==='roulette'){
+    if(now>=xm.nextSwap){
+      xm.nextSwap=now+XM_SWAP_SEC*1000;
+      for(const p of P){ let w; do{ w=SELECTABLE_WEAPONS[Math.floor(Math.random()*SELECTABLE_WEAPONS.length)]; }while(w===p.weapon && SELECTABLE_WEAPONS.length>1); xmSetWeapon(p,w,t); }
+    }
+  } else if(id==='turf'){
+    for(const p of P){ if(!p.alive || !p.grounded || p.team===null || p.team===undefined || p.x===undefined) continue;
+      for(let i=0;i<xm.segs.length;i++){ const s=xm.segs[i]; if(Math.abs(p.y-s.y)<=3 && p.x>=s.x && p.x<=s.x+s.w){ if(xm.own[i]!==p.team){ xm.own[i]=p.team; pushFx('bombpass', p.x, p.y-6, t, {}); } break; } } }
+    const n=xm.segs.length||1;
+    for(const tm of [0,1]){ const c=xm.own.filter(o=>o===tm).length; xm.scF[tm]+=(c/n)*1.5*dt; }
+    for(const tm of [0,1]) if(xm.scF[tm]>=XM_TARGET.turf){ xmWin('팀 '+(tm+1)+' 승리! ('+Math.floor(xm.scF[0])+' : '+Math.floor(xm.scF[1])+')', xmTeamMembers(tm).map(p=>p.id)); break; }
+  }
+  xmV=buildXmView(t);
+}
+function xmOnDeath(p,killer,t){        // true: handled here (no respawn / match over)
+  if(!xm || matchEnded) return false;
+  const id=xm.id, real=killer && killer.id!==p.id && players[killer.id];
+  if(id==='vip'){
+    const tm=xm.kings.indexOf(p.id);
+    if(tm>=0){ const w=1-tm; xmWin('팀 '+(w+1)+' 승리! 상대 왕을 쓰러뜨렸어요', xmTeamMembers(w).map(q=>q.id)); return true; }
+  } else if(id==='relay'){
+    if(real){
+      const k=killer.id; xm.ri[k]=(xm.ri[k]||0)+1;
+      if(xm.ri[k]>=XM_TARGET.relay){ xmWin(killer.name+' 우승! 모든 무기로 킬을 달성했어요', [k]); return true; }
+      xmSetWeapon(killer, xm.seq[xm.ri[k]], t);
+    }
+  } else if(id==='freeze'){
+    xm.fz[p.id]={x:p.x,y:p.y,p:0}; p.respawnAt=Infinity; return true;
+  } else if(id==='rush'){
+    const n=xm.sc[p.id]||0;
+    if(n>0){ const drop=Math.ceil(n/2); xm.sc[p.id]=n-drop;
+      for(let i=0;i<Math.min(drop,12);i++) xm.coins.push({x:clamp(p.x+(Math.random()-0.5)*140,30,MAP.arenaW-30), y:p.y-30-Math.random()*50}); }
+  } else if(id==='oneshot'){
+    if(real && (killer.kills||0)>=XM_TARGET.oneshot){ xmWin(killer.name+' 우승! ('+killer.kills+'킬)', [killer.id]); return true; }
+  } else if(id==='bounty'){
+    if(real){
+      xm.sc[killer.id]=(xm.sc[killer.id]||0)+1+(xm.tgt===p.id?3:0);
+      if(xm.sc[killer.id]>=XM_TARGET.bounty){ xmWin(killer.name+' 우승! ('+xm.sc[killer.id]+'점)', [killer.id]); return true; }
+    }
+    let best=-1, bid=null, tie=false;
+    for(const q of xmPlayers()){ const s=xm.sc[q.id]||0; if(s>best){ best=s; bid=q.id; tie=false; } else if(s===best) tie=true; }
+    xm.tgt=(best>=3 && !tie)?bid:null;
+  }
+  return false;
+}
+function buildXmView(t){
+  const v={m:xm.id, tr:xm.endsAt?Math.max(0,Math.ceil((xm.endsAt-Date.now())/1000)):0};
+  switch(xm.id){
+    case 'vip': v.k=xm.kings; break;
+    case 'koth': { v.z=xm.zone; v.h=xm.holder; v.tg=XM_TARGET.koth; v.zr=Math.max(0,Math.ceil((xm.zoneAt-Date.now())/1000)); v.sc={}; for(const k in xm.scF) v.sc[k]=Math.floor(xm.scF[k]); break; }
+    case 'relay': v.sq=xm.seq; v.ri=xm.ri; break;
+    case 'freeze': v.fz=Object.keys(xm.fz).map(k=>({i:k,x:Math.round(xm.fz[k].x),y:Math.round(xm.fz[k].y),p:Math.round(xm.fz[k].p*100)/100})); break;
+    case 'rush': v.c=xm.coins.slice(0,40).map(c=>[Math.round(c.x),Math.round(c.y)]); v.sc=xm.sc; break;
+    case 'roulette': v.nx=Math.max(0,Math.ceil((xm.nextSwap-Date.now())/1000)); break;
+    case 'oneshot': v.tg=XM_TARGET.oneshot; break;
+    case 'turf': v.o=xm.own.map(o=>o<0?'-':String(o)).join(''); v.sc=[Math.floor(xm.scF[0]),Math.floor(xm.scF[1])]; v.tg=XM_TARGET.turf; break;
+    case 'bounty': v.sc=xm.sc; v.b=xm.tgt; v.tg=XM_TARGET.bounty; break;
+  }
+  return v;
+}
+function xmBotGoal(p,target,d){
+  if(!xm) return null;
+  const near=target && d<260;
+  switch(xm.id){
+    case 'koth': return near ? null : {x:xm.zone.x, y:xm.zone.y};
+    case 'rush': { let b=null, bd=1e9; for(const c of xm.coins){ const dd=Math.hypot(c.x-p.x,c.y-p.y); if(dd<bd){ bd=dd; b=c; } } return (b && !near) ? {x:b.x,y:b.y+26} : null; }
+    case 'turf': { if(near) return null; let b=null, bd=1e9; for(let i=0;i<xm.segs.length;i++){ if(xm.own[i]===p.team) continue; const s=xm.segs[i], dd=Math.hypot(s.x+s.w/2-p.x,s.y-p.y); if(dd<bd){ bd=dd; b=s; } } return b?{x:b.x+b.w/2,y:b.y}:null; }
+    case 'freeze': { if(near) return null; let b=null, bd=1e9; for(const k in xm.fz){ const q=players[k]; if(!q || q.team!==p.team) continue; const f=xm.fz[k], dd=Math.hypot(f.x-p.x,f.y-p.y); if(dd<bd){ bd=dd; b=f; } } return b?{x:b.x,y:b.y}:null; }
+    case 'vip': { if(near) return null; const ek=players[xm.kings[1-p.team]]; return (ek && ek.alive && p.id!==xm.kings[p.team]) ? {x:ek.x,y:ek.y} : null; }
+    case 'bounty': { const b=players[xm.tgt]; return (!near && b && b.alive && b.id!==p.id) ? {x:b.x,y:b.y} : null; }
+  }
+  return null;
+}
+function xmClock(v){ const s=v.tr||0, mm=Math.floor(s/60), ss=s%60; return mm+':'+(ss<10?'0':'')+ss; }
+function updateXmHud(me){
+  const el=document.getElementById('xmLabel'); if(!el) return;
+  if(!xmV){ if(el.style.display!=='none') el.style.display='none'; return; }
+  const v=xmV, nm=id=>players[id]?escapeHtmlText(players[id].name):'?', myId2=me?me.id:null;
+  const top=map=>{ let bid=null, b=-1; for(const k in map){ if(players[k] && map[k]>b){ b=map[k]; bid=k; } } return bid?(nm(bid)+' '+b):'-'; };
+  let h='';
+  switch(v.m){
+    case 'vip': { const mt=(me&&me.team!==null&&me.team!==undefined)?me.team:0, mk=players[v.k[mt]], ek=players[v.k[1-mt]], pc=q=>q&&q.alive?Math.round(q.hp/maxHpFor(q)*100)+'%':'쓰러짐';
+      h='👑 우리 왕 '+pc(mk)+' · 상대 왕 '+pc(ek)+(myId2===v.k[mt]?' <b style="color:#ffd34d">— 당신이 왕이에요!</b>':''); break; }
+    case 'koth': { const my=(v.sc&&v.sc[myId2])||0, st=v.h==='c'?'교전 중 (점수 정지)':(v.h?(v.h===myId2?'내가 차지 중!':nm(v.h)+' 차지 중'):'거점 비어 있음');
+      h='⛰️ 내 점수 '+my+'/'+v.tg+' · 선두 '+top(v.sc||{})+'<div style="font-size:11px; color:var(--text-dim); text-align:center; margin-top:2px;">'+st+' · '+v.zr+'초 뒤 거점 이동</div>'; break; }
+    case 'relay': { const i=(v.ri&&v.ri[myId2])||0, nx=v.sq&&v.sq[i+1]&&WEAPONS[v.sq[i+1]]; let lead=null, lb=-1; for(const k in (v.ri||{})){ if(v.ri[k]>lb && players[k]){ lb=v.ri[k]; lead=k; } }
+      h='🔁 내 단계 '+(i+1)+'/'+v.sq.length+(nx?' · 다음 '+nx.emoji+' '+escapeHtmlText(nx.name):' · 마지막 킬!')+' · 선두 '+(lead?nm(lead)+' '+(lb+1):'-'); break; }
+    case 'freeze': { const c=tm=>{ const mem=Object.values(players).filter(q=>q.team===tm); return mem.filter(q=>q.alive).length+'/'+mem.length; };
+      h='🧊 <span style="color:'+TEAM_COLORS[0]+'">팀 1 '+c(0)+'</span> · <span style="color:'+TEAM_COLORS[1]+'">팀 2 '+c(1)+'</span>'+(me&&!me.alive?'<div style="font-size:11px; color:#9fe3ff; text-align:center;">얼어붙었어요! 아군이 닿아야 풀려요</div>':'<div style="font-size:11px; color:var(--text-dim); text-align:center;">얼어붙은 아군에게 닿으면 녹여줘요</div>'); break; }
+    case 'rush': h='💰 내 금화 '+((v.sc&&v.sc[myId2])||0)+' · 선두 '+top(v.sc||{}); break;
+    case 'roulette': h='🎲 '+v.nx+'초 뒤 모두의 캐릭터가 바뀌어요'; break;
+    case 'oneshot': h='☝️ 한 방! 목표 '+v.tg+'킬 · 내 킬 '+(me?me.kills||0:0); break;
+    case 'turf': { const cnt=(ch)=>(v.o.split(ch).length-1);
+      h='<span style="color:'+TEAM_COLORS[0]+'">팀 1: '+v.sc[0]+' ('+cnt('0')+'칸)</span> <span style="color:var(--text-dim)">(목표 '+v.tg+')</span> <span style="color:'+TEAM_COLORS[1]+'">팀 2: '+v.sc[1]+' ('+cnt('1')+'칸)</span>'; break; }
+    case 'bounty': h='🎯 현상금: '+(v.b?nm(v.b)+' (+3점)':'아직 없음')+' · 내 점수 '+((v.sc&&v.sc[myId2])||0)+'/'+v.tg; break;
+    case 'lowg': h='🪐 저중력 난투 · 내 킬 '+(me?me.kills||0:0); break;
+  }
+  h+='<span style="color:var(--text-dim)"> · '+xmClock(v)+'</span>';
+  if(el.style.display==='none') el.style.display='block';
+  if(el._last!==h){ el.innerHTML=h; el._last=h; }
+}
+function drawXmWorld(){
+  const v=xmV; if(!v) return;
+  const now=performance.now();
+  if(v.m==='koth' && v.z){
+    const z=v.z, mine=v.h && v.h===myId, col=v.h==='c'?'255,90,90':(mine?'93,255,160':'255,210,77'), pulse=0.5+0.5*Math.sin(now/260);
+    ctx.save();
+    ctx.fillStyle='rgba('+col+','+(0.12+0.08*pulse)+')'; ctx.fillRect(z.x-z.w/2, z.y-CQ_ZONE_H, z.w, CQ_ZONE_H);
+    ctx.strokeStyle='rgba('+col+',0.85)'; ctx.lineWidth=3; ctx.setLineDash([12,8]); ctx.strokeRect(z.x-z.w/2, z.y-CQ_ZONE_H, z.w, CQ_ZONE_H); ctx.setLineDash([]);
+    ctx.font='900 22px sans-serif'; ctx.textAlign='center'; ctx.fillStyle='rgba('+col+',0.9)'; ctx.fillText('👑', z.x, z.y-CQ_ZONE_H-8);
+    ctx.restore();
+  } else if(v.m==='rush' && v.c){
+    ctx.save();
+    for(const [x,y] of v.c){ const b=Math.sin(now/220+x)*3; ctx.fillStyle='rgba(255,210,77,0.25)'; ctx.beginPath(); ctx.arc(x,y+b,16,0,7); ctx.fill();
+      ctx.fillStyle='#ffd34d'; ctx.strokeStyle='#b8860b'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(x,y+b,10,0,7); ctx.fill(); ctx.stroke();
+      ctx.fillStyle='#fff3b0'; ctx.beginPath(); ctx.arc(x-3,y+b-3,3,0,7); ctx.fill(); }
+    ctx.restore();
+  } else if(v.m==='turf' && MAP){
+    const segs=turfSegs(MAP); ctx.save();
+    for(let i=0;i<segs.length;i++){ const o=v.o[i]; if(!o || o==='-') continue; const s=segs[i], c=TEAM_COLORS[+o];
+      ctx.globalAlpha=0.7; ctx.fillStyle=c; ctx.fillRect(s.x, s.y-5, s.w, 8);
+      ctx.globalAlpha=0.16; ctx.fillRect(s.x, s.y-46, s.w, 46); }
+    ctx.restore();
+  } else if(v.m==='freeze' && v.fz){
+    ctx.save();
+    for(const f of v.fz){ const pl=players[f.i], col=pl?pl.color:'#ffffff';
+      ctx.fillStyle='rgba(160,225,255,0.55)'; ctx.strokeStyle='rgba(225,247,255,0.95)'; ctx.lineWidth=3;
+      ctx.beginPath(); ctx.roundRect ? ctx.roundRect(f.x-24, f.y-92, 48, 94, 8) : ctx.rect(f.x-24, f.y-92, 48, 94); ctx.fill(); ctx.stroke();
+      ctx.strokeStyle=col; ctx.fillStyle=col; ctx.lineWidth=4; ctx.lineCap='round';
+      ctx.beginPath(); ctx.arc(f.x,f.y-66,8,0,7); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(f.x,f.y-58); ctx.lineTo(f.x,f.y-30); ctx.moveTo(f.x,f.y-30); ctx.lineTo(f.x-10,f.y-4); ctx.moveTo(f.x,f.y-30); ctx.lineTo(f.x+10,f.y-4); ctx.moveTo(f.x-14,f.y-50); ctx.lineTo(f.x+14,f.y-50); ctx.stroke();
+      if(pl){ ctx.font='700 12px sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#e8fbff'; ctx.fillText(pl.name, f.x, f.y-100); }
+      if(f.p>0){ ctx.strokeStyle='#5dffa0'; ctx.lineWidth=5; ctx.beginPath(); ctx.arc(f.x, f.y-46, 34, -Math.PI/2, -Math.PI/2+Math.PI*2*f.p); ctx.stroke(); } }
+    ctx.restore();
+  }
+}
+function drawXmOver(){
+  const v=xmV; if(!v) return;
+  const crown=(p,col)=>{ if(!p || !p.alive || p.x===undefined) return; const x=p.x, y=p.y-112;
+    ctx.save(); ctx.fillStyle=col; ctx.strokeStyle='#7a5a00'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(x-14,y+10); ctx.lineTo(x-14,y-4); ctx.lineTo(x-7,y+3); ctx.lineTo(x,y-8); ctx.lineTo(x+7,y+3); ctx.lineTo(x+14,y-4); ctx.lineTo(x+14,y+10); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  if(v.m==='vip' && v.k) for(const k of v.k) crown(players[k], '#ffd34d');
+  if(v.m==='bounty' && v.b){ const p=players[v.b]; if(p && p.alive && p.x!==undefined){ ctx.save(); ctx.strokeStyle='#ff4d4d'; ctx.lineWidth=3; const r=34+Math.sin(performance.now()/150)*3; ctx.beginPath(); ctx.arc(p.x,p.y-45,r,0,7); ctx.moveTo(p.x-r-8,p.y-45); ctx.lineTo(p.x+r+8,p.y-45); ctx.moveTo(p.x,p.y-45-r-8); ctx.lineTo(p.x,p.y-45+r+8); ctx.stroke(); ctx.restore(); crown(p,'#ff6b6b'); } }
 }
 function drawMapDecorations(){
   const t=performance.now();
@@ -3718,7 +4003,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-12-v171';
+const GAME_BUILD='build 2026-10-12-v173';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -4543,12 +4828,12 @@ function renderModeCarousel(){
   const mid=PRIVATE_MODE_ORDER[modeCarouselIdx];
   const prevMode=MODES[selectedPrivateMode]||{};
   selectedPrivateMode=mid;
-  const mg=MINIGAME_ITEMS.find(it=>it.id===mid);
+  const mg=MINIGAME_ITEMS.find(it=>it.id===mid) || SPECIAL_ITEMS.find(it=>it.id===mid);
   if(mg) renderModePanelCanvas(document.getElementById('modeCarouselPreview'), mg.mapId, mg.weapons, 50);
   else renderModePanelCanvas(document.getElementById('modeCarouselPreview'), MODE_THEME_FOR_ART[mid], MODE_WEAPON_PAIR[mid], 50);
-  document.getElementById('modeCarouselName').textContent=(mg?'🎲 ':'')+MODES[mid].name;
+  document.getElementById('modeCarouselName').textContent=(mg?(MODES[mid].special?(mg.icon+' '):'🎲 '):'')+MODES[mid].name;
   document.getElementById('modeCarouselMeta').textContent=MODES[mid].desc+'  ('+(modeCarouselIdx+1)+'/'+PRIVATE_MODE_ORDER.length+')';
-  document.getElementById('wmodeSection').style.display = MODES[mid].noWeapon ? 'none' : ''; // modes with no weapon selection at all (hot potato, hide-and-seek, survival, parkour) have nothing for "무기 방식" to apply to
+  document.getElementById('wmodeSection').style.display = (MODES[mid].noWeapon||MODES[mid].autoWeapon) ? 'none' : ''; // modes with no weapon selection at all (hot potato, hide-and-seek, survival, parkour) have nothing for "무기 방식" to apply to
   // the map list only needs re-deriving when a mode with its own map rules is involved (a minigame, or a mode with a player minimum such as duo),
   // either the one being left or the one being entered - not on every plain classic-to-classic step. (Duo used to be missed here: it is a classic
   // mode, so its 8-seat map filter never ran and the room could be created on a 4-seat map that can never reach 8 players.)
@@ -4716,7 +5001,7 @@ const MINIGAME_ITEMS=[
   {id:'raid',      name:'보스 레이드', mapId:'grid_school',    weapons:['shotgun','bazooka']},
   {id:'tournament',name:'토너먼트',   mapId:'tower_palace',      weapons:['sword','pistol']}
 ];
-const PRIVATE_MODE_ORDER = MODE_ORDER.concat(MINIGAME_ITEMS.map(it=>it.id)); // one combined carousel: 6 classic modes + 6 minigames, so private room setup works the same way for both
+const PRIVATE_MODE_ORDER = MODE_ORDER.concat(MINIGAME_ITEMS.map(it=>it.id)).concat(SPECIAL_IDS); // one combined carousel: 6 classic modes + 6 minigames, so private room setup works the same way for both
 function buildMinigamePanels(){
   const wrap=document.getElementById('minigamePanels');
   wrap.innerHTML='';
@@ -4790,6 +5075,16 @@ const MODE_LIST=[
   {id:'survival', cat:'mini', icon:'🌪️', desc:'쏟아지는 재해 속에서 끝까지 생존'},
   {id:'parkour', cat:'mini', icon:'🧗', desc:'가장 먼저 꼭대기에 올라가요'},
   {id:'ctf', cat:'mini', icon:'🚩', desc:'상대 깃발을 가져와 득점해요'},
+  {id:'vip', cat:'special', icon:'👑', desc:'팀마다 왕이 한 명, 상대 왕을 먼저 쓰러뜨려요'},
+  {id:'koth', cat:'special', icon:'⛰️', desc:'움직이는 거점을 혼자 차지하면 점수를 얻어요'},
+  {id:'relay', cat:'special', icon:'🔁', desc:'킬할 때마다 캐릭터가 바뀌고, 끝까지 가면 승리'},
+  {id:'freeze', cat:'special', icon:'🧊', desc:'죽으면 얼어붙고, 아군이 닿아서 녹여줘요'},
+  {id:'rush', cat:'special', icon:'💰', desc:'금화를 모으고, 죽으면 절반을 떨어뜨려요'},
+  {id:'roulette', cat:'special', icon:'🎲', desc:'12초마다 모두의 캐릭터가 랜덤으로 바뀌어요'},
+  {id:'oneshot', cat:'special', icon:'☝️', desc:'체력 1, 한 대 맞으면 끝! 12킬 선취'},
+  {id:'turf', cat:'special', icon:'🎨', desc:'밟은 발판이 우리 색으로, 더 많이 칠한 팀이 승리'},
+  {id:'bounty', cat:'special', icon:'🎯', desc:'선두에게 현상금이 붙어요, 잡으면 +4점'},
+  {id:'lowg', cat:'special', icon:'🪐', desc:'중력이 약하고 넉백이 강한 난투'},
   {id:'raid', cat:'coop', icon:'🐲', desc:'모두 한 팀이 되어 거대한 보스를 쓰러뜨려요'},
   {id:'tournament', cat:'coop', icon:'🏆', desc:'8명이 1대1로 겨루는 토너먼트, 끝까지 살아남으면 우승'}
 ];
@@ -5836,7 +6131,7 @@ function renderProfile(){
   const span=Math.max(1,nextFloor-curFloor);
   const frac=clamp((xp-curFloor)/span,0,1);
   const body=document.getElementById('profileBody');
-  const modeRows=MODE_ORDER.concat(MINIGAME_ITEMS.map(it=>it.id)).map(m=>'<div class="profRow"><span class="k">'+((MODES[m]&&MODES[m].name)||m)+'</span><span class="v">'+((saveData.modeMatches&&saveData.modeMatches[m])||0)+'경기</span></div>').join('');
+  const modeRows=MODE_ORDER.concat(MINIGAME_ITEMS.map(it=>it.id)).concat(SPECIAL_IDS).map(m=>'<div class="profRow"><span class="k">'+((MODES[m]&&MODES[m].name)||m)+'</span><span class="v">'+((saveData.modeMatches&&saveData.modeMatches[m])||0)+'경기</span></div>').join('');
   body.innerHTML=
     '<div style="'+profHeaderStyle(myProfileDeco().pbg)+'">'+
     '<div style="text-align:center; margin-bottom:6px;"><canvas id="avatarBigCanvas" class="'+avatarFrameCls(myProfileDeco().pfr)+'" width="84" height="84" style="border-radius:14px; cursor:pointer; '+avatarFrameStyle(myProfileDeco().pfr)+'"></canvas>'+
@@ -6167,6 +6462,7 @@ function startHostPeer(idString, mapId, mode, code, attemptInfo, modeId){
     weaponMode = (mode==='private') ? selectedWeaponMode : 'normal'; // random weapons are private-room only
     roomOpts = (mode==='private') ? cleanOpts(selectedOpts) : {balance:false, vote:false};
     roomRules = (mode==='private') ? cleanRules(selectedRules) : ((mode==='online' && onlineEvent) ? cleanRules(currentEvent().rules) : Object.assign({},RULE_DEFAULT));
+    if((MODES[gameMode]||{}).rules) roomRules=cleanRules(Object.assign({},roomRules,MODES[gameMode].rules));
     conns={}; players={}; started=false;
     const sp=spawnPoint();
     players[myId]={id:myId,name:myName,cos:getEquippedCos(),color:COLORS[0],team:computeTeam(0,mapId,gameMode),x:sp.x,y:sp.y,vx:0,vy:0,angle:0,grounded:false,
@@ -6482,6 +6778,12 @@ function doStart(){
     for(const p of Object.values(players)) p.lastSeen=now; // the stale-connection watchdog's timeout drops sharply the instant `started` flips true below - without this, a perfectly healthy connection whose last heartbeat is a few seconds old (easily the case coming out of the lobby, where the looser pre-start timeout never required a fresher one) would be wrongly flagged stale the very next watchdog tick
     for(const p of Object.values(players)){ p.pick=null; p.weaponChosen=false; p.weapon=null; }
   }catch(e){ recordDiagError('doStart-preReset', e); console.error('[doStart] pre-start player reset failed (recovering - still proceeding to start):', e); }
+  if((MODES[gameMode]||{}).autoWeapon){ // relay / roulette: the game hands out the characters, nobody picks
+    try{ for(const p of Object.values(players)) p.weapon=SELECTABLE_WEAPONS[Math.floor(Math.random()*SELECTABLE_WEAPONS.length)]; }catch(e){ recordDiagError('doStart-autoWeapon', e); }
+    gameLoopStarted=false;
+    beginGame();
+    return;
+  }
   if((MODES[gameMode]||{}).noWeapon){ // modes like hot potato skip weapon selection entirely and jump straight into gameplay, bare-handed
     try{ for(const p of Object.values(players)) p.weapon='none'; }catch(e){ recordDiagError('doStart-noWeapon', e); console.error('[doStart] no-weapon setup failed:', e); }
     gameLoopStarted=false;
@@ -6590,6 +6892,7 @@ function onClientData(data, mode, code){
     walls=data.walls||[];
     magicCircles=data.magicCircles||[]; turrets=data.turrets||[]; hzDraw=data.hz||null;
     if(data.cq && cq){ cq.scores=data.cq.s; cq.holder=data.cq.h; cq.contested=data.cq.c; }
+    xmV=data.xm||null;
     raidView=data.raid||null; tnView=data.tn||null;
     if(data.survival){
       survivalZombies=data.survival.zombies||[];
@@ -7089,6 +7392,7 @@ function beginGame(){
       startCtfMatch();
     }
     if(gameMode==='tournament') startTournament();
+    if((MODES[gameMode]||{}).special) xmStart();
   }catch(e){ recordDiagError('beginGame-kickoff', e); console.error('[beginGame] mode-specific kickoff failed (the loop is already running, so safeStep/safeDraw will keep the screen from freezing):', e); }
 }
 
@@ -7341,7 +7645,7 @@ function finalizeGameplayStart(mte){
   // silent freeze, and the error banner mechanism gets its chance to work.
   try{
     matchEnded=false;
-    particles=[]; fxSeen={}; prevGround={}; prevHp={}; hitFlashUntil={}; screenShake=0; walls=[]; hostTimers=[]; magicCircles=[]; turrets=[]; lastKnownKills=0; matchAssists=0;
+    xm=null; xmV=null; particles=[]; fxSeen={}; prevGround={}; prevHp={}; hitFlashUntil={}; screenShake=0; walls=[]; hostTimers=[]; magicCircles=[]; turrets=[]; lastKnownKills=0; matchAssists=0;
     matchKillLog=[]; killcamActive=false; killcamOverride=null; killcamSnapshot=null; killcamReplay=null; killcamReplayStartAt=0; replayBuffer={}; replayFrames=[]; replayFxLog=[]; replayDefs={};
     if(gameMode==='parkour') initParkourItems(); // runs for host and every client alike, so everyone's item-icon rendering starts from the same "all available" state
     if(weaponCountdownTimer){ clearInterval(weaponCountdownTimer); weaponCountdownTimer=null; }
@@ -8303,7 +8607,7 @@ const BOT_PERSONALITIES=['coward','taunter','sniper','revenge','collector','riva
 const PERSONALITY_WEAPONS={sniper:['bow','rifle','pistol','bazooka','wizard'], taunter:['sword','gloves','dagger','lightsaber','horemheb','bat','dracula']};
 // modes the bots know how to play. (hide & seek is not here: a bot seeker/hider needs its own logic, so those rooms keep waiting for people)
 // hot potato, parkour, survival and the flag mode each have their own brain below (botBrain*); the rest use the generic fighter
-const BOT_MODES={ffa:1,br:1,duo:1,team:1,duel:1,conquest:1,zombie:1,hotpotato:1,parkour:1,survival:1,ctf:1,raid:1,tournament:1};
+const BOT_MODES={ffa:1,br:1,duo:1,team:1,duel:1,conquest:1,zombie:1,hotpotato:1,parkour:1,survival:1,ctf:1,raid:1,tournament:1,vip:1,koth:1,relay:1,freeze:1,rush:1,roulette:1,oneshot:1,turf:1,bounty:1,lowg:1};
 let botSeq=0, lastHumanJoinAt=0, botFillAt=null, botFilling=false, botNextAt=0; // botFillAt: when the first bot will join (announced to everyone); botFilling: bots are walking in; botNextAt: when the next one does
 function botSupported(modeId){ return !!BOT_MODES[modeId]; }
 function humanPlayers(){ return Object.values(players).filter(p=>!p.isBot); }
@@ -9082,6 +9386,7 @@ function botThink(p, t, dt){
     else { const g=botRoamGoal(p, ai, t); goalX=g.x; goalY=g.y; }
     if(mb && !mb.noCombat && mb.goalX!==undefined){ goalX=mb.goalX; goalY=mb.goalY; }      // flag mode: the objective decides where to go, but a bot still shoots whoever is in range
     if(gameMode==='conquest' && !mb && !(rs && rs.mode==='hold')){ const cg=botConquestGoal(p, ai, target, d, lowHp, botBand(p)); if(cg){ goalX=cg.x; goalY=cg.y; } }   // conquest: the point comes first
+    if(xm && !mb && !(rs && rs.mode==='hold')){ const xg=xmBotGoal(p, target, d); if(xg){ goalX=xg.x; goalY=xg.y; } }
     if(ai.personality && !mb && !(rs && rs.mode==='hold')){ const ps=botPersonalityStep(p, ai, target, d, {t, tSec, navBusy, inp, lowHp, shoot, w}); if(ps){ if(ps.goalX!==undefined){ goalX=ps.goalX; goalY=ps.goalY; } if(ps.shoot!==undefined) shoot=ps.shoot; } }
     if(rs && rs.mode==='go'){ goalX=rs.goalX; goalY=rs.goalY; }                     // on its way to the resting place
     ai.goalX=goalX; ai.goalY=goalY; ai.urgent=!!(mb && mb.urgent);
@@ -9246,6 +9551,7 @@ function hostTick(dt,t){
   if(duelPick){ for(const id in players){ const q=players[id]; q.input={left:false,right:false,jump:false,angle:(q.input&&q.input.angle)||0,shoot:false,dash:false}; } }
   else if(hasBots()) botsThink(dt,t);
   conquestTick(dt);
+  if(xm){ try{ xmTick(dt,t); }catch(e){ recordDiagError('xmTick', e); } }
   wizardZoneTick(dt,t);
   if(turrets.length) turretTick(dt,t);
   mapHazardTick(dt,t);
@@ -9538,6 +9844,7 @@ function hostTick(dt,t){
         ultOn:!!p.ultOn, invis:!!p.invis, burning:!!p.burning, slowed:!!p.slowed, stunned:!!p.stunned, cardSlowed:!!p.cardSlowed, bladeSpin:!!p.bladeSpin, swordCharging:!!p.swordCharge, cannonFlying:!!p.cannonFly, chips:p.chips||0, cannonAng:p.cannonFly?Math.round(Math.atan2(p.vy||0,p.cannonFly.vx)*100)/100:0, totalDamageDealt:p.totalDamageDealt||0, channeling:!!p.teleportChannel, flaming:!!p.flaming, portalPair:p.portalPair||null, batting:!!p.batting, vacuumStacks:p.vacuumStacks||0, isZombie:!!p.isZombie, parkourItem:!!p.parkourItem, hsHiding:!!p.hsHiding, hsDisguiseW:p.hsDisguiseW, hsDisguiseH:p.hsDisguiseH, isSeeker:!!p.isSeeker,
         isHost:p.isHost,joinOrder:p.joinOrder,weapon:p.weapon,team:p.team,spinAngle:p.spinAngle,cos:p.cos,isBoss:p.isBoss?1:0,isMinion:p.isMinion?1:0,bt:p.bt,bossMaxHp:p.bossMaxHp,emIdx:p.emIdx,emRem:(p.emUntil?Math.max(0,Math.round((p.emUntil-t/1000)*20)/20):0)})),
       cq: (gameMode==='conquest' && cq) ? {s:cq.scores, h:cq.holder, c:cq.contested} : undefined,
+      xm: (xm && xmV) ? xmV : undefined,
       raid: buildRaidView(), tn: buildTnView(),
       // hazards carry a warnUntil timestamp measured against THIS page's own performance.now(), which starts
       // from each page's own navigation time - not a shared clock. Sending it raw and having a client compare
@@ -9617,6 +9924,7 @@ function handleDeath(p, killer, t, killerNameFallback){
   if(matchEnded) return;
   const mode = MODES[gameMode] || MODES.ffa;
   if(gameMode==='raid'){ handleRaidDeath(p, killer, t); return; }
+  if(xm && xmOnDeath(p, killer, t)) return;
   if(!mode.elim){
     p.respawnAt = t/1000+(practiceMode ? PRACTICE_RESPAWN_SEC : (mode.respawnTime!==undefined ? mode.respawnTime : RESPAWN_TIME)); // some modes want a different respawn time than the default, to keep the match flowing
     return;
@@ -12163,6 +12471,7 @@ function render(fxDt){
   // feature degrades instead of blacking out the whole screen.
   if(gameMode==='survival' && survivalPhase==='active' && !(killcamActive && killcamReplay && killcamReplay.sceneNow)) safeDraw(drawSurvivalDisaster);
   if(gameMode==='ctf' && !(killcamActive && killcamReplay && killcamReplay.sceneNow)) safeDraw(drawCtf);
+  if(xmV && !(killcamActive && killcamReplay && killcamReplay.sceneNow)) safeDraw(drawXmWorld);
   const kcScene=(killcamActive && killcamReplay && killcamReplay.sceneNow) ? killcamReplay.sceneNow : null;   // a recorded killcam scene replaces the live field
   safeDraw(drawConquestZone);
   safeDraw(()=>drawWalls(kcScene?kcScene.walls:null));
@@ -12194,6 +12503,7 @@ function render(fxDt){
     // block every OTHER player from being drawn, not just the HUD code after
     for(const id in players){ const p=players[id]; if(p.x===undefined) continue; if(id!==myId && !inView(p.x,p.y,320)) continue; if(gameMode==='tournament' && !p.alive) continue; safeDraw(()=>{ if(p.isBoss){ ctx.save(); ctx.translate(p.x,p.y); ctx.scale(RAID_BOSS_SCALE,RAID_BOSS_SCALE); ctx.translate(-p.x,-p.y); drawBoss(p); ctx.restore(); } else drawStickman(p); }); }   // (a figure far off the screen is not drawn: its show reaches 90 px, its weapon 250)
   }
+  if(xmV && !kcScene) safeDraw(drawXmOver);
   if(!kcScene) safeDraw(drawAbilityPreview);     // the mint aim of a held ability key
   safeDraw(()=>{ updateAmbientFx(dtN); ambientThemeFx(dtN); if(!kcScene) processNewEffects(); });   // (the live effects of the finished match must not mix into a replay)
   drawParticles();
@@ -12281,7 +12591,7 @@ function render(fxDt){
       // an explicit sentinel for exactly this case, so clients must check that instead of respawnAt.
       const neverRespawning = isHost ? (me.respawnAt===Infinity) : (me.respawnIn===-1);
       if(neverRespawning){
-        document.getElementById('respawnTimer').textContent = (gameMode==='duel') ? ' 다음 라운드 대기 중...' : (gameMode==='tournament' ? ' 관전 중' : ' 탈락');
+        document.getElementById('respawnTimer').textContent = (gameMode==='duel') ? ' 다음 라운드 대기 중...' : (gameMode==='tournament' ? ' 관전 중' : (gameMode==='freeze' ? ' 🧊 얼어붙음 - 아군이 닿아서 녹여줄 때까지 기다려요' : ' 탈락'));
       } else {
         const secs = isHost ? Math.max(0, Math.ceil(me.respawnAt-performance.now()/1000)) : Math.max(0, Math.ceil(me.respawnIn||0));
         document.getElementById('respawnTimer').textContent=secs+'초 후 부활';
@@ -12295,6 +12605,7 @@ function render(fxDt){
       const cqEl=document.getElementById('cqLabel');
       if(cqEl._last!==html){ cqEl.innerHTML=html; cqEl._last=html; }
     }
+    updateXmHud(me);
     if((gameMode==='ffa' || gameMode==='zombie') && matchTimerEndsAt){
       const remain=Math.max(0, Math.ceil((matchTimerEndsAt-Date.now())/1000));
       const mm=Math.floor(remain/60), ss=remain%60;
