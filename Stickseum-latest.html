@@ -594,7 +594,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-12-v163</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-12-v166</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -3665,7 +3665,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-12-v163';
+const GAME_BUILD='build 2026-10-12-v166';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -4784,25 +4784,27 @@ nameConfirmBtn.onclick=()=>{
 
 
 /* ================= 경기 통계 (this device): every player AND bot of every finished match - character, wins, kills, deaths, assists, damage ================= */
-const ST2_KEY='stickseumMatchStats_v1', ST2_RECENT=20;
+const ST2_KEY='stickseumMatchStats_v2', ST2_RECENT=20;
 let pendingMatchSummary=null;
 function buildMatchSummary(wIds){            // (host) one row per fighter that took part: people and bots, no practice dummies
   const rows=[];
   for(const id in players){ const p=players[id]; if(!p || p.isDummy || p.isBoss || p.isMinion || p.isZombie && false) continue;
-    const wid=p.weapon; if(!wid || wid==='none') continue;
+    const wid=p.weapon||'none';          // (the modes without characters - hot potato, hide & seek, survival, parkour - are counted too, under 'none')
     rows.push({id, n:String(p.name||'?').slice(0,16), w:wid, b:p.isBot?1:0, t:(p.team===undefined?null:p.team), win:(wIds&&wIds.indexOf(id)!==-1)?1:0, k:p.kills||0, d:p.deaths||0, a:p.assistN||0, dm:Math.round(p.totalDamageDealt||0)}); }
   return rows;
 }
-function recordMatchSummary(rows){            // (everybody) fold the finished match into this device's statistics
+function recordMatchSummary(rows){            // (everybody) fold the finished match into this device's statistics, kept apart per game mode
   if(practiceMode || highlightViewing || !Array.isArray(rows) || !rows.length) return;
-  const st=lsGet(ST2_KEY,{matches:0, chars:{}, recent:[]});
+  const st=lsGet(ST2_KEY,{modes:{}, recent:[]});
+  if(!st.modes) st.modes={};
   const z=()=>({m:0,w:0,k:0,d:0,a:0,dm:0});
+  const md=st.modes[gameMode]=st.modes[gameMode]||{matches:0, chars:{}};
   for(const r of rows){ if(!r || !r.w) continue;
-    const c=st.chars[r.w]=st.chars[r.w]||{h:z(), b:z(), me:z()};
+    const c=md.chars[r.w]=md.chars[r.w]||{h:z(), b:z(), me:z()};
     const tg=[r.b?c.b:c.h]; if(r.id===myId) tg.push(c.me);
     for(const x of tg){ x.m++; x.w+=r.win?1:0; x.k+=r.k||0; x.d+=r.d||0; x.a+=r.a||0; x.dm+=r.dm||0; }
   }
-  st.matches=(st.matches||0)+1;
+  md.matches++;
   st.recent.unshift({ts:Date.now(), mode:gameMode, map:currentMapId, me:myId, rows});
   st.recent.length=Math.min(st.recent.length, ST2_RECENT);
   lsSet(ST2_KEY, st);
@@ -4813,30 +4815,40 @@ function uploadMatchSummary(rows){            // (host, online) a copy of the ro
   const out=rows.map(r=>({match_id:mid, mode:gameMode, map:currentMapId, wid:r.w, is_bot:!!r.b, won:!!r.win, kills:r.k, deaths:r.d, assists:r.a, damage:r.dm, build:(typeof GAME_BUILD!=='undefined'?GAME_BUILD:null)}));
   sb.from('match_stats').insert(out).then(()=>{}, ()=>{});
 }
-let statsFilter='all';
+let statsFilter='all', statsMode='all';
 function renderMatchStats(){
   const body=document.getElementById('mstatBody'); if(!body) return;
   const st=lsGet(ST2_KEY,null);
   body.innerHTML='';
   const mk=(t,css)=>{ const d=document.createElement('div'); if(css) d.style.cssText=css; if(t!==undefined) d.textContent=t; return d; };
-  if(!st || !st.matches){ body.appendChild(mk('아직 기록된 경기가 없어요. 경기가 끝나면 그 판에 참가한 사람과 봇 모두의 기록이 여기에 쌓여요.','color:var(--text-dim); font-size:13px; padding:10px 0;')); return; }
-  const chips=mk(undefined,'display:flex; gap:6px; margin:8px 0 10px; flex-wrap:wrap;');
-  for(const [k,l] of [['all','전체'],['h','사람'],['b','봇'],['me','나']]){ const b=document.createElement('button'); b.className='shopTab'+(statsFilter===k?' on':''); b.style.padding='5px 12px'; b.textContent=l; b.onclick=()=>{ statsFilter=k; renderMatchStats(); }; chips.appendChild(b); }
+  const modeIds=(st&&st.modes)?Object.keys(st.modes).filter(m=>st.modes[m].matches>0):[];
+  if(!modeIds.length){ body.appendChild(mk('아직 기록된 경기가 없어요. 경기가 끝나면 그 판에 참가한 사람과 봇 모두의 기록이 모드별로 쌓여요.','color:var(--text-dim); font-size:13px; padding:10px 0;')); return; }
+  if(statsMode!=='all' && modeIds.indexOf(statsMode)===-1) statsMode='all';
+  const modeName=(m)=>(MODES[m]?MODES[m].name:m);
+  const chip=(label,on,fn)=>{ const b=document.createElement('button'); b.className='shopTab'+(on?' on':''); b.style.padding='5px 12px'; b.textContent=label; b.onclick=fn; return b; };
+  const mrow=mk(undefined,'display:flex; gap:6px; margin:8px 0 6px; flex-wrap:wrap;');
+  mrow.appendChild(chip('모든 모드',statsMode==='all',()=>{ statsMode='all'; renderMatchStats(); }));
+  for(const m of modeIds) mrow.appendChild(chip(modeName(m)+' '+st.modes[m].matches,statsMode===m,()=>{ statsMode=m; renderMatchStats(); }));
+  body.appendChild(mrow);
+  const chips=mk(undefined,'display:flex; gap:6px; margin:0 0 10px; flex-wrap:wrap;');
+  for(const [k,l] of [['all','전체'],['h','사람'],['b','봇'],['me','나']]) chips.appendChild(chip(l,statsFilter===k,()=>{ statsFilter=k; renderMatchStats(); }));
   body.appendChild(chips);
-  const agg={}; let tot=0;
-  for(const wid in st.chars){ const c=st.chars[wid]; const parts=statsFilter==='all'?[c.h,c.b]:[c[statsFilter]]; const a={m:0,w:0,k:0,d:0,a:0,dm:0}; for(const x of parts){ if(!x) continue; for(const key in a) a[key]+=x[key]||0; } if(a.m>0){ agg[wid]=a; tot+=a.m; } }
-  body.appendChild(mk('저장된 경기 '+st.matches+'판 · 참가 기록 '+tot+'건 (이 기기에서 본 경기만 집계)','font-size:12px; color:var(--text-dim); margin-bottom:8px;'));
+  const agg={}; let tot=0, nMatches=0;
+  for(const m of modeIds){ if(statsMode!=='all' && m!==statsMode) continue; nMatches+=st.modes[m].matches;
+    for(const wid in st.modes[m].chars){ const c=st.modes[m].chars[wid]; const parts=statsFilter==='all'?[c.h,c.b]:[c[statsFilter]]; const a=agg[wid]=agg[wid]||{m:0,w:0,k:0,d:0,a:0,dm:0}; for(const x of parts){ if(!x) continue; for(const key in a) a[key]+=x[key]||0; } } }
+  for(const wid in agg){ if(agg[wid].m>0) tot+=agg[wid].m; else delete agg[wid]; }
+  body.appendChild(mk((statsMode==='all'?'모든 모드':modeName(statsMode))+' · 저장된 경기 '+nMatches+'판 · 참가 기록 '+tot+'건 (이 기기에서 본 경기만 집계, 모드가 달라도 승률 기준이 달라서 모드별로 보는 걸 권장해요)','font-size:12px; color:var(--text-dim); margin-bottom:8px;'));
   const ids=Object.keys(agg).sort((x,y)=>agg[y].m-agg[x].m);
   const tbl=document.createElement('table'); tbl.style.cssText='width:100%; border-collapse:collapse; font-size:12.5px;';
   tbl.innerHTML='<thead><tr style="color:var(--text-dim); text-align:right;"><th style="text-align:left; padding:4px;">캐릭터</th><th>선택</th><th>승률</th><th>평균 킬</th><th>평균 데스</th><th>평균 어시</th><th>평균 피해</th></tr></thead>';
   const tb=document.createElement('tbody');
   for(const wid of ids){ const a=agg[wid], n=a.m; const tr=document.createElement('tr'); tr.style.cssText='text-align:right; border-top:1px solid var(--line);';
-    const nm=(WEAPON_PERSONA_NAME[wid]||wid), em=(WEAPONS[wid]&&WEAPONS[wid].emoji)||'';
+    const nm=(wid==='none'?'맨손 (캐릭터 없는 모드)':(WEAPON_PERSONA_NAME[wid]||wid)), em=(WEAPONS[wid]&&WEAPONS[wid].emoji)||'';
     tr.innerHTML='<td style="text-align:left; padding:6px 4px; font-weight:700;"></td><td>'+n+'</td><td style="color:'+(a.w/n>=0.5?'#7ef0a8':'#ff9b9b')+'; font-weight:800;">'+Math.round(a.w/n*100)+'%</td><td>'+(a.k/n).toFixed(1)+'</td><td>'+(a.d/n).toFixed(1)+'</td><td>'+(a.a/n).toFixed(1)+'</td><td>'+Math.round(a.dm/n)+'</td>';
     tr.firstChild.textContent=em+' '+nm; tb.appendChild(tr); }
   tbl.appendChild(tb); body.appendChild(tbl);
   body.appendChild(mk('최근 경기 (눌러서 전체 기록 보기)','font-size:12px; color:var(--text-dim); margin:16px 0 6px; font-weight:700;'));
-  st.recent.slice(0,10).forEach(m=>{
+  st.recent.filter(m=>statsMode==='all'||m.mode===statsMode).slice(0,10).forEach(m=>{
     const meRow=(m.rows||[]).find(r=>r.id===m.me), won=meRow&&meRow.win;
     const card=mk(undefined,'border:1px solid var(--line); border-radius:8px; margin-bottom:6px; overflow:hidden;');
     const head=mk(undefined,'padding:8px 10px; cursor:pointer; display:flex; justify-content:space-between; gap:8px; font-size:13px;');
@@ -4847,11 +4859,11 @@ function renderMatchStats(){
     const rows=(m.rows||[]).slice().sort((x,y)=>(y.win-x.win)||(y.k-x.k)||(y.dm-x.dm));
     det.innerHTML='<div style="display:grid; grid-template-columns:1.6fr 1.2fr .5fr .5fr .5fr .8fr; gap:2px 6px; text-align:right; color:var(--text-dim); margin-bottom:2px;"><span style="text-align:left;">이름</span><span style="text-align:left;">캐릭터</span><span>킬</span><span>데스</span><span>어시</span><span>피해</span></div>';
     for(const r of rows){ const line=mk(undefined,'display:grid; grid-template-columns:1.6fr 1.2fr .5fr .5fr .5fr .8fr; gap:2px 6px; text-align:right; padding:2px 0;'+(r.id===m.me?' color:#ffd34d; font-weight:800;':'')+(r.win?' ':''));
-      const c1=document.createElement('span'); c1.style.textAlign='left'; c1.textContent=(r.win?'👑 ':'')+(r.b?'🤖 ':'')+r.n; const c2=document.createElement('span'); c2.style.textAlign='left'; c2.textContent=WEAPON_PERSONA_NAME[r.w]||r.w;
+      const c1=document.createElement('span'); c1.style.textAlign='left'; c1.textContent=(r.win?'👑 ':'')+(r.b?'🤖 ':'')+r.n; const c2=document.createElement('span'); c2.style.textAlign='left'; c2.textContent=(r.w==='none'?'맨손':(WEAPON_PERSONA_NAME[r.w]||r.w));
       line.appendChild(c1); line.appendChild(c2); for(const v of [r.k,r.d,r.a,r.dm]){ const x=document.createElement('span'); x.textContent=v; line.appendChild(x); } det.appendChild(line); }
     head.onclick=()=>{ det.style.display=det.style.display==='none'?'block':'none'; };
     card.appendChild(det); body.appendChild(card); });
-  const clr=document.createElement('button'); clr.className='btn-secondary'; clr.style.cssText='margin-top:10px; width:100%; font-size:12px;'; clr.textContent='통계 초기화'; clr.onclick=()=>{ if(confirm('이 기기의 경기 통계를 모두 지울까요?')){ lsSet(ST2_KEY,{matches:0,chars:{},recent:[]}); renderMatchStats(); } }; body.appendChild(clr);
+  const clr=document.createElement('button'); clr.className='btn-secondary'; clr.style.cssText='margin-top:10px; width:100%; font-size:12px;'; clr.textContent='통계 초기화'; clr.onclick=()=>{ if(confirm('이 기기의 경기 통계를 모두 지울까요?')){ lsSet(ST2_KEY,{modes:{},recent:[]}); renderMatchStats(); } }; body.appendChild(clr);
 }
 
 /* ================= 전적 (this device): the last matches, win rate per mode, favourite characters, personal bests ================= */
@@ -7619,7 +7631,7 @@ function tryUltimate(p, tMs, aimX, aimY, viaClick){
   if(viaClick && ARM_FIRE_ULTS[p.weapon] && hasAim(aimX,aimY)) hostTimers.push({at:tSec+0.05, fn:(tt)=>{ if(p.alive && p.ultPending) tryFire(p, aimAngleOf(p,aimX,aimY), tt); }});   // (one tick later, so the armed shot is the one that flies)
   recordReplayEvent(p.id, 'ult', {weapon:p.weapon});
   pushFx('ult', p.x, p.y-40, tMs, {color:p.color, name:(ULTS[p.weapon]||{}).name||''});
-  if(p.weapon!=='samurai') pushFx('ultfx', p.x, p.y-34, tMs, {w:p.weapon});
+  if(p.weapon!=='samurai' && p.weapon!=='sword') pushFx('ultfx', p.x, p.y-34, tMs, {w:p.weapon});
   if(ULT_SFX[p.weapon]) pushFx('sfx', p.x, p.y-40, tMs, {name:ULT_SFX[p.weapon]}); // cast sound, heard by everyone like the weapon sounds
 }
 
@@ -11110,19 +11122,17 @@ function spawnFx(e){
       if(T.k==='fire'){ bu(x,y+10,26,{a0:-2.6,a1:-0.5,s0:120,s1:520,l0:.6,l1:1.3,z0:4,z1:9,colors:c,grav:-140,drag:1.2,shape:'fire'}); }
       if(T.k==='wave'){ for(let r=0;r<(FQ>0.3?2:1);r++) addP({x:x,y:y+20,life:.55+r*.15,color:c[r],shape:'ring',r0:20,r1:340+r*100,lw:5}); }
       if(FQ>0.3) samFlash(0.16*FQ,T.f); shakeFrom(x,y,6*FQ,1000); break; }
-    case 'swordfall': {                                                    // the knight's ultimate: a warning circle, then a giant sword plunging from the sky
-      const dur=e.dur||0.7;
-      addP({x:x,y:y,life:dur,color:'#ffd23f',shape:'ring',r0:100,r1:30,lw:4});
-      addP({x:x,y:y,life:dur,color:'#ffffff',shape:'ring',r0:30,r1:95,lw:2});
-      addP({x:x,y:y,life:dur,color:'#ffd23f',shape:'bigsword',y1:y,add:false,st:0});
-      break; }
-    case 'swordhit': {
-      addP({x:x,y:y,life:.6,color:'#ffd23f',shape:'bigsword',y1:y,add:false,st:1});
-      for(let r=0;r<2;r++) addP({x:x,y:y,life:.4+r*0.15,color:r?'#ffd23f':'#ffffff',shape:'ring',r0:10,r1:150+r*70,lw:7-r*2});
-      addP({x:x,y:y,life:.25,color:'#fff0b0',shape:'flash',size:260});
-      bu(x,y,26,{a0:-3.3,a1:0.15,s0:150,s1:600,l0:.4,l1:.9,z0:2.5,z1:5,colors:['#ffd23f','#ffffff','#ff9a3d'],grav:600,drag:1.2,shape:'streak'});
-      bu(x,y,14,{a0:-3.3,a1:0.15,s0:60,s1:240,l0:.8,l1:1.4,z0:4,z1:8,colors:['#c9a463','#8a6a3a'],grav:500,drag:1,shape:'square',add:false});
-      shakeFrom(x,y,14*FQ,1100); break; }
+    case 'swordfall':
+      addP({x:x,y:y,life:e.dur||0.7,color:'#dfe9ff',shape:'bigsword',add:false});
+      addP({x:x,y:y,life:e.dur||0.7,color:'#7c9eff',shape:'warn'});
+      break;
+    case 'swordhit':
+      addP({x:x,y:y,life:.28,color:'#ffffff',shape:'flash',size:160});
+      addP({x:x,y:y,life:.55,color:'#9fc2ff',shape:'ring',r0:8,r1:190,lw:9});
+      burst(x,y,26,{a0:-3.3,a1:0.15,s0:120,s1:620,l0:.4,l1:.9,z0:2,z1:4,colors:['#ffffff','#9fc2ff','#dfe9ff'],grav:700,drag:1.2,shape:'streak'});
+      burst(x,y,12,{a0:-3.1,a1:-0.04,s0:60,s1:260,l0:.7,l1:1.2,z0:8,z1:18,colors:['#8a8f99','#6b6f78'],grav:-30,drag:1.4,shape:'smoke',add:false});
+      shakeFrom(x,y,14,800);
+      break;
     case 'blink': {
       addP({x:x,y:y,life:.4,color:col,shape:'ring',r0:36,r1:4,lw:5});
       addP({x:x,y:y,life:.3,color:'#ffffff',shape:'ring',r0:6,r1:48,lw:3});
@@ -11420,16 +11430,6 @@ function drawParticles(){
           ctx.lineJoin='round'; stroke(q.size*3.4, hexA(q.color,0.35), a); stroke(q.size*1.6, q.color, a); stroke(q.size*0.6, '#ffffff', a);
           if(R()<0.5){ const k=1+Math.floor(R()*(n-2)), s=R()<0.5?-1:1; ctx.globalAlpha=a*0.8; ctx.strokeStyle=q.color; ctx.lineWidth=q.size*0.7; ctx.beginPath(); ctx.moveTo(pts[k][0],pts[k][1]); ctx.lineTo(pts[k][0]+nx*s*30+dx/len*14, pts[k][1]+ny*s*30+dy/len*14); ctx.stroke(); }
           break; }
-        case 'bigsword': { const t01=1-q.life/q.max, fall=q.st?1:Math.min(1,t01/0.9), e2=fall*fall*fall, tipY=q.y1-820*(1-e2), al=q.st?Math.min(1,q.life/q.max*2.2):Math.min(1,t01*8);   // (a cubic ease: it accelerates like a falling blade)
-          ctx.save(); ctx.globalAlpha=al*0.22; const cg=ctx.createLinearGradient(0,q.y1-340,0,q.y1+60); cg.addColorStop(0,'rgba(255,230,150,0)'); cg.addColorStop(1,'rgba(255,230,150,1)'); ctx.fillStyle=cg; ctx.fillRect(q.x-95,q.y1-340,190,400);   // the danger column
-          ctx.globalAlpha=al; ctx.translate(q.x,tipY);
-          if(!q.st){ ctx.globalAlpha=al*0.35*(1-fall); ctx.fillStyle='#ffffff'; ctx.fillRect(-14,-760,28,740); ctx.globalAlpha=al; }                  // speed trail above the blade
-          const bg=ctx.createLinearGradient(-26,0,26,0); bg.addColorStop(0,'#9fb4d6'); bg.addColorStop(0.5,'#ffffff'); bg.addColorStop(1,'#8aa0c8');
-          ctx.fillStyle=bg; ctx.strokeStyle='#5a6f99'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(-26,-300); ctx.lineTo(-26,-345); ctx.lineTo(26,-345); ctx.lineTo(26,-300); ctx.closePath(); ctx.fill(); ctx.stroke();
-          ctx.strokeStyle='rgba(90,111,153,0.6)'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(0,-14); ctx.lineTo(0,-330); ctx.stroke();
-          ctx.fillStyle='#ffd23f'; ctx.strokeStyle='#8a6a1a'; ctx.lineWidth=3; ctx.fillRect(-70,-362,140,20); ctx.strokeRect(-70,-362,140,20);
-          ctx.fillStyle='#6b3f1d'; ctx.fillRect(-9,-440,18,78); ctx.fillStyle='#ffd23f'; ctx.beginPath(); ctx.arc(0,-448,15,0,7); ctx.fill(); ctx.stroke();
-          ctx.restore(); break; }
         case 'ghost': { ctx.globalAlpha=a*0.7; ctx.strokeStyle=q.color; ctx.fillStyle=q.color; ctx.lineWidth=4; ctx.lineCap='round'; const f=q.dir||1;       // an afterimage of the swordsman, caught mid-dash
           ctx.beginPath(); ctx.arc(q.x,q.y-52,8,0,7); ctx.fill();
           ctx.beginPath(); ctx.moveTo(q.x,q.y-44); ctx.lineTo(q.x+f*8,q.y-20); ctx.moveTo(q.x+f*8,q.y-20); ctx.lineTo(q.x+f*26,q.y-4); ctx.moveTo(q.x+f*8,q.y-20); ctx.lineTo(q.x-f*18,q.y-2);
