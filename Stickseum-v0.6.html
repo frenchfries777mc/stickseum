@@ -594,7 +594,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-12-v173</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v175</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -4003,7 +4003,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-12-v173';
+const GAME_BUILD='build 2026-10-13-v175';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -5062,7 +5062,7 @@ function enterPrivateSetup(){
   showScreen('privateSetupScreen');
 }
 const MODE_LIST=[
-  {id:'event', cat:'event', icon:'🎪', desc:''},
+  {id:'daily', cat:'daily', icon:'📅', desc:''},
   {id:'ffa', cat:'classic', icon:'⚔️', desc:'제한 없이 자유롭게 싸우는 기본 데스매치'},
   {id:'br', cat:'classic', icon:'🏆', desc:'마지막까지 살아남는 서바이벌 대전'},
   {id:'duo', cat:'classic', icon:'🤝', desc:'2인 1팀, 마지막 팀이 승리'},
@@ -5075,27 +5075,18 @@ const MODE_LIST=[
   {id:'survival', cat:'mini', icon:'🌪️', desc:'쏟아지는 재해 속에서 끝까지 생존'},
   {id:'parkour', cat:'mini', icon:'🧗', desc:'가장 먼저 꼭대기에 올라가요'},
   {id:'ctf', cat:'mini', icon:'🚩', desc:'상대 깃발을 가져와 득점해요'},
-  {id:'vip', cat:'special', icon:'👑', desc:'팀마다 왕이 한 명, 상대 왕을 먼저 쓰러뜨려요'},
-  {id:'koth', cat:'special', icon:'⛰️', desc:'움직이는 거점을 혼자 차지하면 점수를 얻어요'},
-  {id:'relay', cat:'special', icon:'🔁', desc:'킬할 때마다 캐릭터가 바뀌고, 끝까지 가면 승리'},
-  {id:'freeze', cat:'special', icon:'🧊', desc:'죽으면 얼어붙고, 아군이 닿아서 녹여줘요'},
-  {id:'rush', cat:'special', icon:'💰', desc:'금화를 모으고, 죽으면 절반을 떨어뜨려요'},
-  {id:'roulette', cat:'special', icon:'🎲', desc:'12초마다 모두의 캐릭터가 랜덤으로 바뀌어요'},
-  {id:'oneshot', cat:'special', icon:'☝️', desc:'체력 1, 한 대 맞으면 끝! 12킬 선취'},
-  {id:'turf', cat:'special', icon:'🎨', desc:'밟은 발판이 우리 색으로, 더 많이 칠한 팀이 승리'},
-  {id:'bounty', cat:'special', icon:'🎯', desc:'선두에게 현상금이 붙어요, 잡으면 +4점'},
-  {id:'lowg', cat:'special', icon:'🪐', desc:'중력이 약하고 넉백이 강한 난투'},
   {id:'raid', cat:'coop', icon:'🐲', desc:'모두 한 팀이 되어 거대한 보스를 쓰러뜨려요'},
   {id:'tournament', cat:'coop', icon:'🏆', desc:'8명이 1대1로 겨루는 토너먼트, 끝까지 살아남으면 우승'}
 ];
+function dailyModeItem(){ const day=Math.floor((Date.now()-new Date().getTimezoneOffset()*-60000)/86400000); return SPECIAL_ITEMS[(day*7+3)%SPECIAL_ITEMS.length]; }       // today's mode: the same for everybody on the same date, a different one of the ten each day
 function buildModeList(){
   const body=document.getElementById('modeListBody'); if(!body) return;
   body.innerHTML='';
-  for(const it of MODE_LIST){ const isEv=(it.id==='event'), m=isEv?{name:'주간 이벤트 · '+currentEvent().name}:MODES[it.id]; if(!m) continue;
+  for(const it of MODE_LIST){ const isEv=(it.id==='event'), isDay=(it.id==='daily'), m=isEv?{name:'주간 이벤트 · '+currentEvent().name}:(isDay?{name:'일일 모드 · '+dailyModeItem().name}:MODES[it.id]); if(!m) continue;
     const row=document.createElement('button'); row.className='modeRow';
     row.innerHTML='<span class="mrIcon"></span><span class="mrText"><div class="mrName"></div><div class="mrDesc"></div></span>';
-    row.querySelector('.mrIcon').textContent=it.icon; row.querySelector('.mrName').textContent=m.name; row.querySelector('.mrDesc').textContent=isEv?(currentEvent().desc+' · 이번 주 한정'):it.desc;
-    row.onclick=()=>pickOnlineModeAndMatch(isEv?'ffa':it.id, isEv); body.appendChild(row); }
+    row.querySelector('.mrIcon').textContent=isDay?dailyModeItem().icon:it.icon; row.querySelector('.mrName').textContent=m.name; row.querySelector('.mrDesc').textContent=isEv?(currentEvent().desc+' · 이번 주 한정'):(isDay?(dailyModeItem().desc+' · 오늘 하루 한정, 매일 바뀌어요'):it.desc);
+    row.onclick=()=>pickOnlineModeAndMatch(isEv?'ffa':(isDay?dailyModeItem().id:it.id), isEv); body.appendChild(row); }
   body.scrollTop=0;
 }
 function enterOnlineTypeScreen(){ buildModeList(); showScreen('modeListScreen'); }
