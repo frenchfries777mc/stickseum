@@ -684,7 +684,7 @@ setTimeout(go,14000);})();</script>
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v205</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v208</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -856,6 +856,9 @@ setTimeout(go,14000);})();</script>
     <div class="profRow"><span class="k">화면 흔들림</span><span class="v"><button id="settingsShakeToggle" class="btn-secondary" style="padding:4px 12px;"></button></span></div>
     <div class="profRow"><span class="k">그래픽 효과 (스킨 연출 등)</span><span class="v"><button id="settingsQualityToggle" class="btn-secondary" style="padding:4px 12px;"></button></span></div>
     <div class="profRow"><span class="k">조작 방식 (모바일 / 컴퓨터)</span><span class="v"><button id="settingsCtrlToggle" class="btn-secondary" style="padding:4px 12px;"></button></span></div>
+    <div class="profRow"><span class="k">프레임 제한</span><span class="v"><button id="settingsFpsLimitToggle" class="btn-secondary" style="padding:4px 12px;"></button></span></div>
+    <div class="profRow"><span class="k">FPS 표시</span><span class="v"><button id="settingsFpsShowToggle" class="btn-secondary" style="padding:4px 12px;"></button></span></div>
+    <div class="profRow"><span class="k">능력(스킬·궁극기·대시·순간이동) 사용 방식</span><span class="v"><button id="settingsAbilityModeToggle" class="btn-secondary" style="padding:4px 12px;"></button></span></div>
     <div class="profRow"><span class="k">피해량 숫자 표시</span><span class="v"><button id="settingsDmgNumToggle" class="btn-secondary" style="padding:4px 12px;"></button></span></div>
   </div>
 
@@ -1371,6 +1374,7 @@ function stopResultSound(){                      // when the player leaves the r
 }
 function playSfx(key, x, y){
   if(otherSettings.sfx===false) return;
+  if(x!==undefined && gameMode==='tournament' && typeof tnFxNear==='function' && !tnFxNear({x:x,y:y})) return;   // tournament: only the sounds of the fights on screen
   const def=SFX_DEFS[key]; if(!def || !sfxCtx || sfxCtx.state!=='running') return;
   const buf=sfxBuffers[def.clip]; if(!buf) return;
   // quieter the farther the fight is from me; anything on/near my screen plays at full volume
@@ -1419,7 +1423,8 @@ function loadKeyBindings(){
 function persistKeyBindings(){ try{ localStorage.setItem('arenaClashKeybinds', JSON.stringify(keyBindings)); }catch(e){} }
 loadKeyBindings();
 
-let otherSettings={screenShake:true, damageNumbers:true, sfx:true, quality:'auto', controls:'auto'};       // quality: 'auto' (follows the speed of the game), 'high', 'mid' or 'low'
+let otherSettings={screenShake:true, damageNumbers:true, sfx:true, quality:'auto', controls:'auto', fpsLimit:0, showFps:false, abilityMode:'hold'};       // fpsLimit: 0 = no limit, 30 or 60 // abilityMode: 'hold' (held to aim, used on release), 'instant', 'confirm' (press once to aim, press again to use)
+let fpsN=0, fpsT=0, fpsBoxEl=null;       // quality: 'auto' (follows the speed of the game), 'high', 'mid' or 'low'
 function loadOtherSettings(){
   try{
     const saved=JSON.parse(localStorage.getItem('arenaClashSettings')||'null');
@@ -1429,6 +1434,9 @@ function loadOtherSettings(){
       if(typeof saved.sfx==='boolean') otherSettings.sfx=saved.sfx;
       if(saved.quality==='auto' || saved.quality==='high' || saved.quality==='mid' || saved.quality==='low') otherSettings.quality=saved.quality;
       if(saved.controls==='auto' || saved.controls==='touch' || saved.controls==='kbm') otherSettings.controls=saved.controls;
+      if(saved.fpsLimit===0 || saved.fpsLimit===30 || saved.fpsLimit===60) otherSettings.fpsLimit=saved.fpsLimit;
+      if(typeof saved.showFps==='boolean') otherSettings.showFps=saved.showFps;
+      if(saved.abilityMode==='hold' || saved.abilityMode==='instant' || saved.abilityMode==='confirm') otherSettings.abilityMode=saved.abilityMode;
     }
   }catch(e){}
 }
@@ -1515,6 +1523,12 @@ function renderSettingsScreen(){
     ctBtn.textContent=CL[otherSettings.controls]||CL.auto;
     ctBtn.onclick=()=>{ otherSettings.controls=co[(co.indexOf(otherSettings.controls)+1)%co.length]; persistOtherSettings(); ctBtn.textContent=CL[otherSettings.controls]; };
   }
+  const flBtn=document.getElementById('settingsFpsLimitToggle');
+  if(flBtn){ const FL={0:'제한 없음', 60:'60 FPS', 30:'30 FPS'}, fo=[0,60,30]; flBtn.textContent=FL[otherSettings.fpsLimit]; flBtn.onclick=()=>{ otherSettings.fpsLimit=fo[(fo.indexOf(otherSettings.fpsLimit)+1)%fo.length]; persistOtherSettings(); flBtn.textContent=FL[otherSettings.fpsLimit]; }; }
+  const fsBtn=document.getElementById('settingsFpsShowToggle');
+  if(fsBtn){ fsBtn.textContent=otherSettings.showFps?'켜짐':'꺼짐'; fsBtn.onclick=()=>{ otherSettings.showFps=!otherSettings.showFps; persistOtherSettings(); fsBtn.textContent=otherSettings.showFps?'켜짐':'꺼짐'; }; }
+  const amBtn=document.getElementById('settingsAbilityModeToggle');
+  if(amBtn){ const AM={hold:'누르고 있다 떼면 사용', instant:'누르면 바로 사용', confirm:'한 번 눌러 조준 → 다시 눌러 사용'}, ao=['hold','instant','confirm']; amBtn.textContent=AM[otherSettings.abilityMode]; amBtn.onclick=()=>{ otherSettings.abilityMode=ao[(ao.indexOf(otherSettings.abilityMode)+1)%ao.length]; persistOtherSettings(); amBtn.textContent=AM[otherSettings.abilityMode]; abilityHold=null; }; }
   const dmgBtn=document.getElementById('settingsDmgNumToggle');
   if(dmgBtn){
     dmgBtn.textContent=otherSettings.damageNumbers?'켜짐':'꺼짐';
@@ -2663,7 +2677,7 @@ const MODES = {
   survival: {id:'survival', name:'서바이벌', desc:'8인 이상 맵에서만 가능 · 최소 6명 · 무기선택·순간이동·캐릭터 없음(대쉬는 있음) · 체력 1: 재해에 한 번이라도 맞으면 탈락 · 9초 대기 후 번개·해일·화산·산성비·홍수·운석·폭탄·좀비 중 하나가 랜덤으로 12초간 발생, 버티면 사라지고 다시 9초 대기 · 라운드가 갈수록 재해가 더 자주·더 넓게·더 빠르게 몰아침 · 총 5번의 재해에서 살아남으면 승리, 먼저 죽으면 관전하거나 나갈 수 있음', teams:false, extra:0, elim:true, isMinigame:true, noWeapon:true, noTeleport:true, minPlayers:6, mapFilterMinPlayers:8}, // noTeleport made explicit here (previously implied only indirectly through noWeapon) to match the mode's own description, which promises no teleport
   ctf: {id:'ctf', name:'깃발 뺏기', desc:'전용 대형 맵 4종 중 선택 · 두 팀이 상대 기지의 깃발을 가져와 우리 기지에 가져오면 1점(우리 깃발이 기지에 있어야 득점) · 깃발을 든 사람은 조금 느려지고 순간이동을 못 씀 · 든 사람이 죽으면 깃발이 떨어지고 10초 뒤 기지로 돌아감(우리 팀이 닿으면 바로 복귀) · 먼저 3점 또는 8분 안에 더 많이 득점한 팀 승리, 동점이면 다음 득점이 결승점 · 처치당하면 5초 후 우리 기지에서 부활 · 최소 4명(비공개 방에서는 봇 추가 가능)', teams:true, teamSize:'half', extra:0, elim:false, isMinigame:true, isCtfMode:true, minPlayers:4, respawnTime:5},
   raid: {id:'raid', name:'보스 레이드', desc:'8인 이상 맵에서만 가능 · 4명 고정 · 모두가 한 팀이 되어 거대한 보스 한 마리를 쓰러뜨리는 협동 모드 · 보스는 인원에 맞춰 체력이 늘어나고, 주기적으로 바닥을 내려쳐요(빨간 원이 번쩍이면 점프!) · 팀 목숨이 정해져 있고 쓰러지면 6초 뒤 부활 · 3분 안에 보스를 잡으면 성공', teams:true, teamSize:'half', soloTeam:true, extra:0, fixedPlayers:4, elim:false, isMinigame:true, mapFilterMinPlayers:8, respawnTime:6},
-  tournament: {id:'tournament', name:'토너먼트', desc:'16명이 1대1 3판 2선승제로 겨루는 단판 토너먼트(16강 → 8강 → 4강 → 결승) · 같은 라운드 경기는 동시에 진행되고 내 경기만 보여요 · 라운드마다 캐릭터가 새로 랜덤 지급 · 끝난 사람은 다른 경기를 관전 · 결승은 경기장이 점점 좁아져요', teams:false, fixedPlayers:16, elim:true, isMinigame:true, mapFilterMinPlayers:8, tnMode:true, autoWeapon:true},
+  tournament: {id:'tournament', name:'토너먼트', desc:'16명이 1대1 3판 2선승제로 겨루는 단판 토너먼트(16강 → 8강 → 4강 → 결승) · 같은 라운드 경기는 동시에 진행되고 내 경기만 보여요 · 라운드마다 캐릭터를 새로 골라요 · 끝난 사람은 다른 경기를 관전 · 결승은 경기장이 점점 좁아져요', teams:false, fixedPlayers:16, elim:true, isMinigame:true, mapFilterMinPlayers:8, tnMode:true},
   vip:      {id:'vip', name:'왕 지키기', desc:'두 팀으로 나뉘고 팀마다 왕이 한 명(머리 위 왕관) · 상대 팀의 왕을 먼저 쓰러뜨리면 승리 · 왕이 아닌 사람은 5초 뒤 부활 · 5분이 지나면 왕의 남은 체력이 많은 팀이 승리', teams:true, teamSize:'half', extra:2, elim:false, respawnTime:5, special:true},
   koth:     {id:'koth', name:'언덕의 왕', desc:'모두가 각자 싸우는 모드 · 맵 위의 거점을 혼자 차지하면 초당 1점(둘 이상이면 점수 정지) · 거점은 20초마다 다른 발판으로 옮겨가요 · 먼저 60점을 채우면 승리, 6분이 지나면 점수가 높은 사람이 승리', teams:false, extra:0, elim:false, respawnTime:4, special:true},
   relay:    {id:'relay', name:'무기 릴레이', desc:'모두가 같은 순서의 캐릭터 10개를 받아요 · 킬을 하면 다음 캐릭터로 바뀌고, 10번째 캐릭터까지 킬을 달성하면 승리 · 6분이 지나면 가장 앞선 사람이 승리', teams:false, extra:0, elim:false, respawnTime:3, autoWeapon:true, special:true},
@@ -4118,7 +4132,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-13-v205';
+const GAME_BUILD='build 2026-10-13-v208';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -4680,13 +4694,29 @@ function tnBkMsg(intro){
 function tnSendBk(intro){ const m=tnBkMsg(intro); broadcastAll(m); tnApplyBk(m); }
 function tnBeginRound(first){
   const R=tn.rounds[tn.r], t=performance.now();
-  tn.phase='intro'; tn.introAt=Date.now()+TN_INTRO_MS; tn.partner={}; tn.zone=null; tn.curLabel=tnRoundLabel(R.length);
+  tn.phase='pick'; tn.partner={}; tn.zone=null; tn.curLabel=tnRoundLabel(R.length);
   for(const id in players){ const p=players[id]; p.alive=false; p.respawnAt=Infinity; }
   for(const m of R){ m.ph='wait'; m.sa=0; m.sb=0; m.w=null; if(!m.b){ m.w=m.a; m.ph='done'; } }      // a bye goes straight on
-  if(!first){                                                                                         // every new round the fighters get a NEW random character
+  if(first || !isHost){ tnIntroGo(); return; }
+  if(practiceMode){                                                                                  // practice: a new random character
     for(const m of R) for(const id of [m.a, m.b]){ const p=id && players[id]; if(!p) continue; let w; do{ w=SELECTABLE_WEAPONS[Math.floor(Math.random()*SELECTABLE_WEAPONS.length)]; }while(w===p.weapon && SELECTABLE_WEAPONS.length>1); xmSetWeapon(p, w, t); }
+    tnIntroGo(); return;
   }
-  tnSendBk(true);
+  tnStartPick(R);                                                                                     // the ones still in choose a character again
+}
+function tnIntroGo(){ if(!tn) return; tn.phase='intro'; tn.introAt=Date.now()+TN_INTRO_MS; tnSendBk(true); }
+function tnStartPick(R){
+  try{
+    const ids=new Set(); for(const m of R){ if(m.a) ids.add(m.a); if(m.b) ids.add(m.b); }
+    duelPick=true;
+    for(const p of Object.values(players)){ if(ids.has(p.id)){ p.pick=null; p.weaponChosen=false; p.offer=null; } else { p.weaponChosen=true; p.pick=p.weapon; p.offer=null; } }
+    weaponPhase={deadline:Date.now()+WEAPON_PICK_MS, revealing:false, revealEnd:0};
+    if(weaponMode==='random') makeWeaponOffers();
+    botSchedulePicks();
+    for(const pid in players){ if(ids.has(pid) && pid!==myId && conns[pid]) safeSend(conns[pid], {t:'duelPick', deadline:weaponPhase.deadline, mode:weaponMode, offer:players[pid].offer||null}); }
+    if(ids.has(myId)) openDuelPickScreen(weaponPhase.deadline, weaponMode, players[myId]?players[myId].offer:null);
+    broadcastWeaponState();
+  }catch(e){ recordDiagError('tn-pick', e); duelPick=false; weaponPhase=null; tnIntroGo(); }
 }
 function tnStartGame(m, now){
   const A=players[m.a], B=players[m.b]; if(!A || !B) return;
@@ -8501,7 +8531,9 @@ function safeStep(label, fn){
 function loop(t){
   lastLoopAt=performance.now();
   if((started || currentMode) && !practiceMode && (t|0)%30===0){ const cf=document.getElementById('chatFeed'); if(cf && cf.style.display==='none') setChatVisible(true); }       // (a safety net: in a room or a match the chat is never left switched off)
+  if(otherSettings.fpsLimit>0 && (t-lastT) < 1000/otherSettings.fpsLimit-3){ requestAnimationFrame(loop); return; }      // (the frame limit: this frame is skipped)
   const rawDt=(t-lastT)/1000, dt=Math.min(0.05,rawDt); lastT=t;
+  if(otherSettings.showFps){ fpsN++; if(t-fpsT>=500){ if(!fpsBoxEl){ fpsBoxEl=document.createElement('div'); fpsBoxEl.style.cssText='position:fixed; top:6px; right:8px; z-index:70; font:700 13px Rajdhani,monospace; color:#7fffd4; text-shadow:0 1px 4px #000; pointer-events:none;'; document.body.appendChild(fpsBoxEl); } fpsBoxEl.textContent=Math.round(fpsN*1000/Math.max(1,t-fpsT))+' FPS'; fpsBoxEl.style.display='block'; fpsN=0; fpsT=t; } } else if(fpsBoxEl) fpsBoxEl.style.display='none';
   updateFxQuality(rawDt);
   // each step gets its OWN try/catch instead of one shared try/catch for the whole frame - previously, if
   // updateMovingPlatforms/hostTick/updateAnimPhases/recordReplaySamples threw, render() never even got
@@ -9366,7 +9398,7 @@ function tryFire(p, angle, tMs){
 const BOT_FILL_MS=15000;     // a human waits this long (since the last human joined) before bots fill the room
 const BOT_JOIN_GAP_MS=450;   // bots then walk in one at a time instead of all at once
 const BOT_FILL_MAX=10;       // a very big room (parkour holds 20) is only filled up to this many; the match then starts on its own
-const BOT_FILL_FULL_UP_TO=12; // a room that holds up to this many is filled COMPLETELY (the flag mode holds 12; with the old limit of 10 it stayed two short)
+const BOT_FILL_FULL_UP_TO=16; // a room that holds up to this many is filled COMPLETELY (the flag mode holds 12; with the old limit of 10 it stayed two short)
 function botFillTargetFor(cap){ return cap<=BOT_FILL_FULL_UP_TO ? cap : Math.min(cap, BOT_FILL_MAX); }
 const BOT_NAMES_BY_LANG={
   ko:['제현','현진','재민','이들','상원','서윤','휘찬','재웅','연후','연준','진표','재윤','유준','우엽','재경'],
@@ -11261,7 +11293,7 @@ function finishDuelRepick(){
   try{
   for(const id in players){
     const p=players[id]; map[id]=p.weapon;
-    p.duelUsed=(p.duelUsed||[]); if(p.weapon && !p.duelUsed.includes(p.weapon)) p.duelUsed.push(p.weapon);
+    if(gameMode!=='tournament'){ p.duelUsed=(p.duelUsed||[]); if(p.weapon && !p.duelUsed.includes(p.weapon)) p.duelUsed.push(p.weapon); }
     p.lastDash=clock; p.lastTeleport=clock; p.lastUlt=clock; p.lastSkill=clock; p.skillUses=0; p.ultUses=0; p.lastShot=0;
     p.buffs={}; p.barrier=null; p.buff=null; p.hasted=false; p.focusOn=false; p.ultPending=null; p.rushUntil=0; p.invisUntil=0; p.burn=null; p.batUntil=0; p.batting=false; p.slowUntil=0; p.slowed=false;
     p.flameHeldSince=null; p.flameOverheatUntil=0; p.flaming=false; p.portalPair=null; p.portalCooldownUntil=0; p.vacuumStacks=0; p.chips=0; p.freeVolleys=0;
@@ -11270,7 +11302,7 @@ function finishDuelRepick(){
   duelPick=false;
   broadcastAll({t:'duelPickEnd', weapons:map});
   closeDuelPickScreen(map);
-  startNewDuelRound();
+  if(gameMode==='tournament') tnIntroGo(); else startNewDuelRound();
 }
 function broadcastDuelScore(){
   broadcastAll({t:'duelScore', scores:duelScores});
@@ -11810,14 +11842,20 @@ function quickCastAbility(action){
 }
 function abilityKeyDown(code, repeat, shiftKey){
   const a=abilityActionFor(code); if(!a) return false;
-  if(repeat || abilityHold) return true;                     // key repeat, or another ability key is already held: ignored
+  const mode=otherSettings.abilityMode||'hold';
+  if(repeat) return true;
+  if(mode==='confirm' && abilityHold && abilityHold.sticky){
+    if(abilityHold.key===code){ const h=abilityHold; abilityHold=null; if(!h.consumed){ const m=mouseWorld(); fireAbility(h.action, m.x, m.y, false); } return true; }      // the second press: use it
+    abilityHold=null;                                                                       // another ability key: aim that one instead
+  } else if(abilityHold) return true;                          // another ability key is already held: ignored
   if(!abilityAvailable(a)) return true;
   if(shiftKey && (a==='ultimate' || a==='skill')){ quickCastAbility(a); return true; }       // used at once: nothing is held, so the key-up does nothing
-  abilityHold={action:a, key:code, consumed:false};
+  if(mode==='instant'){ const m=mouseWorld(); fireAbility(a, m.x, m.y, false); return true; }   // used the moment the key goes down
+  abilityHold={action:a, key:code, consumed:false, sticky:(mode==='confirm')};
   return true;
 }
 function abilityKeyUp(code){
-  if(!abilityHold || abilityHold.key!==code) return;
+  if(!abilityHold || abilityHold.key!==code || abilityHold.sticky) return;
   const h=abilityHold; abilityHold=null;
   if(h.consumed) return;
   const m=mouseWorld(); fireAbility(h.action, m.x, m.y, false);
@@ -11826,9 +11864,10 @@ function abilityClickAt(clientX, clientY){
   if(!abilityHold) return false;
   const h=abilityHold;
   if(!h.consumed){ h.consumed=true; const cam=getCamera(); fireAbility(h.action, clientX+cam.x, clientY+cam.y, true); }
+  if(h.sticky) abilityHold=null;
   return true;                                               // (a click while an ability key is held never shoots, also not a second one)
 }
-function abilityCancel(){ if(abilityHold) abilityHold.consumed=true; }
+function abilityCancel(){ if(abilityHold){ abilityHold.consumed=true; if(abilityHold.sticky) abilityHold=null; } }
 canvas.addEventListener('mousedown', e=>{
   e.preventDefault();
   if(touchModeOn()) return;
@@ -12508,8 +12547,14 @@ function showDiceBanner(name, finalFace, doubled){
     }, 1400);
   }, 500);
 }
+function tnFxNear(e){                 // tournament: only the effects around the fights on screen
+  if(!tnVisSet) return true;
+  for(const id of tnVisSet){ const q=players[id]; if(q && q.x!==undefined && Math.abs(q.x-e.x)<760 && Math.abs(q.y-e.y)<620) return true; }
+  return false;
+}
 function processNewEffects(){
-  for(const e of effects){ if(e.id!==undefined && !fxSeen[e.id]){ fxSeen[e.id]=1; spawnFx(e); } }
+  const tnf=(gameMode==='tournament');
+  for(const e of effects){ if(e.id!==undefined && !fxSeen[e.id]){ fxSeen[e.id]=1; if(tnf && !tnFxNear(e)) continue; spawnFx(e); } }
   if(Object.keys(fxSeen).length>500){ const keep={}; for(const e of effects) keep[e.id]=1; fxSeen=keep; }
 }
 function updateShake(){
