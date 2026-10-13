@@ -668,7 +668,7 @@ setTimeout(go,14000);})();</script>
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v202</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v203</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -4093,7 +4093,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-13-v202';
+const GAME_BUILD='build 2026-10-13-v203';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -9615,7 +9615,7 @@ let BOT_MELEE_STICK=true, BOT_MELEE_DASH=true;
 // like they were dancing back and forth. Now a retreat lasts at most BOT_RETREAT_MAX_SEC, after which the bot has to stand its ground for
 // BOT_RETREAT_HOLD_SEC, and the side-to-side shuffle is shorter and less frequent.
 let BOT_CALM=true;
-const BOT_RETREAT_MAX_SEC=1.2, BOT_RETREAT_HOLD_SEC=1.8, BOT_STRAFE_PX=95, BOT_STRAFE_MIN_SEC=1.4, BOT_STRAFE_SPAN_SEC=1.4;
+const BOT_RETREAT_MAX_SEC=1.2, BOT_RETREAT_HOLD_SEC=1.8, BOT_STRAFE_PX=60, BOT_STRAFE_MIN_SEC=2.8, BOT_STRAFE_SPAN_SEC=2.4;
 function botAimAngle(p, T, ai){
   const w=WEAPONS[p.weapon]||WEAPONS.pistol, ox=p.x, oy=p.y-40;
   let tx=T.x, ty=T.y-29;
@@ -9637,7 +9637,7 @@ function botPickTarget(p, ai){
     if(o.id===p.id || !o.alive || o.x===undefined || isAlly(p,o)) continue;
     let d=dist(p.x,p.y,o.x,o.y);
     if(o.invis && d>160) continue;        // a cloaked player can only be noticed up close
-    if(o.id===ai.tgt) d*=0.7;             // stay on the current target instead of flickering between two
+    if(o.id===ai.tgt) d*=0.5;             // stay on the current target instead of flickering between two
     if(ai.personality==='revenge' && ai.grudge===o.id && !(ai.pstuck && ai.pstuck.until>(ai.nowMs||0)/1000)) d*=0.2;   // the avenger wants the one who killed it (unless it is giving up for a while: see botPersonalityStep)
     else if(ai.personality==='rival'){ if(ai.rivalId===o.id) d*=0.25; else if(!o.isBot) d*=0.6; }   // the rival wants its human (somebody right on top of it still gets attention)
     if(d<bd){ bd=d; best=o; }
@@ -9912,7 +9912,7 @@ function botPersonalityStep(p, ai, target, d, cx){
     case 'sniper': {
       if(!target || cx.w.kind==='melee') return null;
       const R=Math.max(band.fire, 420), minD=R*0.5, ideal=R*0.85;
-      ai.aimErr*=0.35;                                                                                                        // steady aim
+      ai.aimErrT=(ai.aimErrT||0)*0.35; ai.aimErr*=0.35;                                                                                                        // steady aim
       if(d<minD){ if(cornered(target)) return null; if(!cx.navBusy && d<minD*0.6 && Math.random()<0.3) cx.inp.dash=true; return {goalX:away(target), goalY:p.y, shoot:cx.shoot && d>minD*0.5}; }   // too close: back off (unless cornered)
       if(d>R) return {goalX:clamp(target.x-Math.sign(target.x-p.x||1)*ideal, 60, W-60), goalY:target.y, shoot:false};          // too far: move to the ideal distance
       return {goalX:p.x, goalY:p.y, shoot:cx.shoot};                                                                         // in the sweet spot: stands still and shoots
@@ -9942,14 +9942,18 @@ function botThink(p, t, dt){
   const w=WEAPONS[p.weapon]||WEAPONS.pistol;
   const T = ai.tgt ? players[ai.tgt] : null;
   if(p.swordCharge && T && T.alive && (T.x-p.x)*p.swordCharge.dir<-60) swordEnd(p);      // a charging knight whose target ended up behind it stops instead of running off
-  if(T && T.alive && T.x!==undefined && !isAlly(p,T)) inp.angle=botAimAngle(p, T, ai); // keep aiming smoothly between decisions
+  if(T && T.alive && T.x!==undefined && !isAlly(p,T)){                                  // keep aiming smoothly between decisions: the error drifts to its new value and the angle itself is eased (no more jumps)
+    const k=Math.min(1,(dt||0.016)*4); ai.aimErr+=((ai.aimErrT||0)-ai.aimErr)*k;
+    const want=botAimAngle(p, T, ai), cur=(ai.angSm===undefined||ai.angSm===null)?want:ai.angSm; let df=want-cur; while(df>Math.PI) df-=2*Math.PI; while(df<-Math.PI) df+=2*Math.PI;
+    ai.angSm=cur+df*Math.min(1,(dt||0.016)*16); inp.angle=ai.angSm;
+  } else ai.angSm=null;
   if(t>=ai.next){                                      // ---- decisions: a few times per second, like a person reacting ----
     const dif=botDiffOf(p);
     ai.next=t+(BOT_THINK_MIN_MS+Math.random()*BOT_THINK_JITTER_MS)*dif.think;
     const tSec=t/1000;
     const target=botPickTarget(p, ai);
     ai.tgt=target?target.id:null;
-    ai.aimErr=(Math.random()-0.5)*2*(0.035+0.00022*(target?dist(p.x,p.y,target.x,target.y):300))*(1.5-ai.skill)*dif.aim;
+    ai.aimErrT=(Math.random()-0.5)*2*(0.035+0.00022*(target?dist(p.x,p.y,target.x,target.y):300))*(1.5-ai.skill)*dif.aim*0.6;
     const maxHp=maxHpFor(p), lowHp=p.hp<maxHp*0.3;
     const navBusy = !!ai.dashAt || (ai.plan && ai.plan.until>Date.now() && !p.grounded);   // in the middle of a planned jump
     let goalX=p.x, goalY=p.y, shoot=false, d=0;
@@ -9975,7 +9979,7 @@ function botThink(p, t, dt){
       else if(d>band.max || (BOT_CALM && ai.rangeMode==='close' && d>band.max*0.8)){ ai.rangeMode='close'; goalX=target.x; goalY=target.y; }   // too far: close in (and keep going until comfortably inside, so it does not turn around at the very edge of its range)
       else if(retreat && (d<band.min || (BOT_CALM && ai.rangeMode==='back' && d<band.min*1.25))){ ai.rangeMode='back'; goalX=p.x-Math.sign(dx||1)*220; goalY=p.y; }   // too close: give some room (until a little beyond the minimum)
       else if(w.kind==='melee' && BOT_MELEE_STICK){ ai.rangeMode='hold'; goalX=target.x; goalY=target.y; }       // melee, in reach: stay on the target (shuffling away only made it miss)
-      else { ai.rangeMode='hold'; goalX=p.x+ai.strafe*(BOT_CALM?BOT_STRAFE_PX:130); goalY=p.y; }              // right range: shuffle side to side
+      else { ai.rangeMode='hold'; if(BOT_CALM && tSec<(ai.standUntil||0)) { goalX=p.x; goalY=p.y; } else { if(BOT_CALM && tSec>=ai.strafeUntil-0.05 && Math.random()<0.35) ai.standUntil=tSec+1+Math.random()*1.5; goalX=p.x+ai.strafe*(BOT_CALM?BOT_STRAFE_PX:130); goalY=p.y; } }              // right range: shuffle side to side
       const blocked=botLineBlocked(p.x,p.y-40,target.x,target.y-29);
       shoot = d<=band.fire && !blocked && Math.random()<dif.fire;                                             // never fire into a wall
       if(w.kind==='gamble') shoot = d<=band.fire;                                                            // the gambler just keeps rolling
