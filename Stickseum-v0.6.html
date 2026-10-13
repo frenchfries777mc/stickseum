@@ -311,6 +311,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   #menuScreen.menu-floating input[type=text]:disabled{ opacity:.5; cursor:not-allowed; }
   @media (max-width:640px){ #modeListScreen{ padding-top:58px !important; } }
   body.hlView #respawnMsg, body.hlView #hud{ display:none !important; }
+  body.specView #respawnMsg{ display:none !important; }
   .menu-float-btn{
     display:block; width:100%; text-align:left; padding:16px 20px; border-radius:0; margin-bottom:12px;
     font-size:16px; font-weight:700; background:var(--accent-2); border:2px solid #ffffff; color:#062824;
@@ -594,7 +595,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v175</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v176</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -687,8 +688,13 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   <div class="card" id="recordScreen" style="width:min(520px,94vw); max-height:86vh; overflow-y:auto;">
     <button class="backlink" id="recordBackBtn" style="position:absolute; top:14px; right:14px; margin:0;">&larr; 뒤로가기</button>
     <h2 style="margin:0;">🎬 기록</h2>
-    <div class="row" style="margin:12px 0;"><button class="btn-secondary" id="recTabHl">하이라이트</button><button class="btn-secondary" id="recTabRecent">최근 플레이어</button></div>
+    <div class="row" style="margin:12px 0;"><button class="btn-secondary" id="recTabHl">하이라이트</button><button class="btn-secondary" id="recTabRp">리플레이</button><button class="btn-secondary" id="recTabRecent">최근 플레이어</button></div>
     <div id="recordBody"></div>
+  </div>
+  <div class="card" id="clanScreen" style="width:min(520px,94vw); max-height:86vh; overflow-y:auto;">
+    <button class="backlink" id="clanBackBtn" style="position:absolute; top:14px; right:14px; margin:0;">&larr; 뒤로가기</button>
+    <h2 style="margin:0;">🏰 클랜</h2>
+    <div id="clanBody" data-notr></div>
   </div>
   <div class="card" id="mstatScreen" style="width:min(620px,94vw); max-height:88vh; overflow-y:auto;">
     <button class="backlink" id="mstatBackBtn" style="position:absolute; top:14px; right:14px; margin:0;">&larr; 뒤로가기</button>
@@ -872,6 +878,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     <div class="row">
       <input type="text" id="joinCodeInput" maxlength="6" placeholder="코드 6자리">
       <button class="btn-secondary" id="joinBtn" style="flex:0 0 auto;">참가</button>
+      <button class="btn-secondary" id="spectateBtn" style="flex:0 0 auto;">👁 관전</button>
     </div>
     <div id="privateJoinStatus"></div>
   </div>
@@ -4003,7 +4010,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-13-v175';
+const GAME_BUILD='build 2026-10-13-v176';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -5302,11 +5309,155 @@ function playHighlight(h){
 }
 { const cb=document.createElement('button'); cb.id='hlCloseBtn'; cb.className='btn-secondary'; cb.textContent='✕ 닫기'; cb.style.cssText='display:none; position:fixed; top:16px; right:16px; z-index:60; padding:10px 18px;'; cb.onclick=endHighlight; document.body.appendChild(cb); }
 function fmtAgo(ts){ try{ const d=new Date(ts); return d.toLocaleDateString()+' '+d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }catch(e){ return ''; } }
+/* ================= MATCH REPLAY (whole match) =================
+   Every machine keeps the 'state' snapshots it already gets (the host: the ones it sends) at ~10 per second, gzips them in chunks, and when the match
+   ends stores them in IndexedDB (last RP_KEEP matches). Playing one back feeds the same snapshots through the normal client 'state' handler. */
+const RP_KEEP=5, RP_CHUNK=40, RP_MAX_FRAMES=4800;
+let rpRec=null, rpView=null;
+async function rpGzip(str){ try{ if(typeof CompressionStream==='undefined') return str; const s=new Blob([str]).stream().pipeThrough(new CompressionStream('gzip')); return await new Response(s).arrayBuffer(); }catch(e){ return str; } }
+async function rpGunzip(buf){ if(typeof buf==='string') return buf; const s=new Blob([buf]).stream().pipeThrough(new DecompressionStream('gzip')); return await new Response(s).text(); }
+function rpRecStart(){
+  if(practiceMode || highlightViewing || spectatorMode || !MAP){ rpRec=null; return; }
+  rpRec={mapId:currentMapId, mode:gameMode, buf:[], chunks:[], seq:0, pend:[], n:0, tick:0, t0:Date.now(), saved:false};
+}
+function rpFlush(r){ const part=r.buf; r.buf=[]; if(!part.length) return; const idx=r.seq++; r.pend.push(rpGzip('['+part.join(',')+']').then(b=>{ r.chunks[idx]=b; })); }
+function rpRecAdd(snap){
+  const r=rpRec; if(!r || r.saved || !snap) return;
+  if((r.tick++)&1) return; if(r.n>=RP_MAX_FRAMES) return;
+  try{ const o=Object.assign({}, snap); delete o.chat; o.ts=Date.now()-r.t0; r.buf.push(JSON.stringify(o)); r.n++; if(r.buf.length>=RP_CHUNK) rpFlush(r); }catch(e){}
+}
+function rpDb(){ return new Promise((res,rej)=>{ try{ const q=indexedDB.open('stickseum-replays',1); q.onupgradeneeded=()=>{ q.result.createObjectStore('m',{keyPath:'id'}); q.result.createObjectStore('d',{keyPath:'id'}); }; q.onsuccess=()=>res(q.result); q.onerror=()=>rej(q.error); }catch(e){ rej(e); } }); }
+function rpReq(r){ return new Promise((res,rej)=>{ r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
+async function rpList(){ const db=await rpDb(); const l=await rpReq(db.transaction('m').objectStore('m').getAll()); db.close(); return l.sort((a,b)=>b.ts-a.ts); }
+async function rpGet(id){ const db=await rpDb(); const d=await rpReq(db.transaction('d').objectStore('d').get(id)); db.close(); return d; }
+async function rpDelete(id){ const db=await rpDb(); const tx=db.transaction(['m','d'],'readwrite'); tx.objectStore('m').delete(id); tx.objectStore('d').delete(id); await new Promise(r=>{ tx.oncomplete=r; tx.onerror=r; }); db.close(); }
+async function rpSave(meta, chunks){
+  const db=await rpDb(); const tx=db.transaction(['m','d'],'readwrite'); tx.objectStore('m').put(meta); tx.objectStore('d').put({id:meta.id, chunks});
+  await new Promise((r,j)=>{ tx.oncomplete=r; tx.onerror=()=>j(tx.error); tx.onabort=()=>j(tx.error); }); db.close();
+  const l=await rpList(); for(const m of l.slice(RP_KEEP)) await rpDelete(m.id);
+}
+async function rpRecFinish(resultText, winnerIds){
+  const r=rpRec; if(!r || r.saved) return; r.saved=true; rpRec=null;
+  try{
+    if(r.n<30) return; rpFlush(r); await Promise.all(r.pend);
+    const names=Object.values(players).filter(p=>p && !p.isMinion && !p.isBoss && p.name).map(p=>p.name).slice(0,8);
+    const meta={id:Date.now(), ts:Date.now(), mapId:r.mapId, mode:r.mode, text:String(resultText||'').slice(0,80), names, win:(winnerIds||[]).indexOf(myId)!==-1, n:r.n, dur:Math.round((Date.now()-r.t0)/1000)};
+    await rpSave(meta, r.chunks.filter(Boolean));
+  }catch(e){ console.warn('[replay save]', e); }
+}
+async function rpLoadFrames(rec){ const frames=[]; for(const ch of rec.chunks){ const txt=await rpGunzip(ch); for(const f of JSON.parse(txt)) frames.push(f); } return frames; }
+function rpBar(){
+  let b=document.getElementById('rpBar'); if(b) return b;
+  b=document.createElement('div'); b.id='rpBar';
+  b.style.cssText='display:none; position:fixed; left:50%; bottom:14px; transform:translateX(-50%); z-index:60; width:min(640px,94vw); background:rgba(10,12,20,.88); border:1px solid rgba(255,255,255,.18); border-radius:12px; padding:8px 12px; align-items:center; gap:8px; flex-wrap:wrap;';
+  b.innerHTML='<button class="btn-secondary" id="rpPlay" style="padding:6px 12px;">⏸</button><button class="btn-secondary" id="rpSpd" style="padding:6px 12px;">1x</button><input type="range" id="rpSeek" min="0" max="1000" value="0" style="flex:1; min-width:120px;"><span id="rpTime" style="font-size:12px; min-width:84px; text-align:center;">0:00</span><button class="btn-secondary" id="rpPrev" style="padding:6px 10px;">◀</button><button class="btn-secondary" id="rpNext" style="padding:6px 10px;">▶</button><button class="btn-secondary" id="rpClose" style="padding:6px 12px;">✕</button>';
+  document.body.appendChild(b);
+  const v=()=>rpView;
+  b.querySelector('#rpPlay').onclick=()=>{ const s=v(); if(!s) return; s.playing=!s.playing; b.querySelector('#rpPlay').textContent=s.playing?'⏸':'▶'; };
+  b.querySelector('#rpSpd').onclick=()=>{ const s=v(); if(!s) return; const L=[0.5,1,2,4]; s.speed=L[(L.indexOf(s.speed)+1)%L.length]; b.querySelector('#rpSpd').textContent=s.speed+'x'; };
+  b.querySelector('#rpSeek').oninput=e=>{ const s=v(); if(!s) return; s.T=(+e.target.value/1000)*s.total; s.dirty=true; };
+  b.querySelector('#rpPrev').onclick=()=>spectateCycle(-1);
+  b.querySelector('#rpNext').onclick=()=>spectateCycle(1);
+  b.querySelector('#rpClose').onclick=()=>rpStop();
+  return b;
+}
+function rpFmt(ms){ const s=Math.max(0,Math.floor(ms/1000)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
+function rpStart(meta, frames){
+  if(peer || practiceMode || !frames.length || !MAP_TEMPLATES[meta.mapId]) return;
+  startPractice({mapId:meta.mapId, wid:'pistol', oppKind:'none', oppCount:0, botLevel:'normal'});
+  if(!practiceMode) return;
+  highlightViewing=true; matchEnded=true; document.body.classList.add('hlView');
+  document.getElementById('practicePanel').style.display='none';
+  gameMode=MODES[meta.mode]?meta.mode:'ffa';
+  if(gameMode==='conquest') cq={zone:computeConquestZone(MAP), scoreF:[0,0], scores:[0,0], holder:-1, contested:false};
+  const me=players[myId]; if(me){ me.alive=false; me.x=-9999; me.y=-9999; me.respawnAt=Infinity; }
+  rpView={frames, meta, i:-1, T:0, total:frames[frames.length-1].ts, playing:true, speed:1, last:performance.now(), dirty:true, raf:0};
+  specId=null;
+  const b=rpBar(); b.style.display='flex'; b.querySelector('#rpPlay').textContent='⏸'; b.querySelector('#rpSpd').textContent='1x';
+  rpView.raf=requestAnimationFrame(rpLoop);
+}
+function rpFrameAt(frames,T){ let lo=0, hi=frames.length-1; while(lo<hi){ const m=(lo+hi+1)>>1; if(frames[m].ts<=T) lo=m; else hi=m-1; } return lo; }
+function rpLoop(){
+  const s=rpView; if(!s) return;
+  s.raf=requestAnimationFrame(rpLoop);
+  const now=performance.now(), dt=now-s.last; s.last=now;
+  if(s.playing){ s.T+=dt*s.speed; if(s.T>=s.total){ s.T=s.total; s.playing=false; document.getElementById('rpPlay').textContent='▶'; } }
+  const i=rpFrameAt(s.frames,s.T), A=s.frames[i], B=s.frames[Math.min(i+1,s.frames.length-1)];
+  try{
+    if(i!==s.i || s.dirty){ s.i=i; s.dirty=false; onClientData(A,'practice'); }
+    const span=B.ts-A.ts, f=span>0?Math.min(1,Math.max(0,(s.T-A.ts)/span)):0;
+    if(f>0 && f<1) for(const pb of B.players){ const p=players[pb.id], pa=A.players.find(q=>q.id===pb.id); if(p && pa && pa.alive && pb.alive && Math.hypot(pb.x-pa.x,pb.y-pa.y)<400){ p.x=pa.x+(pb.x-pa.x)*f; p.y=pa.y+(pb.y-pa.y)*f; p.angle=lerpAngle(pa.angle||0,pb.angle||0,f); } }
+  }catch(e){ console.warn('[replay]', e); }
+  const bar=document.getElementById('rpBar');
+  if(bar){ bar.querySelector('#rpSeek').value=Math.round(s.T/s.total*1000); bar.querySelector('#rpTime').textContent=rpFmt(s.T)+' / '+rpFmt(s.total); }
+}
+function rpStop(){
+  const s=rpView; if(!s) return;
+  cancelAnimationFrame(s.raf); rpView=null;
+  const b=document.getElementById('rpBar'); if(b) b.style.display='none';
+  highlightViewing=false; document.body.classList.remove('hlView'); killcamActive=false;
+  try{ exitPractice(); }catch(e){}
+  showScreen('recordScreen'); renderRecord();
+}
+async function rpPlayId(id){ try{ const d=await rpGet(id), m=(await rpList()).find(x=>x.id===id); if(!d||!m){ alert('리플레이를 찾을 수 없어요'); return; } rpStart(m, await rpLoadFrames(d)); }catch(e){ alert('리플레이를 열 수 없어요'); console.warn(e); } }
+/* sharing: a gzip+base64 copy in the Supabase `replays` table (see supabase-replays.sql), found again by an 8 letter code */
+async function rpShare(id, btn){
+  if(!sb || !sbUser){ alert('공유하려면 로그인이 필요해요'); return; }
+  try{
+    btn.disabled=true; btn.textContent='올리는 중...';
+    const d=await rpGet(id), m=(await rpList()).find(x=>x.id===id); if(!d||!m) throw new Error('none');
+    const frames=await rpLoadFrames(d), keep=frames.filter((f,k)=>k%2===0||k===frames.length-1);
+    const gz=await rpGzip(JSON.stringify(keep)); if(typeof gz==='string') throw new Error('nogzip');
+    let bin=''; const u8=new Uint8Array(gz); for(let k=0;k<u8.length;k+=8192) bin+=String.fromCharCode.apply(null,u8.subarray(k,k+8192));
+    const b64=btoa(bin); if(b64.length>1500000){ alert('리플레이가 너무 커서 공유할 수 없어요'); btn.disabled=false; btn.textContent='공유'; return; }
+    const code=Array.from({length:8},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('');
+    const {error}=await sb.from('replays').insert({code, owner:sbUser.id, title:(m.text||'리플레이').slice(0,60), meta:{mapId:m.mapId, mode:m.mode, names:m.names, text:m.text, n:keep.length, dur:m.dur}, data:b64});
+    if(error) throw error;
+    btn.textContent='코드 '+code; try{ navigator.clipboard.writeText(code); }catch(e){}
+    alert('공유 코드: '+code+'\n(복사됨) 기록 화면의 "코드로 불러오기"에 입력하면 볼 수 있어요');
+  }catch(e){ console.warn(e); alert('공유 실패 - supabase-replays.sql 로 테이블을 만들었는지 확인하세요'); btn.disabled=false; btn.textContent='공유'; }
+}
+async function rpLoadShared(code){
+  if(!sb){ alert('온라인 기능을 쓸 수 없어요'); return; }
+  code=String(code||'').trim().toUpperCase(); if(code.length!==8){ alert('코드 8자리를 입력하세요'); return; }
+  try{
+    const {data,error}=await sb.from('replays').select('meta,data').eq('code',code).maybeSingle();
+    if(error||!data){ alert('해당 코드의 리플레이가 없어요'); return; }
+    const bin=atob(data.data), u8=new Uint8Array(bin.length); for(let k=0;k<bin.length;k++) u8[k]=bin.charCodeAt(k);
+    const frames=JSON.parse(await rpGunzip(u8.buffer)); const m=data.meta||{};
+    rpStart({mapId:m.mapId, mode:m.mode, names:m.names||[], text:m.text||''}, frames);
+  }catch(e){ alert('불러오기 실패'); console.warn(e); }
+}
+
 function renderRecord(){
   const body=document.getElementById('recordBody'); if(!body) return;
-  document.getElementById('recTabHl').style.opacity=(recTab==='hl')?1:0.55; document.getElementById('recTabRecent').style.opacity=(recTab==='recent')?1:0.55;
+  document.getElementById('recTabHl').style.opacity=(recTab==='hl')?1:0.55; document.getElementById('recTabRecent').style.opacity=(recTab==='recent')?1:0.55; document.getElementById('recTabRp').style.opacity=(recTab==='rp')?1:0.55;
   body.innerHTML='';
   const empty=(t)=>{ const d=document.createElement('div'); d.style.cssText='text-align:center; color:var(--text-dim); font-size:13px; padding:26px 0;'; d.textContent=t; body.appendChild(d); };
+  if(recTab==='rp'){
+    const box=document.createElement('div'); box.style.cssText='display:flex; gap:8px; margin-bottom:10px;';
+    const inp=document.createElement('input'); inp.type='text'; inp.maxLength=8; inp.placeholder='공유 코드 8자리'; inp.style.cssText='flex:1; text-transform:uppercase;';
+    const go=document.createElement('button'); go.className='btn-secondary'; go.textContent='코드로 불러오기'; go.onclick=()=>rpLoadShared(inp.value);
+    box.appendChild(inp); box.appendChild(go); body.appendChild(box);
+    const holder=document.createElement('div'); body.appendChild(holder);
+    rpList().then(list=>{
+      if(recTab!=='rp') return;
+      if(!list.length){ const d=document.createElement('div'); d.style.cssText='text-align:center; color:var(--text-dim); font-size:13px; padding:26px 0;'; d.textContent='아직 저장된 리플레이가 없어요. 온라인 대전이 끝나면 최근 5경기가 자동으로 저장돼요.'; holder.appendChild(d); return; }
+      for(const m of list){
+        const row=document.createElement('div'); row.style.cssText='display:flex; align-items:center; gap:8px; padding:10px 12px; margin-bottom:8px; background:rgba(255,255,255,.05); border-radius:10px; flex-wrap:wrap;';
+        const info=document.createElement('div'); info.style.cssText='flex:1; min-width:140px;';
+        const mp=MAP_TEMPLATES[m.mapId], mn=MODES[m.mode]?MODES[m.mode].name:'';
+        const t1=document.createElement('div'); t1.style.cssText='font-weight:700; font-size:14px;'; t1.textContent=(m.win?'🏆 ':'')+(mp?mp.name:'')+' · '+mn;
+        const t2=document.createElement('div'); t2.style.cssText='font-size:12px; color:var(--text-dim);'; t2.textContent=fmtAgo(m.ts)+' · '+rpFmt(m.dur*1000)+' · '+(m.names||[]).slice(0,4).join(', ');
+        info.appendChild(t1); info.appendChild(t2);
+        const bp=document.createElement('button'); bp.className='btn-primary'; bp.style.padding='8px 12px'; bp.textContent='보기'; bp.onclick=()=>rpPlayId(m.id);
+        const bs=document.createElement('button'); bs.className='btn-secondary'; bs.style.padding='8px 12px'; bs.textContent='공유'; bs.onclick=()=>rpShare(m.id,bs);
+        const bd=document.createElement('button'); bd.className='btn-secondary'; bd.style.padding='8px 12px'; bd.textContent='지우기'; bd.onclick=async()=>{ await rpDelete(m.id); renderRecord(); };
+        row.appendChild(info); row.appendChild(bp); row.appendChild(bs); row.appendChild(bd); holder.appendChild(row);
+      }
+    }).catch(()=>{ holder.textContent='리플레이를 불러올 수 없어요'; });
+    return;
+  }
   if(recTab==='hl'){
     const list=lsGet(HL_KEY,[]);
     if(!list.length){ empty('아직 저장된 하이라이트가 없어요. 대전이 끝나면 처치 장면이 자동으로 저장돼요.'); return; }
@@ -5356,6 +5507,7 @@ function renderCodex(){
     body.appendChild(card);
   }
 }
+document.getElementById('clanBackBtn').onclick=()=>{ showScreen('menuScreen'); };
 document.getElementById('goMstatBtn').onclick=()=>{ showScreen('mstatScreen'); renderMatchStats(); };
 document.getElementById('mstatBackBtn').onclick=()=>{ showScreen('profileScreen'); renderProfile(); };
 document.getElementById('goCodexBtn').onclick=()=>{ showScreen('codexScreen'); renderCodex(); };
@@ -5364,6 +5516,7 @@ document.getElementById('goRecordBtn').onclick=()=>{ recTab='hl'; showScreen('re
 document.getElementById('recordBackBtn').onclick=()=>{ showScreen('profileScreen'); renderProfile(); };
 document.getElementById('recTabHl').onclick=()=>{ recTab='hl'; renderRecord(); };
 document.getElementById('recTabRecent').onclick=()=>{ recTab='recent'; renderRecord(); };
+document.getElementById('recTabRp').onclick=()=>{ recTab='rp'; renderRecord(); };
 document.getElementById('goShopBtn').onclick=()=>{
   if(!myNameSet){ pendingDestination='shop'; showScreen('nameScreen'); return; }
   shopMaxGridHeight=0; showScreen('shopScreen');
@@ -5663,6 +5816,7 @@ async function sbAfterLogin(id, username, userMeta){
   try{ localStorage.setItem(LAST_USER_KEY, username); }catch(e){}
   await refreshFriends();
   sbUploadStats();
+  clanLoadMine().then(()=>{ try{ renderSocialBox(); }catch(e){} });
 }
 const LAST_USER_KEY='arenaClashLastUser';
 async function sbSyncAccountData(id, username, sameAccountAsLast){
@@ -5848,7 +6002,7 @@ async function sbSignOut(){
   try{ await sb.auth.signOut(); }catch(e){}
   try{ clearTimeout(cloudSaveTimer); }catch(e){} cloudSaveReady=false; cloudSaveState='off'; cloudSaveNote=''; sbUserMeta={};
   sbForgetPassword();
-  sbUser=null; friendsCache=[]; presenceLastSeen={};
+  sbUser=null; myClan=null; friendsCache=[]; presenceLastSeen={};
   renderSocialBox(); updateInviteFriendBox();
 }
 const PRESENCE_GRACE_MS=10000; // treat a friend as still online for a short grace window after they briefly drop out of a presence sync (reconnect blips, tab-switch pauses, etc.)
@@ -6032,6 +6186,68 @@ async function showInviteToast(row){
   document.getElementById('inviteDeclineBtn').onclick=()=>{ el.style.display='none'; };
   clearTimeout(el._t); el._t=setTimeout(()=>{ el.style.display='none'; }, 20000);
 }
+/* ================= CLAN (Supabase: clans / clan_members, see supabase-clans.sql) ================= */
+let myClan=null; // {id,name,tag,wins,owner,role}
+function cleanClanTag(t){ return String(t||'').toUpperCase().replace(/[^A-Z0-9가-힣]/g,'').slice(0,4); }
+async function clanLoadMine(){
+  myClan=null; if(!sb || !sbUser) return null;
+  try{
+    const r=await sb.from('clan_members').select('role, clans(id,name,tag,wins,owner)').eq('user_id', sbUser.id).maybeSingle();
+    if(r && !r.error && r.data && r.data.clans) myClan=Object.assign({role:r.data.role}, r.data.clans);
+  }catch(e){}
+  return myClan;
+}
+function clanMyTag(){ return myClan ? cleanClanTag(myClan.tag) : ''; }
+async function clanReportWin(){ try{ if(sb && sbUser && myClan) await sb.rpc('clan_report_win'); }catch(e){} }
+async function renderClanScreen(){
+  const body=document.getElementById('clanBody'); if(!body) return;
+  const esc=escapeHtmlText;
+  if(!sb || !sbUser){ body.innerHTML='<div class="hint" style="padding:20px 0; text-align:center;">클랜은 로그인한 계정만 쓸 수 있어요. 메뉴의 친구/계정 창에서 로그인하세요.</div>'; return; }
+  body.innerHTML='<div class="hint" style="padding:20px 0; text-align:center;">불러오는 중...</div>';
+  await clanLoadMine();
+  let html='';
+  if(myClan){
+    let members=[]; try{ const r=await sb.from('clan_members').select('uname, role').eq('clan_id', myClan.id).limit(60); members=(r&&r.data)||[]; }catch(e){}
+    const fresh=await sb.from('clans').select('wins').eq('id',myClan.id).maybeSingle(); if(fresh && fresh.data) myClan.wins=fresh.data.wins;
+    html+='<div style="text-align:center; margin:8px 0 12px;"><div style="font-size:26px; font-weight:800;">['+esc(myClan.tag)+'] '+esc(myClan.name)+'</div><div class="hint">총 승리 '+(myClan.wins||0)+' · 멤버 '+members.length+'명</div></div>';
+    html+='<div style="font-size:12px; color:var(--text-dim); font-weight:700; margin:6px 0 4px;">멤버</div>';
+    for(const m of members) html+='<div class="socialRow"><span>'+(m.role==='owner'?'👑 ':'')+esc(m.uname||'?')+'</span></div>';
+    html+='<button class="btn-secondary" id="clanLeaveBtn" style="width:100%; margin-top:12px;">'+(myClan.role==='owner'?'클랜 해산':'클랜 탈퇴')+'</button>';
+    html+='<div class="hint" style="margin-top:8px;">온라인 매칭에서 이기면 클랜 승리가 올라가요. 내 이름 앞에 ['+esc(myClan.tag)+'] 태그가 붙어요.</div>';
+  } else {
+    html+='<div style="font-weight:700; margin:6px 0;">클랜 만들기</div><div class="row"><input type="text" id="clanNameIn" maxlength="12" placeholder="클랜 이름 (2~12자)" style="flex:2;"><input type="text" id="clanTagIn" maxlength="4" placeholder="태그" style="flex:1; text-transform:uppercase;"></div><button class="btn-primary" id="clanCreateBtn" style="width:100%; margin-top:8px;">만들기</button><div id="clanMsg" class="hint" style="margin-top:6px;"></div>';
+  }
+  let top=[]; try{ const r=await sb.from('clans').select('id,name,tag,wins').order('wins',{ascending:false}).limit(15); top=(r&&r.data)||[]; }catch(e){}
+  html+='<div style="font-size:12px; color:var(--text-dim); font-weight:700; margin:14px 0 4px;">🏆 클랜 랭킹</div>';
+  if(!top.length) html+='<div class="hint">아직 클랜이 없어요</div>';
+  top.forEach((c,i)=>{ html+='<div class="socialRow"><span>'+(i+1)+'. ['+esc(c.tag)+'] '+esc(c.name)+' <span class="hint">· '+(c.wins||0)+'승</span></span>'+(!myClan?'<span><button data-join="'+c.id+'">가입</button></span>':'')+'</div>'; });
+  body.innerHTML=html;
+  const msg=(t)=>{ const m=document.getElementById('clanMsg'); if(m) m.textContent=t; else alert(t); };
+  const cb=document.getElementById('clanCreateBtn');
+  if(cb) cb.onclick=async()=>{
+    const name=document.getElementById('clanNameIn').value.trim(), tag=cleanClanTag(document.getElementById('clanTagIn').value);
+    if(name.length<2 || tag.length<2){ msg('이름은 2자 이상, 태그는 2~4자(영문/숫자/한글)로 입력하세요'); return; }
+    cb.disabled=true;
+    const r=await sb.from('clans').insert({name, tag, owner:sbUser.id}).select().single();
+    if(r.error||!r.data){ cb.disabled=false; msg('만들 수 없어요 (이미 있는 이름/태그이거나 테이블이 없어요)'); return; }
+    const m=await sb.from('clan_members').insert({user_id:sbUser.id, clan_id:r.data.id, role:'owner', uname:(myNameSet&&myName)?myName:sbUser.username});
+    if(m.error){ await sb.from('clans').delete().eq('id', r.data.id); cb.disabled=false; msg('가입 처리에 실패했어요'); return; }
+    renderClanScreen();
+  };
+  body.querySelectorAll('[data-join]').forEach(b=>b.onclick=async()=>{
+    b.disabled=true;
+    const m=await sb.from('clan_members').insert({user_id:sbUser.id, clan_id:b.getAttribute('data-join'), role:'member', uname:(myNameSet&&myName)?myName:sbUser.username});
+    if(m.error){ alert('가입할 수 없어요'); b.disabled=false; return; }
+    renderClanScreen();
+  });
+  const lb=document.getElementById('clanLeaveBtn');
+  if(lb) lb.onclick=async()=>{
+    if(!confirm(myClan.role==='owner'?'클랜을 해산할까요? 모든 멤버가 나가게 돼요.':'클랜을 탈퇴할까요?')) return;
+    if(myClan.role==='owner') await sb.from('clans').delete().eq('id', myClan.id); else await sb.from('clan_members').delete().eq('user_id', sbUser.id);
+    myClan=null; renderClanScreen();
+  };
+}
+
 function renderSocialBox(){
   const box=document.getElementById('socialBox');
   if(!box) return;
@@ -6062,6 +6278,7 @@ function renderSocialBox(){
   const outgoing=friendsCache.filter(f=>f.outgoing);
   let html='<div class="socialRow"><span><span class="onlineDot on"></span><b>'+escapeHtmlText((myNameSet && myName) ? myName : sbUser.username)+'</b>'+((myNameSet && myName && myName!==sbUser.username) ? ' <span class="hint">(@'+escapeHtmlText(sbUser.username)+')</span>' : '')+' 로그인됨</span><button id="sbSignOutBtn">로그아웃</button></div>';
   html+=accountBoxHtml();
+  html+='<button class="btn-secondary" id="goClanBtn" style="width:100%; margin:8px 0;">🏰 클랜'+(myClan?' · ['+escapeHtmlText(myClan.tag)+']':'')+'</button>';
   html+='<div style="display:flex; gap:6px; margin:8px 0;"><input type="text" id="sbSearchInput" placeholder="닉네임으로 찾기" style="flex:1;"><button class="btn-secondary" id="sbSearchBtn">검색</button></div>';
   html+='<div id="sbSearchResults"></div>';
   if(incoming.length){
@@ -6092,6 +6309,7 @@ function renderSocialBox(){
     rbox.querySelectorAll('[data-prof]').forEach(el=>el.onclick=()=>openPublicProfile(el.dataset.prof));
   };
   document.getElementById('sbSearchBtn').onclick=runSearch;
+  { const gc=document.getElementById('goClanBtn'); if(gc) gc.onclick=()=>{ showScreen('clanScreen'); renderClanScreen(); }; }
   document.getElementById('sbSearchInput').addEventListener('input', debounce(runSearch, 350));
   box.querySelectorAll('[data-prof]').forEach(el=>el.onclick=()=>openPublicProfile(el.dataset.prof));
   box.querySelectorAll('[data-acc]').forEach(btn=>btn.onclick=()=>sbRespondFriendRequest(btn.dataset.acc, true).then(renderSocialBox));
@@ -6293,6 +6511,14 @@ joinBtn.onclick=()=>{
   if(code.length!==6){ alert('6자리 코드를 입력하세요.'); return; }
   joinPrivateByCode(code);
 };
+document.getElementById('spectateBtn').onclick=()=>{
+  const code=joinCodeInput.value.trim().toUpperCase();
+  if(code.length!==6){ alert('6자리 코드를 입력하세요.'); return; }
+  if(connecting) return;
+  if(!myNameSet){ pendingDestination=null; showScreen('nameScreen'); pendingJoinCode=code; return; }
+  connecting=true; privateJoinStatus.textContent='관전 접속 중...';
+  becomeClient('arena-'+code, 'private', null, code, true);
+};
 leaveBtn.onclick=()=>leaveRoom();
 document.getElementById('inviteFriendBtn').onclick=()=>{
   const box=document.getElementById('inviteFriendBox');
@@ -6319,7 +6545,7 @@ function resetFlowState(){
 function showErrorAndReturnToMenu(msg){
   if(peer){ try{peer.destroy();}catch(e){} peer=null; }
   window.__versionNoted=false; chatPending=[];
-  conns={}; players={}; isHost=false; hostConn=null; MAP=null; started=false; currentMode=null; currentMapId=null; countdownEndsAt=null; gameLoopStarted=false; weaponChosenLocally=false; hostRoomLive=false; if(typeof weaponCountdownTimer!=='undefined' && weaponCountdownTimer){ clearInterval(weaponCountdownTimer); weaponCountdownTimer=null; } matchEnded=false; duelScores={}; duelRoundEndsAt=null; duelPick=false; matchTimerEndsAt=null; document.getElementById('matchTimerLabel').style.display='none'; document.getElementById('duelScoreLabel').style.display='none'; cq=null; walls=[]; hostTimers=[]; magicCircles=[]; turrets=[]; weaponPhase=null; document.getElementById('cqLabel').style.display='none'; bombHolderId=null; bombTimerEndsAt=0; hotpotatoOriginalCount=0; seekerId=null; hideseekPhase=null; hideseekPhaseEndsAt=0; survivalRound=0; survivalPhase=null; survivalPhaseEndsAt=0; survivalCurrentDisaster=null; survivalHazards=[]; survivalZombies=[]; document.getElementById('survivalLabel').style.display='none'; ctf=null; ctfEndsLocal=0; document.getElementById('ctfLabel').style.display='none'; { const mini=document.getElementById('ctfMini'); if(mini) mini.style.display='none'; }
+  spectatorMode=false; document.body.classList.remove('specView'); conns={}; players={}; isHost=false; hostConn=null; MAP=null; started=false; currentMode=null; currentMapId=null; countdownEndsAt=null; gameLoopStarted=false; weaponChosenLocally=false; hostRoomLive=false; if(typeof weaponCountdownTimer!=='undefined' && weaponCountdownTimer){ clearInterval(weaponCountdownTimer); weaponCountdownTimer=null; } matchEnded=false; duelScores={}; duelRoundEndsAt=null; duelPick=false; matchTimerEndsAt=null; document.getElementById('matchTimerLabel').style.display='none'; document.getElementById('duelScoreLabel').style.display='none'; cq=null; walls=[]; hostTimers=[]; magicCircles=[]; turrets=[]; weaponPhase=null; document.getElementById('cqLabel').style.display='none'; bombHolderId=null; bombTimerEndsAt=0; hotpotatoOriginalCount=0; seekerId=null; hideseekPhase=null; hideseekPhaseEndsAt=0; survivalRound=0; survivalPhase=null; survivalPhaseEndsAt=0; survivalCurrentDisaster=null; survivalHazards=[]; survivalZombies=[]; document.getElementById('survivalLabel').style.display='none'; ctf=null; ctfEndsLocal=0; document.getElementById('ctfLabel').style.display='none'; { const mini=document.getElementById('ctfMini'); if(mini) mini.style.display='none'; }
   resetFlowState();
   showScreen('menuScreen');
   if(msg) alert(msg);
@@ -6457,7 +6683,7 @@ function startHostPeer(idString, mapId, mode, code, attemptInfo, modeId){
     conns={}; players={}; started=false;
     const sp=spawnPoint();
     players[myId]={id:myId,name:myName,cos:getEquippedCos(),color:COLORS[0],team:computeTeam(0,mapId,gameMode),x:sp.x,y:sp.y,vx:0,vy:0,angle:0,grounded:false,
-      hp:ruleHp(),kills:0,deaths:0,alive:true,respawnAt:0,isHost:true,joinOrder:0,
+      hp:ruleHp(),kills:0,deaths:0,alive:true,respawnAt:0,isHost:true,joinOrder:0, clan:clanMyTag(),
       level:levelFromXp(saveData.xp||0),
       sbId:(sbUser?sbUser.id:null), sbUsername:(sbUser?sbUser.username:null),
       input:{left:false,right:false,jump:false,angle:0,shoot:false,dash:false}, lastShot:0, lastDash:-9999, lastTeleport:-9999, lastSeen:Date.now(), weapon:null, weaponChosen:false};
@@ -6501,7 +6727,7 @@ function wireHostConnectionHandler(){
   }));
 }
 function handlePlayerDisconnect(pid){
-  if(!players[pid]) return;
+  if(!players[pid]){ if(conns[pid]){ try{conns[pid].close();}catch(e){} delete conns[pid]; } return; }
   delete players[pid];
   if(conns[pid]){ try{conns[pid].close();}catch(e){} delete conns[pid]; }
   try{
@@ -6528,6 +6754,14 @@ function onHostData(conn, data){
     safeSend(conn, {t:'probeReply', count:Object.keys(players).length, max:effectiveMaxPlayers(currentMapId,gameMode), started:started});
     return;
   }
+  if(data.t==='spectate'){
+    if(!started || matchEnded){ safeSend(conn, {t:'specNo', msg:'지금 진행 중인 경기가 없어요'}); return; }
+    if(Object.keys(conns).filter(id=>!players[id]).length>=8){ safeSend(conn, {t:'specNo', msg:'관전석이 가득 찼어요'}); return; }
+    conns[peerId]=conn;
+    safeSend(conn, {t:'specInit', mapId:currentMapId, gameMode, weaponMode, mte:matchTimerEndsAt, rules:roomRules, opts:roomOpts, count:Object.keys(players).length});
+    try{ pushSystemLine('👁 관전자가 들어왔어요'); }catch(e){}
+    return;
+  }
   if(data.t==='join'){
     if(started){ safeSend(conn, {t:'started'}); return; }
     const capacity = effectiveMaxPlayers(currentMapId, gameMode);
@@ -6542,7 +6776,7 @@ function onHostData(conn, data){
     players[peerId]={id:peerId,name:String(data.name||'플레이어').slice(0,12),cos:sanitizeCos(data.cos),color,team:tookBotSeat?pickBotTeam():computeTeam(order,currentMapId,gameMode),x:sp.x,y:sp.y,vx:0,vy:0,angle:0,grounded:false,
       hp:ruleHp(),kills:0,deaths:0,alive:true,respawnAt:0,isHost:false,joinOrder:order,
       level:(Number.isFinite(data.level) && data.level>=1) ? Math.floor(data.level) : 1, // each client reports its own locally-computed level (from its own saveData.xp) on join - trusted at face value like name/cos, same as the rest of this payload
-      sbId:(typeof data.sbId==='string'?data.sbId:null), sbUsername:(typeof data.sbUsername==='string'?data.sbUsername.slice(0,16):null),
+      sbId:(typeof data.sbId==='string'?data.sbId:null), sbUsername:(typeof data.sbUsername==='string'?data.sbUsername.slice(0,16):null), clan:(typeof data.clan==='string'?cleanClanTag(data.clan):''),
       input:{left:false,right:false,jump:false,angle:0,shoot:false,dash:false}, lastShot:0, lastDash:-9999, lastTeleport:-9999, lastSeen:Date.now(), weapon:null, weaponChosen:false};
     broadcastLobby(); updatePlayerListUI(); evaluateAutoStart();
     return;
@@ -6805,7 +7039,7 @@ function leaveRoom(){
   else if(hostConn){ try{hostConn.close();}catch(e){} }
   if(peer){ try{peer.destroy();}catch(e){} peer=null; }
   window.__versionNoted=false; chatPending=[];
-  conns={}; players={}; isHost=false; hostConn=null; MAP=null; started=false; currentMode=null; currentMapId=null; countdownEndsAt=null; gameLoopStarted=false; weaponChosenLocally=false; hostRoomLive=false; if(typeof weaponCountdownTimer!=='undefined' && weaponCountdownTimer){ clearInterval(weaponCountdownTimer); weaponCountdownTimer=null; } matchEnded=false; duelScores={}; duelRoundEndsAt=null; duelPick=false; matchTimerEndsAt=null; document.getElementById('matchTimerLabel').style.display='none'; document.getElementById('duelScoreLabel').style.display='none'; cq=null; walls=[]; hostTimers=[]; magicCircles=[]; turrets=[]; weaponPhase=null; document.getElementById('cqLabel').style.display='none'; bombHolderId=null; bombTimerEndsAt=0; hotpotatoOriginalCount=0; seekerId=null; hideseekPhase=null; hideseekPhaseEndsAt=0; survivalRound=0; survivalPhase=null; survivalPhaseEndsAt=0; survivalCurrentDisaster=null; survivalHazards=[]; survivalZombies=[]; document.getElementById('survivalLabel').style.display='none'; ctf=null; ctfEndsLocal=0; document.getElementById('ctfLabel').style.display='none'; { const mini=document.getElementById('ctfMini'); if(mini) mini.style.display='none'; }
+  spectatorMode=false; document.body.classList.remove('specView'); conns={}; players={}; isHost=false; hostConn=null; MAP=null; started=false; currentMode=null; currentMapId=null; countdownEndsAt=null; gameLoopStarted=false; weaponChosenLocally=false; hostRoomLive=false; if(typeof weaponCountdownTimer!=='undefined' && weaponCountdownTimer){ clearInterval(weaponCountdownTimer); weaponCountdownTimer=null; } matchEnded=false; duelScores={}; duelRoundEndsAt=null; duelPick=false; matchTimerEndsAt=null; document.getElementById('matchTimerLabel').style.display='none'; document.getElementById('duelScoreLabel').style.display='none'; cq=null; walls=[]; hostTimers=[]; magicCircles=[]; turrets=[]; weaponPhase=null; document.getElementById('cqLabel').style.display='none'; bombHolderId=null; bombTimerEndsAt=0; hotpotatoOriginalCount=0; seekerId=null; hideseekPhase=null; hideseekPhaseEndsAt=0; survivalRound=0; survivalPhase=null; survivalPhaseEndsAt=0; survivalCurrentDisaster=null; survivalHazards=[]; survivalZombies=[]; document.getElementById('survivalLabel').style.display='none'; ctf=null; ctfEndsLocal=0; document.getElementById('ctfLabel').style.display='none'; { const mini=document.getElementById('ctfMini'); if(mini) mini.style.display='none'; }
   resetFlowState();
   showScreen('menuScreen');
   setChatVisible(false);
@@ -6814,7 +7048,8 @@ function leaveRoom(){
 }
 
 /* ================= CLIENT LOGIC ================= */
-function becomeClient(idString, mode, mapId, code){
+let spectatorMode=false;
+function becomeClient(idString, mode, mapId, code, spec){
   if(peer){ return; } // re-entrancy guard: don't start a second session while one is active
   const p=new Peer(undefined, Object.assign({debug:0}, PEERJS_ICE_CONFIG));
   keepPeerAlive(p);
@@ -6826,17 +7061,31 @@ function becomeClient(idString, mode, mapId, code){
     hostConn=conn;
     conn.on('open', ()=>{
       if(joined) return; joined=true;
-      conn.send({t:'join', build:GAME_BUILD, name:myName, cos:getEquippedCos(), sbId:(sbUser?sbUser.id:null), sbUsername:(sbUser?sbUser.username:null), level:levelFromXp(saveData.xp||0)});
+      if(spec){ spectatorMode=true; conn.send({t:'spectate', build:GAME_BUILD, name:myName}); return; }
+      conn.send({t:'join', build:GAME_BUILD, name:myName, cos:getEquippedCos(), sbId:(sbUser?sbUser.id:null), sbUsername:(sbUser?sbUser.username:null), clan:clanMyTag(), level:levelFromXp(saveData.xp||0)});
       if(mode==='online' && mapId){ enterRoomScreen(mode, mapId, code); resetFlowState(); }
       // for private-by-code: room screen shown once lobby (with mapId) arrives
     });
     conn.on('data', safeHandler(data=>onClientData(data, mode, code)));
-    conn.on('close', safeHandler(()=>{ if(!started) showErrorAndReturnToMenu('호스트와 연결이 끊어졌습니다.'); }));
+    conn.on('close', safeHandler(()=>{ if(!started || spectatorMode) showErrorAndReturnToMenu(spectatorMode?'경기가 끝났거나 호스트와 연결이 끊어졌어요.':'호스트와 연결이 끊어졌습니다.'); }));
     conn.on('error', safeHandler(()=>{ showErrorAndReturnToMenu('연결 오류. 코드를 확인하세요.'); }));
   });
   p.on('error', err=>{ if(err && err.type==='disconnected') return; showErrorAndReturnToMenu('연결 실패: '+err.type); });
 }
 function onClientData(data, mode, code){
+  if(data.t==='specNo'){ showErrorAndReturnToMenu(data.msg||'관전할 수 없어요'); return; }
+  if(data.t==='specInit'){
+    if(!MAP_TEMPLATES[data.mapId]) { showErrorAndReturnToMenu('알 수 없는 맵이에요'); return; }
+    if(data.rules) roomRules=cleanRules(data.rules);
+    if(data.opts) roomOpts=cleanOpts(data.opts);
+    MAP=MAP_TEMPLATES[data.mapId]; currentMapId=data.mapId; currentMode='private'; gameMode=data.gameMode||'ffa'; weaponMode=data.weaponMode||'normal';
+    if(MAP.basePlats && !MAP.gates) {} 
+    players[myId]=ensurePlayerDefaults({id:myId,name:myName,color:'#888',team:null,x:-9999,y:-9999,hp:0,alive:false,respawnAt:Infinity,isSpectator:true,joinOrder:99,kills:0,deaths:0});
+    started=true; spectatorMode=true; document.body.classList.add('specView'); resetFlowState();
+    finalizeGameplayStart(data.mte||null);
+    try{ pushSystemLine('👁 관전 중 - 좌/우 키 또는 화면 탭으로 시점 변경'); }catch(e){}
+    return;
+  }
   if(data.t==='full'){ showErrorAndReturnToMenu('방이 가득 찼습니다.'); }
   else if(data.t==='started'){ showErrorAndReturnToMenu('이미 시작된 방입니다.'); }
   else if(data.t==='closed'){ showErrorAndReturnToMenu('호스트가 나가 방이 닫혔습니다.'); }
@@ -6876,6 +7125,7 @@ function onClientData(data, mode, code){
   else if(data.t==='weaponReveal'){ showWeaponReveal(data.list, data.endsAt); }
   else if(data.t==='begin'){ started=true; finalizeGameplayStart(data.matchTimerEndsAt); } // THE root cause of the long-standing survival black-screen reports: a client only ever set started=true upon receiving 'weaponPhase', but noWeapon modes (hotpotato/hideseek/survival/parkour) never send that message at all - so on any CLIENT (never the host, which is why host-side testing never caught it), started stayed false forever and render()'s "if(!started||!MAP) return" permanently blacked out the canvas, with the HUD's static "1" placeholder never getting overwritten. No exception was ever thrown, which is also why no error banner or diagnostic line ever caught it.
   else if(data.t==='state'){
+    if(!isHost) rpRecAdd(data);
     lastStateReceivedAt=performance.now(); // feeds the staleness watchdog below - a client that stops receiving these needs to know, instead of silently sitting on stale/default data forever
     for(const sp of data.players){ if(!players[sp.id]) players[sp.id]={}; Object.assign(players[sp.id], sp); ensurePlayerDefaults(players[sp.id]); }
     if(Array.isArray(data.chat)) for(const m of data.chat.slice(0,12)){ if(m && typeof m.text==='string') onChatRelayed(m); }       // chat lines that ride along with the state (the second road: a state certainly arrives during a match)
@@ -6904,7 +7154,7 @@ function onClientData(data, mode, code){
       return Object.assign({}, e, {born:effectLocalTimes[e.id]});
     });
     for(const id in effectLocalTimes) if(!stillPresent[id]) delete effectLocalTimes[id];
-    for(const id in players) if(!data.players.find(sp=>sp.id===id)) delete players[id];
+    for(const id in players) if(!((spectatorMode||rpView) && id===myId) && !data.players.find(sp=>sp.id===id)) delete players[id];
   }
   else if(data.t==='kill'){ onKillEvent(data); }
   else if(data.t==='chat'){ onChatRelayed(data); }
@@ -6926,6 +7176,7 @@ function updateDuelScoreUI(){
   el.textContent=parts.join(' : ');
 }
 function showMatchEndOverlay(resultText, winnerIds, forcedPick){
+  try{ rpRecFinish(resultText, winnerIds); }catch(e){}
   matchEnded=true;
   lastMatchVerdict=matchVerdict(resultText, winnerIds);
   saveData.totalMatches=(saveData.totalMatches||0)+1;
@@ -6939,6 +7190,7 @@ function showMatchEndOverlay(resultText, winnerIds, forcedPick){
     if(wid){ saveData.charKills=saveData.charKills||{}; const kb=saveData.charKills[wid]||0; saveData.charKills[wid]=kb+(me.kills||0); lastTierUps=tierUpsFor(wid, kb, saveData.charKills[wid]); }
   }
   recordRecentPlayers(); recordMatchStats(!!(winnerIds && winnerIds.indexOf(myId)!==-1));
+  try{ if(currentMode==='online' && !practiceMode && winnerIds && winnerIds.indexOf(myId)!==-1 && Object.values(players).filter(q=>q && !q.isBot && !q.isMinion && !q.isBoss).length>=2) clanReportWin(); }catch(e){}
   try{ recordMatchSummary(pendingMatchSummary); }catch(e){} pendingMatchSummary=null;
   lastMastery=null;
   try{ lastMastery=applyWeaponMastery(me, !!(winnerIds && winnerIds.indexOf(myId)!==-1)); }catch(e){ console.error('[mastery]', e); }
@@ -7153,7 +7405,7 @@ function attemptJoinCandidate(p, roomId, timeoutMs, cb){
   p.on('error', onErr);
   const timer=setTimeout(()=>{ try{ if(conn) conn.close(); }catch(e){} finish({status:'timeout'}); }, timeoutMs);
   try{ conn=p.connect(roomId, {reliable:true}); }catch(e){ finish({status:'error'}); return; }
-  conn.on('open', ()=>{ conn.send({t:'join', build:GAME_BUILD, name:myName, cos:getEquippedCos(), sbId:(sbUser?sbUser.id:null), sbUsername:(sbUser?sbUser.username:null), level:levelFromXp(saveData.xp||0)}); });
+  conn.on('open', ()=>{ conn.send({t:'join', build:GAME_BUILD, name:myName, cos:getEquippedCos(), sbId:(sbUser?sbUser.id:null), sbUsername:(sbUser?sbUser.username:null), clan:clanMyTag(), level:levelFromXp(saveData.xp||0)}); });
   conn.on('data', data=>{
     if(data.t==='full'){ try{conn.close();}catch(e){} finish({status:'full'}); }
     else if(data.t==='started'){ try{conn.close();}catch(e){} finish({status:'started'}); }
@@ -7635,7 +7887,7 @@ function finalizeGameplayStart(mte){
   // loop starts regardless, so at minimum the player sees a live (if visibly broken) screen instead of a
   // silent freeze, and the error banner mechanism gets its chance to work.
   try{
-    matchEnded=false;
+    matchEnded=false; try{ rpRecStart(); }catch(e){}
     xm=null; xmV=null; particles=[]; fxSeen={}; prevGround={}; prevHp={}; hitFlashUntil={}; screenShake=0; walls=[]; hostTimers=[]; magicCircles=[]; turrets=[]; lastKnownKills=0; matchAssists=0;
     matchKillLog=[]; killcamActive=false; killcamOverride=null; killcamSnapshot=null; killcamReplay=null; killcamReplayStartAt=0; replayBuffer={}; replayFrames=[]; replayFxLog=[]; replayDefs={};
     if(gameMode==='parkour') initParkourItems(); // runs for host and every client alike, so everyone's item-icon rendering starts from the same "all available" state
@@ -9833,7 +10085,7 @@ function hostTick(dt,t){
         ultCdRemain: Math.max(0, ULT_CD - (t/1000-(p.lastUlt===undefined?-9999:p.lastUlt))),
         skillCdRemain: Math.max(0, SKILL_CD - (t/1000-(p.lastSkill===undefined?-9999:p.lastSkill))), buff:p.buff||null, skillUses:p.skillUses||0, ultUses:p.ultUses||0,
         ultOn:!!p.ultOn, invis:!!p.invis, burning:!!p.burning, slowed:!!p.slowed, stunned:!!p.stunned, cardSlowed:!!p.cardSlowed, bladeSpin:!!p.bladeSpin, swordCharging:!!p.swordCharge, cannonFlying:!!p.cannonFly, chips:p.chips||0, cannonAng:p.cannonFly?Math.round(Math.atan2(p.vy||0,p.cannonFly.vx)*100)/100:0, totalDamageDealt:p.totalDamageDealt||0, channeling:!!p.teleportChannel, flaming:!!p.flaming, portalPair:p.portalPair||null, batting:!!p.batting, vacuumStacks:p.vacuumStacks||0, isZombie:!!p.isZombie, parkourItem:!!p.parkourItem, hsHiding:!!p.hsHiding, hsDisguiseW:p.hsDisguiseW, hsDisguiseH:p.hsDisguiseH, isSeeker:!!p.isSeeker,
-        isHost:p.isHost,joinOrder:p.joinOrder,weapon:p.weapon,team:p.team,spinAngle:p.spinAngle,cos:p.cos,isBoss:p.isBoss?1:0,isMinion:p.isMinion?1:0,bt:p.bt,bossMaxHp:p.bossMaxHp,emIdx:p.emIdx,emRem:(p.emUntil?Math.max(0,Math.round((p.emUntil-t/1000)*20)/20):0)})),
+        isHost:p.isHost,clan:p.clan||'',joinOrder:p.joinOrder,weapon:p.weapon,team:p.team,spinAngle:p.spinAngle,cos:p.cos,isBoss:p.isBoss?1:0,isMinion:p.isMinion?1:0,bt:p.bt,bossMaxHp:p.bossMaxHp,emIdx:p.emIdx,emRem:(p.emUntil?Math.max(0,Math.round((p.emUntil-t/1000)*20)/20):0)})),
       cq: (gameMode==='conquest' && cq) ? {s:cq.scores, h:cq.holder, c:cq.contested} : undefined,
       xm: (xm && xmV) ? xmV : undefined,
       raid: buildRaidView(), tn: buildTnView(),
@@ -9854,6 +10106,7 @@ function hostTick(dt,t){
       effects:effects.map(e=>({x:e.x,y:e.y,type:e.type,born:e.born,id:e.id,color:e.color,ang:e.ang,v:e.v,dir:e.dir,face:e.face,doubled:e.doubled,name:e.name,k:e.k,x2:e.x2,y2:e.y2,r:e.r,w:e.w}))
     };
     { const now=Date.now(); chatOutbox=chatOutbox.filter(m=>now-m.at<CHAT_CARRY_MS); if(chatOutbox.length) snap.chat=chatOutbox.map(m=>({cid:m.cid, from:m.from, text:m.text, fromId:m.fromId})); }
+    rpRecAdd(snap);
     broadcastAll(snap);
   }
 }
@@ -11143,7 +11396,7 @@ setInterval(()=>{
 setInterval(()=>{
   if(!started) return;
   if(isHost){ players[myId] && (players[myId].input=localInput); }
-  else if(hostConn && hostConn.open){
+  else if(hostConn && hostConn.open && !spectatorMode){
     const now=Date.now(); chatCarry=chatCarry.filter(m=>now-m.at<CHAT_CARRY_MS);
     const msg={t:'input', input:localInput}; if(chatCarry.length) msg.chat=chatCarry.map(m=>({cid:m.cid, text:m.text}));
     hostConn.send(msg);
@@ -11165,6 +11418,7 @@ let specId=null;
 function spectateList(){ return Object.values(players).filter(o=>o.id!==myId && o.alive && o.x!==undefined && !o.isMinion); }
 function spectateTarget(){
   const me=players[myId];
+  if(rpView){ const c=Object.values(players).filter(o=>o.id!==myId && o.x!==undefined && !o.isMinion); if(!c.length) return null; let t=specId?c.find(o=>o.id===specId):null; if(!t){ t=c.find(o=>o.alive)||c[0]; specId=t.id; } return t; }
   if(!me || me.alive || gameMode==='tournament' || killcamActive || highlightViewing){ specId=null; return null; }
   const c=spectateList(); if(!c.length){ specId=null; return null; }
   let t=specId?c.find(o=>o.id===specId):null;
@@ -12228,7 +12482,7 @@ function drawStickman(p){
     if(p.stunned && p.alive) drawStunStars(ctx, HEADCY);
     ctx.restore();
     ctx.font='600 13px Rajdhani'; ctx.textAlign='center'; ctx.fillStyle=nameColorFor(p.cos&&p.cos.name);
-    ctx.fillText(p.name, p.x, p.y+HEADCY-38); drawTitleTag(ctx, p, HEADCY); drawEmote(ctx, p, HEADCY);
+    ctx.fillText((p.clan?'['+p.clan+'] ':'')+p.name, p.x, p.y+HEADCY-38); drawTitleTag(ctx, p, HEADCY); drawEmote(ctx, p, HEADCY);
     drawOverheadExtras(p, HEADCY);
     return;
   }
@@ -12266,7 +12520,7 @@ function drawStickman(p){
   if(p.stunned && p.alive) drawStunStars(ctx, HEADCY);
   ctx.restore();
   ctx.font='600 13px Rajdhani'; ctx.textAlign='center'; ctx.fillStyle=nameColorFor(p.cos&&p.cos.name);
-  ctx.fillText(p.name, p.x, p.y+HEADCY-38); drawTitleTag(ctx, p, HEADCY); drawEmote(ctx, p, HEADCY);
+  ctx.fillText((p.clan?'['+p.clan+'] ':'')+p.name, p.x, p.y+HEADCY-38); drawTitleTag(ctx, p, HEADCY); drawEmote(ctx, p, HEADCY);
   drawOverheadExtras(p, HEADCY);
 }
 function drawStunStars(ctx, HEADCY){   // three little stars circling over the head (drawn in the player's own coordinates)
