@@ -651,7 +651,7 @@ setTimeout(go,14000);})();</script>
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v197</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v199</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -2164,7 +2164,7 @@ function nameColorFor(id){
   return COSMETICS[id].color;
 }
 function clanBadgeHtml(emb,col,size){ size=size||16; if(!emb) return ''; const c=(typeof clanSafeColor==='function')?clanSafeColor(col):'#3fe0c5', e=(typeof clanSafeEmblem==='function')?clanSafeEmblem(emb):'🏰'; return '<span style="display:inline-flex; align-items:center; justify-content:center; width:'+size+'px; height:'+size+'px; border-radius:50%; background:'+c+'33; border:1.5px solid '+c+'; font-size:'+Math.round(size*0.6)+'px; margin-right:4px; vertical-align:middle;">'+e+'</span>'; }
-function nameWithStyleHtml(name, nameCosId, emb, col, tag, cname){ return clanBadgeHtml(emb,col,16)+(tag?'<span class="hint" style="margin-right:3px;">['+escapeHtmlText(tag)+']</span>':'')+(cname?'<span class="hint" style="margin-right:6px; font-weight:700;">'+escapeHtmlText(cname)+'</span>':'')+'<span style="color:'+nameColorFor(nameCosId)+'; font-weight:700;">'+escapeHtmlText(name)+'</span>'; }
+function nameWithStyleHtml(name, nameCosId, emb, col, tag, cname){ return clanBadgeHtml(emb,col,16)+(tag?'<span style="color:#fff; margin-right:3px;">['+escapeHtmlText(tag)+']</span>':'')+(cname?'<span style="color:#fff; margin-right:6px; font-weight:700;">'+escapeHtmlText(cname)+'</span>':'')+'<span style="color:'+nameColorFor(nameCosId)+'; font-weight:700;">'+escapeHtmlText(name)+'</span>'; }
 const WEAPON_PERSONA_NAME = {
   horemheb:'호렘헵', lightsaber:'자다이', pistol:'제임스', smg:'특수요원', bow:'로빈 후드', sword:'기사', bat:'야구선수', boomerang:'사냥꾼',
   shuriken:'닌자', shotgun:'보안관', rifle:'군인', gloves:'복서', grenade:'폭발광',
@@ -4076,7 +4076,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-13-v197';
+const GAME_BUILD='build 2026-10-13-v199';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -6818,8 +6818,8 @@ function updatePlayerListUI(){
   const friendIds=new Set(friendsCache.map(f=>f.otherId));
   for(const p of list){
     const li=document.createElement('li');
-    const lvTag = '<span class="hint" style="margin-right:4px;">Lv.'+(p.level||1)+'</span>';
-    li.innerHTML = '<span class="dot" style="background:'+p.color+'"></span>'+lvTag+nameWithStyleHtml(p.name, (p.cos&&p.cos.name)||p.nm, p.clan?p.ce:'', p.cc, p.clan, p.cn)+(p.id===myId?' (나)':'')+teamTag(p)+((p.isHost && currentMode!=='online')?' 👑':'')+(p.isBot?' 🤖':'');
+    const lvTag = '<span style="color:#fff; margin-right:4px;">Lv.'+(p.level||1)+'</span>';
+    li.innerHTML = '<span class="dot" style="background:'+p.color+'"></span>'+lvTag+nameWithStyleHtml(p.name, (p.cos&&p.cos.name)||p.nm||(p.id===myId?getEquippedCos().name:null), p.clan?p.ce:'', p.cc, p.clan, p.cn)+(p.id===myId?' (나)':'')+teamTag(p)+((p.isHost && currentMode!=='online')?' 👑':'')+(p.isBot?' 🤖':'');
     if(sbUser && p.id!==myId && p.sbId){
       if(p.sbId===sbUser.id){ const tag=document.createElement('span'); tag.className='hint'; tag.style.marginLeft='6px'; tag.textContent='(나의 계정)'; li.appendChild(tag); }
       else if(friendIds.has(p.sbId)){ const tag=document.createElement('span'); tag.className='hint'; tag.style.marginLeft='6px'; tag.textContent='이미 친구'; li.appendChild(tag); }
