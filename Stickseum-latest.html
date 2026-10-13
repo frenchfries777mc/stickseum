@@ -684,7 +684,7 @@ setTimeout(go,14000);})();</script>
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v209</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-14-v210</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -4132,7 +4132,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-13-v209';
+const GAME_BUILD='build 2026-10-14-v210';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -5297,7 +5297,7 @@ function buildMinigamePanels(){
     label.textContent=it.name;
     div.appendChild(canvas); div.appendChild(label);
     const builtMinigames={zombie:1, hotpotato:1, hideseek:1, parkour:1, survival:1, ctf:1};
-    div.onclick = builtMinigames[it.id] ? (()=>pickOnlineModeAndMatch(it.id)) : (()=>alert('준비 중인 모드예요. 곧 플레이할 수 있게 만들게요!'));
+    div.onclick = builtMinigames[it.id] ? (()=>pickOnlineModeAndMatch(it.id)) : (()=>uiAlert('준비 중인 모드예요. 곧 플레이할 수 있게 만들게요!'));
     wrap.appendChild(div);
     requestAnimationFrame(()=>renderModePanelCanvas(canvas, it.mapId, it.weapons, centers[i]));
   });
@@ -5491,7 +5491,7 @@ function renderMatchStats(){
       line.appendChild(c1); line.appendChild(c2); for(const v of [r.k,r.d,r.a,r.dm]){ const x=document.createElement('span'); x.textContent=v; line.appendChild(x); } det.appendChild(line); }
     head.onclick=()=>{ det.style.display=det.style.display==='none'?'block':'none'; };
     card.appendChild(det); body.appendChild(card); });
-  const clr=document.createElement('button'); clr.className='btn-secondary'; clr.style.cssText='margin-top:10px; width:100%; font-size:12px;'; clr.textContent='통계 초기화'; clr.onclick=()=>{ if(confirm('이 기기의 경기 통계를 모두 지울까요?')){ lsSet(ST2_KEY,{modes:{},recent:[]}); renderMatchStats(); } }; body.appendChild(clr);
+  const clr=document.createElement('button'); clr.className='btn-secondary'; clr.style.cssText='margin-top:10px; width:100%; font-size:12px;'; clr.textContent='통계 초기화'; clr.onclick=()=>{ uiConfirm('이 기기의 경기 통계를 모두 지울까요?').then(ok=>{ if(ok){ lsSet(ST2_KEY,{modes:{},recent:[]}); renderMatchStats(); } }); }; body.appendChild(clr);
 }
 
 /* ================= 전적 (this device): the last matches, win rate per mode, favourite characters, personal bests ================= */
@@ -5680,34 +5680,34 @@ function rpStop(){
   try{ exitPractice(); }catch(e){}
   showScreen('recordScreen'); renderRecord();
 }
-async function rpPlayId(id){ try{ const d=await rpGet(id), m=(await rpList()).find(x=>x.id===id); if(!d||!m){ alert('리플레이를 찾을 수 없어요'); return; } rpStart(m, await rpLoadFrames(d)); }catch(e){ alert('리플레이를 열 수 없어요'); console.warn(e); } }
+async function rpPlayId(id){ try{ const d=await rpGet(id), m=(await rpList()).find(x=>x.id===id); if(!d||!m){ uiAlert('리플레이를 찾을 수 없어요'); return; } rpStart(m, await rpLoadFrames(d)); }catch(e){ uiAlert('리플레이를 열 수 없어요'); console.warn(e); } }
 /* sharing: a gzip+base64 copy in the Supabase `replays` table (see supabase-replays.sql), found again by an 8 letter code */
 async function rpShare(id, btn){
-  if(!sb || !sbUser){ alert('공유하려면 로그인이 필요해요'); return; }
+  if(!sb || !sbUser){ uiAlert('공유하려면 로그인이 필요해요'); return; }
   try{
     btn.disabled=true; btn.textContent='올리는 중...';
     const d=await rpGet(id), m=(await rpList()).find(x=>x.id===id); if(!d||!m) throw new Error('none');
     const frames=await rpLoadFrames(d), keep=frames.filter((f,k)=>k%2===0||k===frames.length-1);
     const gz=await rpGzip(JSON.stringify(keep)); if(typeof gz==='string') throw new Error('nogzip');
     let bin=''; const u8=new Uint8Array(gz); for(let k=0;k<u8.length;k+=8192) bin+=String.fromCharCode.apply(null,u8.subarray(k,k+8192));
-    const b64=btoa(bin); if(b64.length>1500000){ alert('리플레이가 너무 커서 공유할 수 없어요'); btn.disabled=false; btn.textContent='공유'; return; }
+    const b64=btoa(bin); if(b64.length>1500000){ uiAlert('리플레이가 너무 커서 공유할 수 없어요'); btn.disabled=false; btn.textContent='공유'; return; }
     const code=Array.from({length:8},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('');
     const {error}=await sb.from('replays').insert({code, owner:sbUser.id, title:(m.text||'리플레이').slice(0,60), meta:{mapId:m.mapId, mode:m.mode, names:m.names, text:m.text, n:keep.length, dur:m.dur}, data:b64});
     if(error) throw error;
     btn.textContent='코드 '+code; try{ navigator.clipboard.writeText(code); }catch(e){}
-    alert('공유 코드: '+code+'\n(복사됨) 기록 화면의 "코드로 불러오기"에 입력하면 볼 수 있어요');
-  }catch(e){ console.warn(e); alert('공유 실패 - supabase-replays.sql 로 테이블을 만들었는지 확인하세요'); btn.disabled=false; btn.textContent='공유'; }
+    uiAlert('공유 코드: '+code+'\n(복사됨) 기록 화면의 "코드로 불러오기"에 입력하면 볼 수 있어요');
+  }catch(e){ console.warn(e); uiAlert('공유 실패 - supabase-replays.sql 로 테이블을 만들었는지 확인하세요'); btn.disabled=false; btn.textContent='공유'; }
 }
 async function rpLoadShared(code){
-  if(!sb){ alert('온라인 기능을 쓸 수 없어요'); return; }
-  code=String(code||'').trim().toUpperCase(); if(code.length!==8){ alert('코드 8자리를 입력하세요'); return; }
+  if(!sb){ uiAlert('온라인 기능을 쓸 수 없어요'); return; }
+  code=String(code||'').trim().toUpperCase(); if(code.length!==8){ uiAlert('코드 8자리를 입력하세요'); return; }
   try{
     const {data,error}=await sb.from('replays').select('meta,data').eq('code',code).maybeSingle();
-    if(error||!data){ alert('해당 코드의 리플레이가 없어요'); return; }
+    if(error||!data){ uiAlert('해당 코드의 리플레이가 없어요'); return; }
     const bin=atob(data.data), u8=new Uint8Array(bin.length); for(let k=0;k<bin.length;k++) u8[k]=bin.charCodeAt(k);
     const frames=JSON.parse(await rpGunzip(u8.buffer)); const m=data.meta||{};
     rpStart({mapId:m.mapId, mode:m.mode, names:m.names||[], text:m.text||''}, frames);
-  }catch(e){ alert('불러오기 실패'); console.warn(e); }
+  }catch(e){ uiAlert('불러오기 실패'); console.warn(e); }
 }
 
 function renderRecord(){
@@ -6485,7 +6485,7 @@ function clanMyId(){ return myClan ? String(myClan.id) : ''; }
 function clanMyTag(){ return myClan ? cleanClanTag(myClan.tag) : ''; }
 async function clanReportWin(){ try{ if(sb && sbUser && myClan) await sb.rpc('clan_report_win'); }catch(e){} }
 function clanWarStart(){
-  if(!myClan){ alert('클랜에 가입해야 해요'); return; }
+  if(!myClan){ uiAlert('클랜에 가입해야 해요'); return; }
   if(connecting || peer) return;
   const ids=practiceMapIds().filter(id=>{ const m=MAP_TEMPLATES[id]; return m && m.maxPlayers>=4 && m.maxPlayers<=8; });
   const mapId=ids.length?ids[Math.floor(Math.random()*ids.length)]:'arena';
@@ -6783,7 +6783,7 @@ function renderSocialBox(){
   box.querySelectorAll('[data-prof]').forEach(el=>el.onclick=()=>openPublicProfile(el.dataset.prof));
   box.querySelectorAll('[data-acc]').forEach(btn=>btn.onclick=()=>sbRespondFriendRequest(btn.dataset.acc, true).then(renderSocialBox));
   box.querySelectorAll('[data-dec]').forEach(btn=>btn.onclick=()=>sbRespondFriendRequest(btn.dataset.dec, false).then(renderSocialBox));
-  box.querySelectorAll('[data-rm]').forEach(btn=>btn.onclick=()=>{ if(confirm('친구를 삭제할까요?')) sbRemoveFriend(btn.dataset.rm).then(renderSocialBox); });
+  box.querySelectorAll('[data-rm]').forEach(btn=>btn.onclick=()=>{ const rid=btn.dataset.rm; uiConfirm('친구를 삭제할까요?').then(ok=>{ if(ok) sbRemoveFriend(rid).then(renderSocialBox); }); });
 }
 function updateInviteFriendBox(){
   const btn=document.getElementById('inviteFriendBtn');
@@ -6838,13 +6838,14 @@ function renderProfile(){
   drawAvatarPreview(document.getElementById('avatarBigCanvas'), saveData.avatar);
   document.getElementById('avatarBigCanvas').onclick=()=>{ avatarEditorOpen=!avatarEditorOpen; renderAvatarEditor(); };
   document.getElementById('profNameEditBtn').onclick=()=>{
-    const v=prompt('새 닉네임 (최대 12자)', (typeof myName!=='undefined'&&myName)?myName:'');
+    uiPrompt('새 닉네임 (최대 12자)', (typeof myName!=='undefined'&&myName)?myName:'', 12).then(v=>{
     if(v===null) return;
     const trimmed=v.trim().slice(0,12);
     if(!trimmed) return;
     myName=trimmed; myNameSet=true; saveData.playerName=trimmed; persistSave();
     if(sb && sbUser) sb.from('profiles').update({display_name:trimmed}).eq('id',sbUser.id).then(()=>{});
     renderProfile();
+    });
   };
   document.getElementById('profCharBtn').onclick=()=>enterCharacterBrowse();
   document.getElementById('profTitleBtn').onclick=()=>{ const bx=document.getElementById('titleBox'); const open=bx.style.display!=='none'; bx.style.display=open?'none':'block'; if(!open) renderTitleBox(); };
@@ -6978,12 +6979,12 @@ function joinPrivateByCode(code){
 let pendingJoinCode=null;
 joinBtn.onclick=()=>{
   const code=joinCodeInput.value.trim().toUpperCase();
-  if(code.length!==6){ alert('6자리 코드를 입력하세요.'); return; }
+  if(code.length!==6){ uiAlert('6자리 코드를 입력하세요.'); return; }
   joinPrivateByCode(code);
 };
 document.getElementById('spectateBtn').onclick=()=>{
   const code=joinCodeInput.value.trim().toUpperCase();
-  if(code.length!==6){ alert('6자리 코드를 입력하세요.'); return; }
+  if(code.length!==6){ uiAlert('6자리 코드를 입력하세요.'); return; }
   if(connecting) return;
   if(!myNameSet){ pendingDestination=null; showScreen('nameScreen'); pendingJoinCode=code; return; }
   connecting=true; privateJoinStatus.textContent='관전 접속 중...';
@@ -7012,13 +7013,41 @@ function resetFlowState(){
   joinBtn.disabled=false; privateJoinStatus.textContent=''; privateStatus.textContent='';
   mapSelectBtn.disabled=false;
 }
+/* ---- in-game dialogs (replace the browser's alert / confirm / prompt) ---- */
+let uiDlgQueue=[], uiDlgOpen=false;
+function uiDialog(msg, opts){
+  return new Promise(resolve=>{ uiDlgQueue.push({msg, opts:opts||{}, resolve}); if(!uiDlgOpen) uiDlgNext(); });
+}
+function uiDlgNext(){
+  const it=uiDlgQueue.shift(); if(!it){ uiDlgOpen=false; return; }
+  uiDlgOpen=true;
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.72);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;';
+  const tx=document.createElement('div'); tx.style.cssText='color:#fff;font-size:18px;font-weight:700;text-align:center;white-space:pre-line;max-width:520px;text-shadow:0 2px 8px #000;line-height:1.5;'; tx.textContent=it.msg; ov.appendChild(tx);
+  let inp=null;
+  if(it.opts.input){ inp=document.createElement('input'); inp.type='text'; inp.value=it.opts.def||''; if(it.opts.max) inp.maxLength=it.opts.max; inp.style.cssText='width:min(320px,80vw);padding:10px 12px;font-size:16px;text-align:center;border-radius:8px;border:1px solid var(--line);background:var(--panel-2);color:var(--text);'; ov.appendChild(inp); }
+  const done=(v)=>{ document.removeEventListener('keydown',onKey,true); ov.remove(); it.resolve(v); uiDlgNext(); };
+  const row=document.createElement('div'); row.style.cssText='display:flex;gap:10px;width:min(320px,80vw);';
+  const mk=(label,val)=>{ const b=document.createElement('button'); b.className='btn-secondary'; b.style.cssText='flex:1;padding:12px;font-size:15px;font-weight:700;'; b.textContent=label; b.onclick=()=>done(val); row.appendChild(b); return b; };
+  const okV=()=> inp ? inp.value : true;
+  if(it.opts.cancel) mk('취소', inp?null:false);
+  const ok=document.createElement('button'); ok.className='btn-secondary'; ok.style.cssText='flex:1;padding:12px;font-size:15px;font-weight:700;'; ok.textContent='확인'; ok.onclick=()=>done(okV()); row.appendChild(ok);
+  ov.appendChild(row);
+  const onKey=(e)=>{ if(e.key==='Enter'){ e.preventDefault(); e.stopPropagation(); done(okV()); } else if(e.key==='Escape'){ e.preventDefault(); e.stopPropagation(); done(it.opts.cancel?(inp?null:false):(inp?'':true)); } };
+  document.addEventListener('keydown',onKey,true);
+  document.body.appendChild(ov);
+  setTimeout(()=>{ try{ (inp||ok).focus(); if(inp) inp.select(); }catch(e){} },30);
+}
+function uiAlert(msg){ return uiDialog(String(msg)); }
+function uiConfirm(msg){ return uiDialog(String(msg),{cancel:true}); }
+function uiPrompt(msg,def,max){ return uiDialog(String(msg),{cancel:true,input:true,def:def,max:max}); }
 function showErrorAndReturnToMenu(msg){
   if(peer){ try{peer.destroy();}catch(e){} peer=null; }
   window.__versionNoted=false; chatPending=[];
   spectatorMode=false; clanWar=null; clanRoom=null; document.body.classList.remove('specView'); conns={}; players={}; isHost=false; hostConn=null; MAP=null; started=false; currentMode=null; currentMapId=null; countdownEndsAt=null; gameLoopStarted=false; weaponChosenLocally=false; hostRoomLive=false; if(typeof weaponCountdownTimer!=='undefined' && weaponCountdownTimer){ clearInterval(weaponCountdownTimer); weaponCountdownTimer=null; } matchEnded=false; duelScores={}; duelRoundEndsAt=null; duelPick=false; matchTimerEndsAt=null; document.getElementById('matchTimerLabel').style.display='none'; document.getElementById('duelScoreLabel').style.display='none'; cq=null; walls=[]; hostTimers=[]; magicCircles=[]; turrets=[]; weaponPhase=null; document.getElementById('cqLabel').style.display='none'; bombHolderId=null; bombTimerEndsAt=0; hotpotatoOriginalCount=0; seekerId=null; hideseekPhase=null; hideseekPhaseEndsAt=0; survivalRound=0; survivalPhase=null; survivalPhaseEndsAt=0; survivalCurrentDisaster=null; survivalHazards=[]; survivalZombies=[]; document.getElementById('survivalLabel').style.display='none'; ctf=null; ctfEndsLocal=0; document.getElementById('ctfLabel').style.display='none'; { const mini=document.getElementById('ctfMini'); if(mini) mini.style.display='none'; }
   resetFlowState();
   showScreen('menuScreen');
-  if(msg) alert(msg);
+  if(msg) uiAlert(msg);
 }
 
 /* ================= ROOM SCREEN ================= */
@@ -7478,8 +7507,8 @@ function doStart(){
   if(!roomOpts.vote || mapVoteDone || true){ if(roomOpts.balance && !mapVoteDone) rebalanceTeams(); } // guard: a race between manual start / auto-fill / countdown-expiry must never double-fire this
   if(hasBots() && MAP) setTimeout(()=>{ try{ botGraph(); }catch(e){} }, 30);   // the bots' path graph of a big map takes ~1.5 s to build: do it while the players pick their characters, not at the first frame of the match
   const modeMin=(MODES[gameMode]||{}).minPlayers;
-  if(clanWar && !clanWar.inner && (!clanWar.ids[1] || !Object.values(players).some(p=>p.team===1) || !Object.values(players).some(p=>p.team===0))){ alert('상대 클랜원이 들어와야 시작할 수 있어요'); return; }
-  if(modeMin && Object.keys(players).length<modeMin){ alert((MODES[gameMode].name)+'는 최소 '+modeMin+'명이 필요해요. (현재 '+Object.keys(players).length+'명)'); return; }
+  if(clanWar && !clanWar.inner && (!clanWar.ids[1] || !Object.values(players).some(p=>p.team===1) || !Object.values(players).some(p=>p.team===0))){ uiAlert('상대 클랜원이 들어와야 시작할 수 있어요'); return; }
+  if(modeMin && Object.keys(players).length<modeMin){ uiAlert((MODES[gameMode].name)+'는 최소 '+modeMin+'명이 필요해요. (현재 '+Object.keys(players).length+'명)'); return; }
   started=true; countdownEndsAt=null; // this flag is a one-way guard (see the line above) - same reasoning
   // as gameLoopStarted in finalizeGameplayStart: if anything below throws before we actually reach
   // beginGame()/enterWeaponPhase(), the player would be stuck forever with no way to retry "시작" again
