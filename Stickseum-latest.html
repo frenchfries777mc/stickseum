@@ -596,7 +596,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v186</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v187</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -2109,7 +2109,7 @@ function nameColorFor(id){
   return COSMETICS[id].color;
 }
 function clanBadgeHtml(emb,col,size){ size=size||16; if(!emb) return ''; const c=(typeof clanSafeColor==='function')?clanSafeColor(col):'#3fe0c5', e=(typeof clanSafeEmblem==='function')?clanSafeEmblem(emb):'🏰'; return '<span style="display:inline-flex; align-items:center; justify-content:center; width:'+size+'px; height:'+size+'px; border-radius:50%; background:'+c+'33; border:1.5px solid '+c+'; font-size:'+Math.round(size*0.6)+'px; margin-right:4px; vertical-align:middle;">'+e+'</span>'; }
-function nameWithStyleHtml(name, nameCosId, emb, col, tag){ return clanBadgeHtml(emb,col,16)+(tag?'<span class="hint" style="margin-right:3px;">['+escapeHtmlText(tag)+']</span>':'')+'<span style="color:'+nameColorFor(nameCosId)+'; font-weight:700;">'+escapeHtmlText(name)+'</span>'; }
+function nameWithStyleHtml(name, nameCosId, emb, col, tag, cname){ return clanBadgeHtml(emb,col,16)+(tag?'<span class="hint" style="margin-right:3px;">['+escapeHtmlText(tag)+']</span>':'')+(cname?'<span class="hint" style="margin-right:6px; font-weight:700;">'+escapeHtmlText(cname)+'</span>':'')+'<span style="color:'+nameColorFor(nameCosId)+'; font-weight:700;">'+escapeHtmlText(name)+'</span>'; }
 const WEAPON_PERSONA_NAME = {
   horemheb:'호렘헵', lightsaber:'자다이', pistol:'제임스', smg:'특수요원', bow:'로빈 후드', sword:'기사', bat:'야구선수', boomerang:'사냥꾼',
   shuriken:'닌자', shotgun:'보안관', rifle:'군인', gloves:'복서', grenade:'폭발광',
@@ -4021,7 +4021,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-13-v186';
+const GAME_BUILD='build 2026-10-13-v187';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -6718,7 +6718,7 @@ function updatePlayerListUI(){
   for(const p of list){
     const li=document.createElement('li');
     const lvTag = '<span class="hint" style="margin-right:4px;">Lv.'+(p.level||1)+'</span>';
-    li.innerHTML = '<span class="dot" style="background:'+p.color+'"></span>'+lvTag+nameWithStyleHtml(p.name, (p.cos&&p.cos.name)||p.nm, p.clan?p.ce:'', p.cc, p.clan)+(p.id===myId?' (나)':'')+teamTag(p)+((p.isHost && currentMode!=='online')?' 👑':'')+(p.isBot?' 🤖':'');
+    li.innerHTML = '<span class="dot" style="background:'+p.color+'"></span>'+lvTag+nameWithStyleHtml(p.name, (p.cos&&p.cos.name)||p.nm, p.clan?p.ce:'', p.cc, p.clan, p.cn)+(p.id===myId?' (나)':'')+teamTag(p)+((p.isHost && currentMode!=='online')?' 👑':'')+(p.isBot?' 🤖':'');
     if(sbUser && p.id!==myId && p.sbId){
       if(p.sbId===sbUser.id){ const tag=document.createElement('span'); tag.className='hint'; tag.style.marginLeft='6px'; tag.textContent='(나의 계정)'; li.appendChild(tag); }
       else if(friendIds.has(p.sbId)){ const tag=document.createElement('span'); tag.className='hint'; tag.style.marginLeft='6px'; tag.textContent='이미 친구'; li.appendChild(tag); }
@@ -6826,7 +6826,7 @@ function startHostPeer(idString, mapId, mode, code, attemptInfo, modeId){
     clanWar=(clanWarNext && myClan && mode==='private') ? {ids:[clanMyId(),null], tags:[clanMyTag(),null], inner:true} : null; clanWarNext=false;
     const sp=spawnPoint();
     players[myId]={id:myId,name:myName,cos:getEquippedCos(),color:COLORS[0],team:computeTeam(0,mapId,gameMode),x:sp.x,y:sp.y,vx:0,vy:0,angle:0,grounded:false,
-      hp:ruleHp(),kills:0,deaths:0,alive:true,respawnAt:0,isHost:true,joinOrder:0, clan:clanMyTag(), clanId:clanMyId(), ce:(myClan?myClan.emblem:''), cc:(myClan?myClan.color:''),
+      hp:ruleHp(),kills:0,deaths:0,alive:true,respawnAt:0,isHost:true,joinOrder:0, clan:clanMyTag(), clanId:clanMyId(), ce:(myClan?myClan.emblem:''), cc:(myClan?myClan.color:''), cn:(myClan?myClan.name:''),
       level:levelFromXp(saveData.xp||0),
       sbId:(sbUser?sbUser.id:null), sbUsername:(sbUser?sbUser.username:null),
       input:{left:false,right:false,jump:false,angle:0,shoot:false,dash:false}, lastShot:0, lastDash:-9999, lastTeleport:-9999, lastSeen:Date.now(), weapon:null, weaponChosen:false};
@@ -6930,7 +6930,7 @@ function onHostData(conn, data){
     players[peerId]={id:peerId,name:String(data.name||'플레이어').slice(0,12),cos:sanitizeCos(data.cos),color,team:(cwTeam!==null?cwTeam:(tookBotSeat?pickBotTeam():computeTeam(order,currentMapId,gameMode))),x:sp.x,y:sp.y,vx:0,vy:0,angle:0,grounded:false,
       hp:ruleHp(),kills:0,deaths:0,alive:true,respawnAt:0,isHost:false,joinOrder:order,
       level:(Number.isFinite(data.level) && data.level>=1) ? Math.floor(data.level) : 1, // each client reports its own locally-computed level (from its own saveData.xp) on join - trusted at face value like name/cos, same as the rest of this payload
-      sbId:(typeof data.sbId==='string'?data.sbId:null), sbUsername:(typeof data.sbUsername==='string'?data.sbUsername.slice(0,16):null), clan:(typeof data.clan==='string'?cleanClanTag(data.clan):''), clanId:(typeof data.clanId==='string'?data.clanId.slice(0,40):''), ce:((typeof data.clan==='string'&&data.clan)?clanSafeEmblem(data.ce):''), cc:clanSafeColor(data.cc),
+      sbId:(typeof data.sbId==='string'?data.sbId:null), sbUsername:(typeof data.sbUsername==='string'?data.sbUsername.slice(0,16):null), clan:(typeof data.clan==='string'?cleanClanTag(data.clan):''), clanId:(typeof data.clanId==='string'?data.clanId.slice(0,40):''), ce:((typeof data.clan==='string'&&data.clan)?clanSafeEmblem(data.ce):''), cc:clanSafeColor(data.cc), cn:((typeof data.clan==='string'&&data.clan&&typeof data.cn==='string')?data.cn.slice(0,12):''),
       input:{left:false,right:false,jump:false,angle:0,shoot:false,dash:false}, lastShot:0, lastDash:-9999, lastTeleport:-9999, lastSeen:Date.now(), weapon:null, weaponChosen:false};
     broadcastLobby(); updatePlayerListUI(); evaluateAutoStart();
     return;
@@ -6983,7 +6983,7 @@ setInterval(()=>{
   }
 }, 400);
 function broadcastLobby(){
-  const list=Object.values(players).map(p=>({id:p.id,name:p.name,color:p.color,team:p.team,joinOrder:p.joinOrder,isHost:p.isHost,sbId:p.sbId||null,sbUsername:p.sbUsername||null,level:p.level||1,isBot:!!p.isBot,nm:(p.cos&&p.cos.name)||null,clan:p.clan||'',ce:p.ce||'',cc:p.cc||''}));
+  const list=Object.values(players).map(p=>({id:p.id,name:p.name,color:p.color,team:p.team,joinOrder:p.joinOrder,isHost:p.isHost,sbId:p.sbId||null,sbUsername:p.sbUsername||null,level:p.level||1,isBot:!!p.isBot,nm:(p.cos&&p.cos.name)||null,clan:p.clan||'',ce:p.ce||'',cc:p.cc||'',cn:p.cn||''}));
   botFillShowAt=botFillAt;
   const msg={t:'lobby', build:GAME_BUILD, list, mapId:currentMapId, gameMode, weaponMode, rules:roomRules, opts:roomOpts, started, countdownEndsAt, botFillAt:botFillAt===null?null:botFillAt, cr:(clanWar?{i:clanWar.inner?1:0, t:clanWar.tags}:null)};
   broadcastAll(msg);
@@ -7217,7 +7217,7 @@ function becomeClient(idString, mode, mapId, code, spec){
     conn.on('open', ()=>{
       if(joined) return; joined=true;
       if(spec){ spectatorMode=true; conn.send({t:'spectate', build:GAME_BUILD, name:myName}); return; }
-      conn.send({t:'join', build:GAME_BUILD, name:myName, cos:getEquippedCos(), sbId:(sbUser?sbUser.id:null), sbUsername:(sbUser?sbUser.username:null), clan:clanMyTag(), clanId:clanMyId(), ce:(myClan?myClan.emblem:''), cc:(myClan?myClan.color:''), level:levelFromXp(saveData.xp||0)});
+      conn.send({t:'join', build:GAME_BUILD, name:myName, cos:getEquippedCos(), sbId:(sbUser?sbUser.id:null), sbUsername:(sbUser?sbUser.username:null), clan:clanMyTag(), clanId:clanMyId(), ce:(myClan?myClan.emblem:''), cc:(myClan?myClan.color:''), cn:(myClan?myClan.name:''), level:levelFromXp(saveData.xp||0)});
       if(mode==='online' && mapId){ enterRoomScreen(mode, mapId, code); resetFlowState(); }
       // for private-by-code: room screen shown once lobby (with mapId) arrives
     });
@@ -7567,7 +7567,7 @@ function attemptJoinCandidate(p, roomId, timeoutMs, cb){
   p.on('error', onErr);
   const timer=setTimeout(()=>{ try{ if(conn) conn.close(); }catch(e){} finish({status:'timeout'}); }, timeoutMs);
   try{ conn=p.connect(roomId, {reliable:true}); }catch(e){ finish({status:'error'}); return; }
-  conn.on('open', ()=>{ conn.send({t:'join', build:GAME_BUILD, name:myName, cos:getEquippedCos(), sbId:(sbUser?sbUser.id:null), sbUsername:(sbUser?sbUser.username:null), clan:clanMyTag(), clanId:clanMyId(), ce:(myClan?myClan.emblem:''), cc:(myClan?myClan.color:''), level:levelFromXp(saveData.xp||0)}); });
+  conn.on('open', ()=>{ conn.send({t:'join', build:GAME_BUILD, name:myName, cos:getEquippedCos(), sbId:(sbUser?sbUser.id:null), sbUsername:(sbUser?sbUser.username:null), clan:clanMyTag(), clanId:clanMyId(), ce:(myClan?myClan.emblem:''), cc:(myClan?myClan.color:''), cn:(myClan?myClan.name:''), level:levelFromXp(saveData.xp||0)}); });
   conn.on('data', data=>{
     if(data.t==='full'){ try{conn.close();}catch(e){} finish({status:'full'}); }
     else if(data.t==='started'){ try{conn.close();}catch(e){} finish({status:'started'}); }
