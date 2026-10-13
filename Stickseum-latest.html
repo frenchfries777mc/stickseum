@@ -637,6 +637,19 @@ h1,h2{ text-shadow:0 0 10px rgba(63,224,197,.55), 0 0 26px rgba(63,224,197,.25);
 #winFxCanvas{ width:min(300px,70vw); height:auto; margin-bottom:6px; }
   .nmRainbow{ background:linear-gradient(90deg,#ff5f5f,#ffd34d,#5fff8a,#4dd9ff,#c17bff,#ff5f5f); background-size:300% 100%; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; animation:nmRb 3s linear infinite; }
   @keyframes nmRb{ to{ background-position:300% 0; } }
+  #mastCer{ position:fixed; inset:0; z-index:60; background:rgba(0,0,0,.88); display:flex; flex-direction:column; align-items:center; justify-content:center; animation:mcIn .6s both; transition:opacity .6s; }
+  #mastCer.out{ opacity:0; }
+  #mastCer .mcRays{ position:absolute; left:50%; top:50%; width:0; height:0; }
+  #mastCer .mcRays i{ position:absolute; left:0; top:0; width:min(46vw,330px); height:3px; transform-origin:0 50%; transform:rotate(var(--a)) scaleX(0); background:linear-gradient(90deg,#ffd34d,rgba(255,211,77,0)); animation:mcRay 1.2s var(--d) ease-out forwards; }
+  #mastCer .mcRing{ position:absolute; left:50%; top:50%; width:120px; height:120px; margin:-60px 0 0 -60px; border:3px solid #ffd34d; border-radius:50%; box-shadow:0 0 24px #ffd34d; opacity:0; animation:mcRing 1.6s .2s ease-out infinite; }
+  #mastCer .mcRing.r2{ animation-delay:.9s; }
+  #mastCer .mcIcon{ position:relative; font-size:84px; margin-bottom:6px; animation:mcPop .8s cubic-bezier(.2,1.6,.4,1) both; filter:drop-shadow(0 0 18px #ffd34d); }
+  #mastCer .mcIcon canvas{ width:110px !important; height:110px !important; }
+  #mastCer .mcT{ position:relative; font:900 clamp(40px,10vw,84px) 'Rajdhani',sans-serif; letter-spacing:.14em; color:#ffd34d; text-shadow:0 0 18px #ffd34d,0 0 44px rgba(255,211,77,.6); opacity:0; animation:mcT .7s .5s both; }
+  #mastCer .mcS{ position:relative; margin-top:8px; font:700 clamp(15px,3.4vw,22px) 'Rajdhani',sans-serif; color:#fff; opacity:0; animation:mcT .6s 1s both; }
+  @keyframes mcIn{ from{opacity:0;} to{opacity:1;} } @keyframes mcRay{ to{ transform:rotate(var(--a)) scaleX(1); } }
+  @keyframes mcRing{ 0%{opacity:.9; transform:scale(.4);} 100%{opacity:0; transform:scale(4.6);} }
+  @keyframes mcPop{ from{transform:scale(0) rotate(-40deg);} to{transform:scale(1) rotate(0);} } @keyframes mcT{ from{opacity:0; transform:translateY(14px) scale(1.2);} to{opacity:1; transform:none;} }
 </style>
 </head>
 <body>
@@ -655,7 +668,7 @@ setTimeout(go,14000);})();</script>
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v201</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v202</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -4080,7 +4093,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-13-v201';
+const GAME_BUILD='build 2026-10-13-v202';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -5894,7 +5907,7 @@ async function sbAfterLogin(id, username, userMeta){
   try{ localStorage.setItem(LAST_USER_KEY, username); }catch(e){}
   await refreshFriends();
   sbUploadStats();
-  clanLoadMine().then(()=>{ try{ renderSocialBox(); }catch(e){} clanLoadInvites(); });
+  clanLoadMine().then(()=>{ try{ renderSocialBox(); }catch(e){} clanLoadInvites(); clanShowNotice(); });
   clearInterval(clanInviteTimer); clanInviteTimer=setInterval(()=>{ if(sbUser && !myClan) clanLoadInvites(); }, 60000);
 }
 const LAST_USER_KEY='arenaClashLastUser';
@@ -6273,7 +6286,7 @@ function cleanClanTag(t){ return String(t||'').toUpperCase().replace(/[^A-Z0-9�
 async function clanLoadMine(){
   myClan=null; if(!sb || !sbUser) return null;
   try{
-    const r=await sb.from('clan_members').select('role, clans(id,name,tag,wins,score,owner,emblem,color,intro)').eq('user_id', sbUser.id).maybeSingle();
+    const r=await sb.from('clan_members').select('role, clans(id,name,tag,wins,score,owner,emblem,color,intro,notice,treasury,unlocks)').eq('user_id', sbUser.id).maybeSingle();
     if(r && !r.error && r.data && r.data.clans) myClan=Object.assign({role:r.data.role}, r.data.clans);
   }catch(e){}
   return myClan;
@@ -6323,7 +6336,10 @@ async function clanLoadInvites(){
 }
 let clanTab='my', clanFindQ='', clanDraft={name:'', tag:'', emblem:'🏰', color:'#3fe0c5', intro:'', pick:false};
 function clanSafeColor(c){ return /^#[0-9a-f]{6}$/i.test(c||'') ? c : '#3fe0c5'; }
-function clanSafeEmblem(e){ return CLAN_EMBLEMS.indexOf(e)!==-1 ? e : '🏰'; }
+const CLAN_PREMIUM=[['💎',100,'다이아'],['🌌',150,'은하'],['🔱',200,'삼지창'],['🐲',300,'용'],['☄️',300,'혜성'],['🏯',500,'성']];
+let clanVaultOpen=false, clanNoticeEdit=false, clanNoticeShown=false;
+function clanSafeEmblem(e){ return (CLAN_EMBLEMS.indexOf(e)!==-1 || CLAN_PREMIUM.some(x=>x[0]===e)) ? e : '🏰'; }
+function clanShowNotice(){ try{ if(clanNoticeShown || !myClan || !myClan.notice) return; clanNoticeShown=true; showAchievementToast({icon:'📢', name:escapeHtmlText(myClan.notice), reward:0}, '['+escapeHtmlText(myClan.tag)+'] 클랜 공지'); }catch(e){} }
 function clanEmblemHtml(c,size){ const col=clanSafeColor(c&&c.color); return '<span style="display:inline-flex; align-items:center; justify-content:center; width:'+size+'px; height:'+size+'px; border-radius:50%; background:'+col+'33; border:2px solid '+col+'; font-size:'+Math.round(size*0.55)+'px; flex:none;">'+clanSafeEmblem(c&&c.emblem)+'</span>'; }
 function clanRowBtn(icon, name, desc, extraStyle){
   const b=document.createElement('button'); b.className='modeRow'; b.style.cssText='padding:12px 16px; gap:12px; '+(extraStyle||'');
@@ -6412,19 +6428,38 @@ function clanInfoRow(icon, title, desc){ const b=clanRowBtn(icon,title,desc,'poi
 async function renderClanMy(pane){
   if(!myClan){ pane.appendChild(clanInfoRow('🛡️','가입한 클랜이 없어요','클랜 찾기에서 가입하거나 클랜 만들기로 직접 만들어 보세요')); pane.firstElementChild && pane.firstElementChild.classList.contains('hint') && pane.firstElementChild.remove(); return; }
   const [mr, cr]=await Promise.all([
-    sb.from('clan_members').select('uname,role,score').eq('clan_id', myClan.id).order('score',{ascending:false}).limit(60),
-    sb.from('clans').select('id,name,tag,wins,score,emblem,color,intro,owner').eq('id', myClan.id).maybeSingle()
+    sb.from('clan_members').select('user_id,uname,role,score').eq('clan_id', myClan.id).order('score',{ascending:false}).limit(60),
+    sb.from('clans').select('id,name,tag,wins,score,emblem,color,intro,owner,notice,treasury,unlocks').eq('id', myClan.id).maybeSingle()
   ]);
   const members=(mr&&mr.data)||[]; if(cr && cr.data) Object.assign(myClan, cr.data);
   pane.innerHTML='<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:14px; align-items:start;"><div id="clanLeft" style="display:flex; flex-direction:column; gap:8px;"></div><div id="clanRight" style="display:flex; flex-direction:column; gap:8px;"></div></div>';
   const L=document.getElementById('clanLeft'), R=document.getElementById('clanRight');
   const lt=document.createElement('div'); lt.style.cssText='font-weight:800; font-size:14px; text-shadow:0 2px 8px rgba(0,0,0,.9);'; lt.textContent='클랜원 · 클랜 토큰'; L.appendChild(lt);
   members.forEach(m=>{ L.appendChild(clanInfoRow(m.role==='owner'?'👑':'👤', m.uname||'?', '클랜 토큰 '+(m.score==null?0:m.score))); });
+  const isOwner=(myClan.role==='owner'), myRow=members.find(m=>sbUser && m.user_id===sbUser.id), myTok=(myRow&&myRow.score)||0;
+  const rerender=()=>renderClanMy(pane), fail=(r,msg)=>{ clanNotice(msg||'할 수 없어요'); };
+  if(clanNoticeEdit && isOwner){
+    R.appendChild(clanEditRow('📢','클랜 공지 (최대 40자, 클랜원이 접속할 때 보여요)', myClan.notice||'', 40, async v=>{ const r=await sb.rpc('clan_set_notice',{p_text:v.trim().slice(0,40)}); clanNoticeEdit=false; if(r&&r.error) fail(r,'공지를 저장하지 못했어요'); else myClan.notice=v.trim().slice(0,40); rerender(); }, ()=>{ clanNoticeEdit=false; rerender(); }));
+  } else {
+    const nb=clanRowBtn('📢','클랜 공지', myClan.notice||(isOwner?'눌러서 공지를 적어요':'공지가 없어요'), isOwner?'':'pointer-events:none;'); if(isOwner) nb.onclick=()=>{ clanNoticeEdit=true; rerender(); }; R.appendChild(nb);
+  }
   const prof=clanRowBtn('', '['+myClan.tag+'] '+myClan.name, myClan.intro||'소개가 없어요', 'pointer-events:none;');
   prof.querySelector('.mrIcon').innerHTML=clanEmblemHtml(myClan,40); R.appendChild(prof);
   R.appendChild(clanInfoRow('⭐','클랜 점수', String(myClan.score==null?1000:myClan.score)+' (클랜 대항전으로 오르고 내려가요)'));
   R.appendChild(clanInfoRow('🏆','클랜전 승리', String(myClan.wins||0)+'회'));
   const wb=clanRowBtn('⚔','클랜경기 시작','우리 클랜원끼리 하는 방 만들기'); wb.onclick=clanWarStart; R.appendChild(wb);
+  const vb=clanRowBtn('🏦','클랜 창고','창고 '+(myClan.treasury||0)+' · 내 토큰 '+myTok+(clanVaultOpen?'':' · 눌러서 열기')); vb.onclick=()=>{ clanVaultOpen=!clanVaultOpen; rerender(); }; R.appendChild(vb);
+  if(clanVaultOpen){
+    const vp=document.createElement('div'); vp.style.cssText='display:flex; flex-direction:column; gap:8px;'; R.appendChild(vp);
+    for(const amt of [10,50]){ const dr=clanRowBtn('🪙','토큰 '+amt+' 기부','내 클랜 토큰을 창고에 넣어요', 'padding:10px 16px;'); dr.onclick=async()=>{ if(myTok<amt){ clanNotice('내 클랜 토큰이 부족해요'); return; } const r=await sb.rpc('clan_donate',{p_amount:amt}); if(r&&r.error) clanNotice('기부하지 못했어요'); else rerender(); }; vp.appendChild(dr); }
+    const have=(myClan.unlocks||'').split(',');
+    for(const [e,cost,nm] of CLAN_PREMIUM){
+      const un=have.indexOf(e)!==-1, cur=(myClan.emblem===e);
+      const er=clanRowBtn(e, nm+' 엠블럼', cur?'✔ 사용 중':(un?(isOwner?'눌러서 우리 클랜 엠블럼으로 설정':'해금됨'):('🔒 창고 '+cost+(isOwner?' · 눌러서 해금':' · 클랜장이 해금해요'))), 'padding:10px 16px;'+((!isOwner||cur)?'pointer-events:none;':''));
+      er.onclick=async()=>{ const r=un ? await sb.rpc('clan_set_emblem',{p_emblem:e}) : await sb.rpc('clan_unlock',{p_emblem:e}); if(r&&r.error) clanNotice(un?'바꾸지 못했어요':'창고 토큰이 부족해요'); else { if(un) myClan.emblem=e; rerender(); } };
+      vp.appendChild(er);
+    }
+  }
   const fb=clanRowBtn('👥','친구 클랜 초대','친구에게 클랜 참가 요청 보내기'); R.appendChild(fb);
   const fl=document.createElement('div'); fl.style.cssText='display:flex; flex-direction:column; gap:8px;'; R.appendChild(fl);
   const drawFriends=()=>{
@@ -7440,6 +7475,18 @@ function updateDuelScoreUI(){
 async function clanMemberReport(won){
   try{ if(!sb||!sbUser||!myClan) return; const r=await sb.rpc('clan_member_report',{p_won:!!won}); if(r && !r.error && r.data) pushSystemLine('🏰 클랜 토큰 '+(won?'+':'-')+'10'); }catch(e){}
 }
+function masteryCeremony(wid){
+  const old=document.getElementById('mastCer'); if(old) old.remove();
+  const el=document.createElement('div'); el.id='mastCer';
+  const nm=escapeHtmlText(WEAPON_PERSONA_NAME[wid]||(WEAPONS[wid]&&WEAPONS[wid].name)||wid);
+  let rays=''; for(let i=0;i<12;i++) rays+='<i style="--a:'+(i*30)+'deg; --d:'+(i%3)*0.12+'s"></i>';
+  el.innerHTML='<div class="mcRays">'+rays+'</div><div class="mcRing"></div><div class="mcRing r2"></div><div class="mcIcon"></div><div class="mcT">MASTER</div><div class="mcS">'+nm+' 숙련 Lv.'+MASTERY_STAR_LV+' 달성 ★</div>';
+  document.body.appendChild(el);
+  const ic=el.querySelector('.mcIcon'); ic.textContent=''; try{ const hold=document.createElement('div'); hold.className='wi'; ic.appendChild(hold); setWeaponIcon(ic,wid); }catch(e){ ic.textContent=(WEAPONS[wid]&&WEAPONS[wid].emoji)||'★'; }
+  try{ playResultSound('win'); }catch(e){}
+  const close=()=>{ el.classList.add('out'); setTimeout(()=>{ try{ el.remove(); }catch(e){} },600); };
+  el.addEventListener('pointerdown',close); setTimeout(close, 4800);
+}
 function showMatchEndOverlay(resultText, winnerIds, forcedPick){
   try{ const hum=Object.values(players).filter(q=>q && !q.isBot && !q.isMinion && !q.isBoss && !q.isSpectator);
     if(currentMode==='private' && !practiceMode && !highlightViewing && myClan && hum.length>=2 && hum.every(q=>q.clan===clanMyTag()) && winnerIds && winnerIds.length) clanMemberReport(winnerIds.indexOf(myId)!==-1); }catch(e){}
@@ -7467,6 +7514,7 @@ function showMatchEndOverlay(resultText, winnerIds, forcedPick){
   checkAchievements({me, won:!!(winnerIds && winnerIds.indexOf(myId)!==-1), mode:gameMode});
   try{ featuresAfterMatch(me, !!(winnerIds && winnerIds.indexOf(myId)!==-1), gameMode); }catch(e){ console.error('[missions/season]', e); }
   sbCloudSaveAfterMatch();            // the match is over: the account gets its record now
+  if(lastMastery && lastMastery.newLv>=MASTERY_STAR_LV && lastMastery.oldLv<MASTERY_STAR_LV){ const lw=lastMastery.wid; setTimeout(()=>{ try{ masteryCeremony(lw); }catch(e){ console.error(e); } }, 1500); }
   if(lastMastery && lastMastery.newLv>lastMastery.oldLv){
     if(lastMastery.gold>0) addGold(lastMastery.gold, null);
     const lm=lastMastery;
@@ -12813,6 +12861,7 @@ function drawStickman(p){
   ctx.strokeStyle=bodyCol; ctx.fillStyle=bodyCol;
   ctx.lineWidth=5; ctx.lineCap='round'; ctx.lineJoin='round';
   const HIP=-22, SH=-42, HEADR=9;
+  if(p.id===myId && p.alive!==false && p.weapon && masteryInfo(p.weapon).lv>=MASTERY_STAR_LV){ try{ drawSkinFx(ctx,'sparkle','#ffd34d',0,HEADCY,HEADR,luxNow); }catch(e){} }   // a mastered character: a golden sparkle
   const grounded=p.grounded, moving=Math.abs(p.vx||0)>10;
   const phase=animPhases[p.id]||0;
   let footLX,footLY,footRX,footRY;
