@@ -262,6 +262,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   #dailyBadge{ position:fixed; top:16px; left:154px; z-index:6; display:none; width:38px; height:38px; border-radius:50%; border:none; background:rgba(20,22,28,0.85); color:#fff; font-size:18px; cursor:pointer; align-items:center; justify-content:center; }
   #missionBadge{ position:fixed; top:16px; left:200px; z-index:6; display:none; width:38px; height:38px; border-radius:50%; border:none; background:rgba(20,22,28,0.85); color:#fff; font-size:18px; cursor:pointer; align-items:center; justify-content:center; }
   #clanBadge{ position:fixed; top:16px; left:246px; z-index:6; display:none; width:38px; height:38px; border-radius:50%; border:none; background:rgba(20,22,28,0.85); color:#fff; font-size:18px; cursor:pointer; align-items:center; justify-content:center; }
+  #clanBadge .dot{ position:absolute; top:-2px; right:-2px; width:12px; height:12px; border-radius:50%; background:#ff6b6b; border:2px solid #14161c; display:none; }
+  #clanBadge.ready .dot{ display:block; }
   #missionBadge .dot{ position:absolute; top:-2px; right:-2px; width:12px; height:12px; border-radius:50%; background:#c17bff; border:2px solid #14161c; display:none; animation:dailyPulse 1.4s infinite; }
   #missionBadge.ready .dot{ display:block; }
   #missionBadge.ready{ box-shadow:0 0 0 2px rgba(193,123,255,.7); }
@@ -596,7 +598,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v187</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v189</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -692,7 +694,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     <div class="row" style="margin:12px 0;"><button class="btn-secondary" id="recTabHl">하이라이트</button><button class="btn-secondary" id="recTabRp">리플레이</button><button class="btn-secondary" id="recTabRecent">최근 플레이어</button></div>
     <div id="recordBody"></div>
   </div>
-  <div class="card" id="clanScreen" style="width:min(940px,94vw); height:86vh; max-height:90vh; overflow-y:auto; background:transparent; border:none; box-shadow:none; padding:0;">
+  <div class="card" id="clanScreen" style="width:min(940px,94vw); height:86vh; max-height:90vh; overflow-y:auto; padding:18px 20px;">
     <button class="backlink" id="clanBackBtn" style="position:fixed; top:16px; left:16px; z-index:5; padding:8px 14px; border-radius:0; margin:0;">&larr; 뒤로가기</button>
     <h2 style="margin:0 0 4px; text-shadow:0 2px 12px rgba(0,0,0,.8);">🏰 클랜</h2>
     <div id="clanBody" data-notr></div>
@@ -1815,7 +1817,7 @@ function ensureMissionBadge(){
 }
 function ensureClanBadge(){
   let b=document.getElementById('clanBadge'); if(b) return b;
-  b=document.createElement('button'); b.id='clanBadge'; b.title='클랜'; b.textContent='🏰';
+  b=document.createElement('button'); b.id='clanBadge'; b.title='클랜'; b.innerHTML='🏰<span class="dot"></span>';
   b.onclick=()=>{ if(!myNameSet){ pendingDestination=null; showScreen('nameScreen'); return; } openClanHub(); };
   (document.getElementById('lobby')||document.body).appendChild(b); return b;
 }
@@ -4021,7 +4023,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-13-v187';
+const GAME_BUILD='build 2026-10-13-v189';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -5827,7 +5829,8 @@ async function sbAfterLogin(id, username, userMeta){
   try{ localStorage.setItem(LAST_USER_KEY, username); }catch(e){}
   await refreshFriends();
   sbUploadStats();
-  clanLoadMine().then(()=>{ try{ renderSocialBox(); }catch(e){} });
+  clanLoadMine().then(()=>{ try{ renderSocialBox(); }catch(e){} clanLoadInvites(); });
+  clearInterval(clanInviteTimer); clanInviteTimer=setInterval(()=>{ if(sbUser && !myClan) clanLoadInvites(); }, 60000);
 }
 const LAST_USER_KEY='arenaClashLastUser';
 async function sbSyncAccountData(id, username, sameAccountAsLast){
@@ -6247,6 +6250,12 @@ async function clanChatRefresh(){
 }
 const CLAN_EMBLEMS=['🏰','🔥','❄️','⚡','🐉','🦅','🐺','🦁','💀','🌙','⭐','🗡️','🛡️','👑','🌊','🍀'];
 const CLAN_COLORS=['#3fe0c5','#ff6b6b','#ffd34d','#7ec8ff','#c17bff','#7ef0a8','#ff9a4d','#f06bd0'];
+let clanInvites=[], clanInviteTimer=null, clanFriendOpen=false;
+async function clanLoadInvites(){
+  clanInvites=[]; if(!sb||!sbUser) return;
+  try{ const r=await sb.from('clan_invites').select('id,clan_id,from_name,clans(id,name,tag,emblem,color)').eq('to_user', sbUser.id).limit(10); if(r && !r.error && Array.isArray(r.data)) clanInvites=r.data.filter(x=>x.clans); }catch(e){}
+  try{ const b=document.getElementById('clanBadge'); if(b) b.classList.toggle('ready', clanInvites.length>0 && !myClan); }catch(e){}
+}
 let clanTab='my', clanFindQ='', clanDraft={name:'', tag:'', emblem:'🏰', color:'#3fe0c5', intro:'', pick:false};
 function clanSafeColor(c){ return /^#[0-9a-f]{6}$/i.test(c||'') ? c : '#3fe0c5'; }
 function clanSafeEmblem(e){ return CLAN_EMBLEMS.indexOf(e)!==-1 ? e : '🏰'; }
@@ -6284,12 +6293,22 @@ async function clanJoin(id, btn){
 async function renderClanScreen(){
   const body=document.getElementById('clanBody'); if(!body) return;
   if(!sb || !sbUser){ body.innerHTML='<div class="hint" style="padding:30px 0; text-align:center;">클랜은 로그인한 계정만 쓸 수 있어요. 메뉴의 친구/계정 창에서 로그인하세요.</div>'; return; }
-  body.innerHTML='<div id="clanTabs" style="display:flex; gap:10px; margin:12px 0;"></div><div id="clanPane"></div>';
-  await clanLoadMine();
+  body.innerHTML='<div id="clanTabs" style="display:flex; gap:10px; margin:12px 0;"></div><div id="clanInvBox" style="display:flex; flex-direction:column; gap:8px;"></div><div id="clanPane"></div>';
+  await clanLoadMine(); await clanLoadInvites();
   const tabs=document.getElementById('clanTabs'), pane=document.getElementById('clanPane');
   for(const [id,icon,name,desc] of [['find','🔍','클랜 찾기','이름·태그로 검색'],['my','🛡️','내 클랜',myClan?('['+myClan.tag+'] '+myClan.name):'가입한 클랜 없음'],['create','✨','클랜 만들기','새 클랜 창설']]){
     const b=clanRowBtn(icon,name,desc,'flex:1; min-width:0;'); if(clanTab===id){ b.style.borderColor='#3fe0c5'; b.style.background='#1d2a2a'; }
     b.onclick=()=>{ clanTab=id; renderClanScreen(); }; tabs.appendChild(b);
+  }
+  { const ib=document.getElementById('clanInvBox');
+    if(!myClan) for(const iv of clanInvites){
+      const r=clanRowBtn('', '['+iv.clans.tag+'] '+iv.clans.name+' 클랜 초대', (iv.from_name||'클랜원')+'님이 초대했어요 · 누르면 가입해요', 'border-color:#ffd34d;');
+      r.querySelector('.mrIcon').innerHTML=clanEmblemHtml(iv.clans,40);
+      r.onclick=async()=>{ r.style.pointerEvents='none'; await clanJoin(iv.clans.id, null); try{ await sb.from('clan_invites').delete().eq('to_user', sbUser.id); }catch(e){} clanInvites=[]; };
+      const no=document.createElement('button'); no.className='modeRow'; no.style.cssText='width:auto; flex:none; padding:8px 14px; gap:0;'; no.innerHTML='<span class="mrName" style="font-size:14px;">거절</span>';
+      no.onclick=async(e)=>{ e.stopPropagation(); try{ await sb.from('clan_invites').delete().eq('id', iv.id); }catch(x){} clanInvites=clanInvites.filter(x=>x.id!==iv.id); renderClanScreen(); };
+      r.appendChild(no); ib.appendChild(r);
+    }
   }
   pane.innerHTML='<div class="hint" style="text-align:center; padding:20px 0;">불러오는 중...</div>';
   try{ if(clanTab==='find') await renderClanFind(pane); else if(clanTab==='my') await renderClanMy(pane); else renderClanCreate(pane); }catch(e){ pane.innerHTML='<div class="hint" style="text-align:center; padding:20px 0;">불러오지 못했어요 (supabase-clans.sql 최신본을 실행했는지 확인하세요)</div>'; console.warn(e); }
@@ -6338,6 +6357,24 @@ async function renderClanMy(pane){
   R.appendChild(clanInfoRow('⭐','클랜 점수', String(myClan.score==null?1000:myClan.score)+' (클랜 대항전으로 오르고 내려가요)'));
   R.appendChild(clanInfoRow('🏆','클랜전 승리', String(myClan.wins||0)+'회'));
   const wb=clanRowBtn('⚔','클랜경기 시작','우리 클랜원끼리 하는 방 만들기'); wb.onclick=clanWarStart; R.appendChild(wb);
+  const fb=clanRowBtn('👥','친구 클랜 초대','친구에게 클랜 참가 요청 보내기'); R.appendChild(fb);
+  const fl=document.createElement('div'); fl.style.cssText='display:flex; flex-direction:column; gap:8px;'; R.appendChild(fl);
+  const drawFriends=()=>{
+    fl.innerHTML=''; if(!clanFriendOpen) return;
+    const fr=(friendsCache||[]).filter(f=>f.status==='accepted');
+    if(!fr.length){ fl.appendChild(clanInfoRow('🙁','초대할 친구가 없어요','친구를 먼저 추가하세요')); return; }
+    for(const f of fr){
+      const row=clanRowBtn('👤', f.otherName||'친구', '누르면 초대를 보내요', 'padding:10px 16px;');
+      row.onclick=async()=>{
+        if(row.dataset.sent) return;
+        const r=await sb.from('clan_invites').insert({clan_id:myClan.id, from_user:sbUser.id, to_user:f.otherId, from_name:(myNameSet&&myName)?myName:sbUser.username});
+        row.dataset.sent='1'; row.querySelector('.mrDesc').textContent=(r&&r.error)?'이미 초대했거나 보낼 수 없어요':'✔ 초대를 보냈어요';
+      };
+      fl.appendChild(row);
+    }
+  };
+  fb.onclick=()=>{ clanFriendOpen=!clanFriendOpen; drawFriends(); };
+  drawFriends();
   const ct=document.createElement('div'); ct.style.cssText='font-weight:800; font-size:14px; margin-top:6px; text-shadow:0 2px 8px rgba(0,0,0,.9);'; ct.textContent='💬 클랜 채팅'; R.appendChild(ct);
   const log=document.createElement('div'); log.id='clanChatLog'; log.style.cssText='max-height:130px; overflow-y:auto; font-size:13px; text-shadow:0 1px 6px rgba(0,0,0,.95); padding:2px 4px;'; R.appendChild(log);
   const row=document.createElement('div'); row.className='row'; row.innerHTML='<input type="text" id="clanChatIn" maxlength="100" placeholder="클랜원에게 메시지" style="flex:1;"><button class="btn-secondary" id="clanChatSend">보내기</button>'; R.appendChild(row);
