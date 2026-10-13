@@ -595,7 +595,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v177</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v179</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -4010,7 +4010,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-13-v177';
+const GAME_BUILD='build 2026-10-13-v179';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -6246,7 +6246,7 @@ async function renderClanScreen(){
     html+='<div style="text-align:center; margin:8px 0 12px;"><div style="font-size:26px; font-weight:800;">['+esc(myClan.tag)+'] '+esc(myClan.name)+'</div><div class="hint">클랜 점수 <b>'+(myClan.score==null?1000:myClan.score)+'</b> · 총 승리 '+(myClan.wins||0)+' · 멤버 '+members.length+'명</div></div>'+'<button class="btn-primary" id="clanWarBtn" style="width:100%; margin-bottom:6px;">⚔ 클랜전 방 만들기</button><div class="hint" style="margin-bottom:8px;">방 코드를 다른 클랜에 알려주세요. 두 클랜원만 들어올 수 있고 봇은 없어요. 이긴 클랜은 점수를 얻고 진 클랜은 잃어요.</div>';
     html+='<div style="font-size:12px; color:var(--text-dim); font-weight:700; margin:6px 0 4px;">멤버</div>';
     for(const m of members) html+='<div class="socialRow"><span>'+(m.role==='owner'?'👑 ':'')+esc(m.uname||'?')+'</span></div>';
-    html+='<div style="font-size:12px; color:var(--text-dim); font-weight:700; margin:12px 0 4px;">💬 클랜 채팅 <span style="font-weight:400;">(게임 중에는 /c 내용 으로 클랜원에게만 말할 수 있어요)</span></div><div id="clanChatLog" style="max-height:150px; overflow-y:auto; background:rgba(255,255,255,.05); border-radius:8px; padding:6px 8px; font-size:13px;"></div><div class="row" style="margin-top:6px;"><input type="text" id="clanChatIn" maxlength="100" placeholder="클랜원에게 메시지" style="flex:1;"><button class="btn-secondary" id="clanChatSend">보내기</button></div>';
+    html+='<div style="font-size:12px; color:var(--text-dim); font-weight:700; margin:12px 0 4px;">💬 클랜 채팅</div><div id="clanChatLog" style="max-height:150px; overflow-y:auto; background:rgba(255,255,255,.05); border-radius:8px; padding:6px 8px; font-size:13px;"></div><div class="row" style="margin-top:6px;"><input type="text" id="clanChatIn" maxlength="100" placeholder="클랜원에게 메시지" style="flex:1;"><button class="btn-secondary" id="clanChatSend">보내기</button></div>';
     html+='<button class="btn-secondary" id="clanLeaveBtn" style="width:100%; margin-top:12px;">'+(myClan.role==='owner'?'클랜 해산':'클랜 탈퇴')+'</button>';
     html+='<div class="hint" style="margin-top:8px;">온라인 매칭에서 이기면 클랜 승리가 올라가요. 내 이름 앞에 ['+esc(myClan.tag)+'] 태그가 붙어요.</div>';
   } else {
@@ -10858,14 +10858,6 @@ function handleChatMessage(fromId, fromName, text, cid){
   if(!text) return;
   cid = (typeof cid==='string' && cid.length<=60) ? cid : chatNewId();
   if(!chatRemember(cid)) return;                                   // (the same line came on the other road already)
-  if(isHost && /^\/(c|ㅊ|클랜)\s/i.test(text)){
-    const sp=players[fromId], tag=sp && sp.clan;
-    if(!tag){ if(fromId===myId) pushSystemLine('클랜이 없어서 클랜 채팅을 쓸 수 없어요'); else if(conns[fromId]) safeSend(conns[fromId], {t:'chat', from:'안내', text:'클랜이 없어서 클랜 채팅을 쓸 수 없어요', fromId:'sys', cid:chatNewId()}); return; }
-    const out={t:'chat', from:'[클랜] '+fromName, text:text.replace(/^\/\S+\s+/,''), fromId, cid};
-    if(fromId===myId) pushChatLine(out.from, out.text, true); else if(players[myId] && players[myId].clan===tag) pushChatLine(out.from, out.text, false);
-    for(const pid in conns){ const q=players[pid]; if(q && q.clan===tag) safeSend(conns[pid], out); }
-    return;
-  }
   pushChatLine(fromName, text, fromId===myId);
   if(isHost){ broadcastAll({t:'chat', from:fromName, text, fromId, cid}); chatOutbox.push({cid, from:fromName, text, fromId, at:Date.now()}); if(chatOutbox.length>12) chatOutbox.shift(); }
 }
