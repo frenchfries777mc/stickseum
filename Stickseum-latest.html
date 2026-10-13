@@ -203,6 +203,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   .boxCard .bBtns button{ padding:9px 16px; border-radius:8px; border:none; font-weight:800; cursor:pointer; background:#3fe0c5; color:#0b1d1a; }
   .boxCard .bBtns button.alt{ background:#ffd34d; color:#2a2100; }
   .boxCard .bBtns button:disabled{ opacity:.4; cursor:default; }
+  .boxCard .bBtns button{ width:140px; height:44px; padding:0 8px; display:inline-flex; align-items:center; justify-content:center; white-space:nowrap; }
+  #shopTabs .shopTab{ width:136px; height:42px; padding:0 6px; display:inline-flex; align-items:center; justify-content:center; white-space:nowrap; }
   #rewardModal{ position:fixed; inset:0; z-index:9000; display:none; align-items:center; justify-content:center; background:rgba(6,8,12,.86); padding:20px; }
   #rewardModal .rmCard{ width:min(380px,100%); background:#171a22; border:1px solid #3a4152; border-radius:16px; padding:26px 22px; text-align:center; box-shadow:0 24px 70px rgba(0,0,0,.65); }
   #rewardModal .rmIcon{ font-size:78px; line-height:1.1; }
@@ -633,6 +635,8 @@ h1,h2{ text-shadow:0 0 10px rgba(63,224,197,.55), 0 0 26px rgba(63,224,197,.25);
 @keyframes cvL{ from{transform:translateX(-60vw);} to{transform:translateX(0);} } @keyframes cvR{ from{transform:translateX(60vw);} to{transform:translateX(0);} }
 @keyframes cvV{ from{opacity:0; transform:scale(2.4);} to{opacity:1; transform:scale(1);} } @keyframes cvOut{ to{opacity:0;} }
 #winFxCanvas{ width:min(300px,70vw); height:auto; margin-bottom:6px; }
+  .nmRainbow{ background:linear-gradient(90deg,#ff5f5f,#ffd34d,#5fff8a,#4dd9ff,#c17bff,#ff5f5f); background-size:300% 100%; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; animation:nmRb 3s linear infinite; }
+  @keyframes nmRb{ to{ background-position:300% 0; } }
 </style>
 </head>
 <body>
@@ -651,7 +655,7 @@ setTimeout(go,14000);})();</script>
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v199</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v201</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -2164,7 +2168,7 @@ function nameColorFor(id){
   return COSMETICS[id].color;
 }
 function clanBadgeHtml(emb,col,size){ size=size||16; if(!emb) return ''; const c=(typeof clanSafeColor==='function')?clanSafeColor(col):'#3fe0c5', e=(typeof clanSafeEmblem==='function')?clanSafeEmblem(emb):'🏰'; return '<span style="display:inline-flex; align-items:center; justify-content:center; width:'+size+'px; height:'+size+'px; border-radius:50%; background:'+c+'33; border:1.5px solid '+c+'; font-size:'+Math.round(size*0.6)+'px; margin-right:4px; vertical-align:middle;">'+e+'</span>'; }
-function nameWithStyleHtml(name, nameCosId, emb, col, tag, cname){ return clanBadgeHtml(emb,col,16)+(tag?'<span style="color:#fff; margin-right:3px;">['+escapeHtmlText(tag)+']</span>':'')+(cname?'<span style="color:#fff; margin-right:6px; font-weight:700;">'+escapeHtmlText(cname)+'</span>':'')+'<span style="color:'+nameColorFor(nameCosId)+'; font-weight:700;">'+escapeHtmlText(name)+'</span>'; }
+function nameWithStyleHtml(name, nameCosId, emb, col, tag, cname){ return clanBadgeHtml(emb,col,16)+(tag?'<span style="color:#fff; margin-right:3px;">['+escapeHtmlText(tag)+']</span>':'')+(cname?'<span style="color:#fff; margin-right:6px; font-weight:700;">'+escapeHtmlText(cname)+'</span>':'')+'<span '+(nameCosId==='name_rainbow'?'class="nmRainbow" style="font-weight:700;"':'style="color:'+nameColorFor(nameCosId)+'; font-weight:700;"')+'>'+escapeHtmlText(name)+'</span>'; }
 const WEAPON_PERSONA_NAME = {
   horemheb:'호렘헵', lightsaber:'자다이', pistol:'제임스', smg:'특수요원', bow:'로빈 후드', sword:'기사', bat:'야구선수', boomerang:'사냥꾼',
   shuriken:'닌자', shotgun:'보안관', rifle:'군인', gloves:'복서', grenade:'폭발광',
@@ -4076,7 +4080,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-13-v199';
+const GAME_BUILD='build 2026-10-13-v201';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
