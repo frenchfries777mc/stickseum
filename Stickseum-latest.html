@@ -684,7 +684,7 @@ setTimeout(go,14000);})();</script>
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v208</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v209</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -4132,7 +4132,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-13-v208';
+const GAME_BUILD='build 2026-10-13-v209';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -12196,6 +12196,7 @@ function hexA(col,a){
 }
 const RND=(a,b)=>a+Math.random()*(b-a);
 function addP(o){
+  if(tnVisSet && gameMode==='tournament' && o.x!==undefined && !tnFxNear(o)) return;      // tournament: nothing of the other fights is ever drawn
   if(particles.length>(fxQuality>=2?900:(fxQuality===1?650:400))) particles.splice(0,200);
   particles.push(Object.assign({x:0,y:0,vx:0,vy:0,grav:0,drag:0,size:3,shape:'dot',add:true,rot:0,vr:0,color:'#fff'}, o, {max:o.life}));
 }
@@ -12210,6 +12211,7 @@ function shakeFrom(x,y,amp,range){
   if(otherSettings.screenShake===false) return; // convenience setting - screen shake can be uncomfortable for some players
   const me=players[myId]; let k=1;
   if(me && me.x!==undefined) k=clamp(1-Math.hypot(me.x-x,(me.y-30)-y)/range,0,1);
+  if(gameMode==='tournament' && tnVisSet && !tnFxNear({x:x,y:y})) return;
   screenShake=Math.max(screenShake, amp*k);
 }
 function dmgText(x,y,v,col){
@@ -13340,6 +13342,7 @@ function render(fxDt){
     });
   } else {
     tnVisSet = (gameMode==='tournament') ? tnComputeVis() : null;
+    { const k=tnVisSet?Array.from(tnVisSet).sort().join(','):''; if(k!==window.__tnVisKey){ window.__tnVisKey=k; particles.length=0; } }   // another match on screen: the old particles go
     // drawn per-player (not one big safeDraw around the whole loop) so one malformed player can't also
     // block every OTHER player from being drawn, not just the HUD code after
     for(const id in players){ const p=players[id]; if(p.x===undefined) continue; if(id!==myId && !inView(p.x,p.y,320)) continue; if(gameMode==='tournament' && (!p.alive || !(tnVisSet && tnVisSet.has(id)))) continue; safeDraw(()=>{ if(p.isBoss){ ctx.save(); ctx.translate(p.x,p.y); ctx.scale(RAID_BOSS_SCALE,RAID_BOSS_SCALE); ctx.translate(-p.x,-p.y); drawBoss(p); ctx.restore(); } else drawStickman(p); }); }   // (a figure far off the screen is not drawn: its show reaches 90 px, its weapon 250)
