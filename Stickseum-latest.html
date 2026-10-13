@@ -615,6 +615,24 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 @keyframes itM{to{transform:translateX(0);opacity:1}}
 @keyframes itFade{to{opacity:1}}
 @keyframes itBar{to{width:100%}}
+
+/* neon style */
+.modeRow{ border-color:rgba(63,224,197,.35); box-shadow:0 0 0 1px rgba(63,224,197,.08), 0 0 12px rgba(63,224,197,.12); }
+.modeRow:hover{ box-shadow:0 0 0 1px rgba(63,224,197,.6), 0 0 22px rgba(63,224,197,.5); }
+.modeRow:hover .mrIcon{ animation:mrWig .7s ease-in-out infinite; }
+@keyframes mrWig{ 0%,100%{transform:rotate(0) scale(1);} 25%{transform:rotate(-12deg) scale(1.15);} 50%{transform:translateY(-4px) scale(1.2);} 75%{transform:rotate(12deg) scale(1.15);} }
+.btn-primary{ box-shadow:0 0 16px rgba(255,77,77,.55); }
+h1,h2{ text-shadow:0 0 10px rgba(63,224,197,.55), 0 0 26px rgba(63,224,197,.25); }
+.wpnCard .wi canvas, #weaponPortraitCanvas{ transform-origin:50% 100%; animation:wBreathe 2.6s ease-in-out infinite; }
+.wpnCard:nth-child(2n) .wi canvas{ animation-delay:-.9s; } .wpnCard:nth-child(3n) .wi canvas{ animation-delay:-1.7s; }
+@keyframes wBreathe{ 0%,100%{transform:translateY(0) scaleY(1);} 50%{transform:translateY(-2px) scaleY(1.05);} }
+#clanVs{ position:fixed; inset:0; z-index:40; display:flex; align-items:center; justify-content:center; gap:5vw; pointer-events:none; background:rgba(0,0,0,.72); animation:cvOut .5s 2.2s forwards; }
+#clanVs .cvT{ text-align:center; color:#fff; font:800 clamp(16px,3.4vw,28px) 'Rajdhani',sans-serif; text-shadow:0 0 12px currentColor; }
+#clanVs .cvL{ animation:cvL .6s cubic-bezier(.2,.9,.3,1.2) both; } #clanVs .cvR{ animation:cvR .6s cubic-bezier(.2,.9,.3,1.2) both; }
+#clanVs .cvV{ font:900 clamp(34px,8vw,72px) 'Rajdhani',sans-serif; color:#ffd34d; text-shadow:0 0 18px #ffd34d; opacity:0; animation:cvV .4s .55s forwards; }
+@keyframes cvL{ from{transform:translateX(-60vw);} to{transform:translateX(0);} } @keyframes cvR{ from{transform:translateX(60vw);} to{transform:translateX(0);} }
+@keyframes cvV{ from{opacity:0; transform:scale(2.4);} to{opacity:1; transform:scale(1);} } @keyframes cvOut{ to{opacity:0;} }
+#winFxCanvas{ width:min(300px,70vw); height:auto; margin-bottom:6px; }
 </style>
 </head>
 <body>
@@ -633,7 +651,7 @@ setTimeout(go,14000);})();</script>
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v194</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v196</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -2624,7 +2642,7 @@ const MODES = {
 };
 const MODE_ORDER = ['ffa','br','duo','team','duel','conquest'];
 const ZOMBIE_DURATION = 120, ZOMBIE_COLOR = '#1f6b2e';
-const ZOMBIE_SPEED_MULT = 1.45, ZOMBIE_MAX_HP = 420, ZOMBIE_DMG_MULT = 1.5, ZOMBIE_CD_MULT = 0.8;     // (was 1.3 and 1.25)
+const ZOMBIE_SPEED_MULT = 1.45, ZOMBIE_MAX_HP = 900, ZOMBIE_DMG_MULT = 6, ZOMBIE_CD_MULT = 0.8;     // (was 1.3 and 1.25)
 // ...and the other zombie advantages: a dash that is ready twice as fast, a faster resting heal (starts after 1.5 s instead of 3 s, and +10 hp instead of +5 every half second), and NO knockback at all
 const ZOMBIE_DASH_CD_MULT = 0.5, ZOMBIE_REST_SEC = 1.5, ZOMBIE_REST_AMOUNT = 10;
 const HOTPOTATO_DURATION = 20, HOTPOTATO_PASS_RANGE = 90, HOTPOTATO_PASS_HALF_ANGLE = 0.5, HOTPOTATO_ROUND_GAP = 3;
@@ -4058,7 +4076,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-13-v194';
+const GAME_BUILD='build 2026-10-13-v196';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -7419,7 +7437,7 @@ function showMatchEndOverlay(resultText, winnerIds, forcedPick){
   try{ const hum=Object.values(players).filter(q=>q && !q.isBot && !q.isMinion && !q.isBoss && !q.isSpectator);
     if(currentMode==='private' && !practiceMode && !highlightViewing && myClan && hum.length>=2 && hum.every(q=>q.clan===clanMyTag()) && winnerIds && winnerIds.length) clanMemberReport(winnerIds.indexOf(myId)!==-1); }catch(e){}
   try{ rpRecFinish(resultText, winnerIds); }catch(e){}
-  matchEnded=true;
+  matchEnded=true; lastWinnerIds=winnerIds||[];
   lastMatchVerdict=matchVerdict(resultText, winnerIds);
   saveData.totalMatches=(saveData.totalMatches||0)+1;
   saveData.modeMatches=saveData.modeMatches||{};
@@ -7596,6 +7614,36 @@ function matchVerdict(resultText, winnerIds){
   return {main:'패배...', sub:resultText, color:'#ff7b7b', kind:'lose'};
 }
 let lastMatchVerdict=null;
+let lastWinnerIds=[], winFxRun=0;
+function winPoseStart(){
+  const el=document.getElementById('matchEndOverlay'); if(!el) return;
+  let cv=document.getElementById('winFxCanvas');
+  if(!cv){ cv=document.createElement('canvas'); cv.id='winFxCanvas'; cv.width=300; cv.height=200; el.insertBefore(cv, el.firstChild); }
+  const vd=lastMatchVerdict||{}, won=vd.kind==='win';
+  const wp=(lastWinnerIds||[]).map(id=>players[id]).find(q=>q) || (won?players[myId]:null);
+  if(!wp){ cv.style.display='none'; return; }
+  cv.style.display='block';
+  const run=++winFxRun, c=cv.getContext('2d'), W=300, H=200;
+  const conf=[]; if(won) for(let i=0;i<90;i++) conf.push({x:Math.random()*W, y:-Math.random()*H, vy:40+Math.random()*70, vx:(Math.random()-.5)*30, r:Math.random()*6, vr:(Math.random()-.5)*8, w:5+Math.random()*5, h:3+Math.random()*4, col:['#ff5d73','#ffd34d','#3fe0c5','#c17bff','#7bf3ff','#ffffff'][i%6]});
+  const col=wp.color||'#3fe0c5', wid=wp.weapon, sk=wp.cos&&wp.cos.skin&&wp.cos.skin[wid], tint=(sk&&COSMETICS[sk])?COSMETICS[sk].tint:undefined;
+  let last=performance.now();
+  (function frame(now){
+    if(run!==winFxRun || el.style.display!=='flex') return;
+    const dt=Math.min(0.05,(now-last)/1000); last=now; const t=now/1000;
+    c.clearRect(0,0,W,H);
+    for(const q of conf){ q.y+=q.vy*dt; q.x+=q.vx*dt; q.r+=q.vr*dt; if(q.y>H+10){ q.y=-10; q.x=Math.random()*W; } c.save(); c.translate(q.x,q.y); c.rotate(q.r); c.fillStyle=q.col; c.fillRect(-q.w/2,-q.h/2,q.w,q.h*Math.abs(Math.cos(q.r*2))+1); c.restore(); }
+    const bob=Math.abs(Math.sin(t*5))*8, HIP=-22, SH=-42, HEADCY=-52, HEADR=9;
+    c.save(); c.translate(W/2, H-24-bob); c.scale(1.9,1.9);
+    c.shadowColor=col; c.shadowBlur=10; c.strokeStyle=col; c.fillStyle=col; c.lineWidth=5; c.lineCap='round'; c.lineJoin='round';
+    const k=Math.sin(t*5)*5;
+    c.beginPath(); c.moveTo(0,HIP); c.lineTo(-8,0); c.moveTo(0,HIP); c.lineTo(8,0); c.moveTo(0,HIP); c.lineTo(0,SH); c.stroke();
+    c.beginPath(); c.moveTo(0,SH+4); c.lineTo(-16,SH-16-k); c.moveTo(0,SH+4); c.lineTo(16,SH-16+k); c.stroke();
+    c.beginPath(); c.arc(0,HEADCY,HEADR,0,7); c.fill();
+    c.shadowBlur=0; if(wid && WEAPON_PERSONA_NAME[wid]) { try{ drawWeaponPersona(c,wid,0,HEADCY,HEADR,SH,tint); }catch(e){} }
+    c.restore();
+    requestAnimationFrame(frame);
+  })(last);
+}
 function finishMatchEndOverlay(resultText){
   const el=document.getElementById('matchEndOverlay');
   if(!el) return;
@@ -7622,6 +7670,7 @@ function finishMatchEndOverlay(resultText){
   }
   const wasShown=(el.style.display==='flex');
   el.style.display='flex';
+  if(!wasShown){ try{ winPoseStart(); }catch(e){ console.error(e); } }
   if(!wasShown && (vd.kind==='win' || vd.kind==='lose')) playResultSound(vd.kind);     // the victory or the defeat song, once, when the screen comes up (a draw or no winner: silence)
 }
 
@@ -7941,7 +7990,20 @@ document.getElementById('weaponBrowseBackBtn').onclick=()=>{
   document.getElementById('weaponCharStats').style.display='none';
   showScreen('profileScreen'); renderProfile();
 };
+function clanVsIntro(){
+  const cr = clanWar ? {i:clanWar.inner?1:0, t:clanWar.tags} : clanRoom; if(!cr || !cr.t || !cr.t[0]) return;
+  const info=tag=>{ const q=Object.values(players).find(x=>x && x.clan===tag); return {tag, emblem:q&&q.ce, color:q&&q.cc, name:q&&q.cn}; };
+  const A=info(cr.t[0]), B=cr.i?info(cr.t[0]):info(cr.t[1]); if(!B.tag) return;
+  const old=document.getElementById('clanVs'); if(old) old.remove();
+  const el=document.createElement('div'); el.id='clanVs';
+  const side=(c,cls)=>'<div class="cvT '+cls+'" style="color:'+clanSafeColor(c.color)+'">'+clanEmblemHtml({emblem:c.emblem,color:c.color},Math.min(120,Math.round(innerWidth*0.22)))+'<div>['+cleanClanTag(c.tag)+']</div><div class="cvN" style="font-size:.6em; color:#cfd6e4;"></div></div>';
+  el.innerHTML=side(A,'cvL')+'<div class="cvV">'+(cr.i?'내전':'VS')+'</div>'+side(B,'cvR');
+  document.body.appendChild(el);
+  const nm=el.querySelectorAll('.cvN'); if(nm[0]) nm[0].textContent=A.name||''; if(nm[1]) nm[1].textContent=B.name||'';
+  setTimeout(()=>{ try{ el.remove(); }catch(e){} }, 2800);
+}
 function enterWeaponPhase(deadline, wmode, offer){
+  try{ clanVsIntro(); }catch(e){}
   characterBrowseMode=false;
   document.getElementById('weaponBrowseBackBtn').style.display='none';
   document.getElementById('weaponCharStats').style.display='none';
@@ -12678,6 +12740,8 @@ function drawBoss(p){
   ctx.restore();
   ctx.font='700 14px Rajdhani'; ctx.textAlign='center'; ctx.fillStyle=T.glow; ctx.fillText(p.name, p.x, p.y-112);
 }
+function mixHex(a,b,t){ const pa=/^#([0-9a-f]{6})$/i.exec(a||''), pb=/^#([0-9a-f]{6})$/i.exec(b||''); if(!pa||!pb) return a; const A=parseInt(pa[1],16), B=parseInt(pb[1],16); let o=0; for(let k=16;k>=0;k-=8){ const x=(A>>k)&255, y=(B>>k)&255; o=(o<<8)|Math.round(x+(y-x)*t); } return '#'+('000000'+o.toString(16)).slice(-6); }
+let _pcg=0, _pcgAt=0; function playerCountForGlow(){ const n=performance.now(); if(n-_pcgAt>1000){ _pcgAt=n; _pcg=Object.keys(players).length; } return _pcg; }
 function drawStickman(p){
   if(p.invis){ const me0=players[myId]; if(!(me0 && (p.id===myId || isAlly(me0,p)))) return; } // invisible to enemies
   if(gameMode==='hideseek' && p.hsHiding){
@@ -12736,7 +12800,9 @@ function drawStickman(p){
     drawOverheadExtras(p, HEADCY);
     return;
   }
-  const bodyCol=((hitFlashUntil[p.id]||0)>performance.now())?'#ffffff':(p.isBoss?'#a32626':(p.isZombie?ZOMBIE_COLOR:p.color));
+  let bodyCol=((hitFlashUntil[p.id]||0)>performance.now())?'#ffffff':(p.isBoss?'#a32626':(p.isZombie?ZOMBIE_COLOR:p.color));
+  if(skinTint && p.alive!==false && bodyCol===p.color && skinId && (COSMETICS[skinId].lux||COSMETICS[skinId].isNew)){ bodyCol=mixHex(p.color, skinTint, 0.5+0.5*Math.sin(luxNow/1100+luxSeed)); }   // a rare skin: the lines slowly drift between the player's color and the skin's
+  if(playerCountForGlow()<=12 && p.alive!==false){ ctx.shadowColor=bodyCol; ctx.shadowBlur=9; }                  // neon glow
   ctx.strokeStyle=bodyCol; ctx.fillStyle=bodyCol;
   ctx.lineWidth=5; ctx.lineCap='round'; ctx.lineJoin='round';
   const HIP=-22, SH=-42, HEADR=9;
