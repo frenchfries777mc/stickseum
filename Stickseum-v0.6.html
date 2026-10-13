@@ -596,7 +596,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v183</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v186</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -692,9 +692,9 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     <div class="row" style="margin:12px 0;"><button class="btn-secondary" id="recTabHl">하이라이트</button><button class="btn-secondary" id="recTabRp">리플레이</button><button class="btn-secondary" id="recTabRecent">최근 플레이어</button></div>
     <div id="recordBody"></div>
   </div>
-  <div class="card" id="clanScreen" style="width:min(960px,96vw); max-height:90vh; overflow-y:auto;">
-    <button class="backlink" id="clanBackBtn" style="position:absolute; top:14px; right:14px; margin:0;">&larr; 뒤로가기</button>
-    <h2 style="margin:0;">🏰 클랜</h2>
+  <div class="card" id="clanScreen" style="width:min(940px,94vw); height:86vh; max-height:90vh; overflow-y:auto; background:transparent; border:none; box-shadow:none; padding:0;">
+    <button class="backlink" id="clanBackBtn" style="position:fixed; top:16px; left:16px; z-index:5; padding:8px 14px; border-radius:0; margin:0;">&larr; 뒤로가기</button>
+    <h2 style="margin:0 0 4px; text-shadow:0 2px 12px rgba(0,0,0,.8);">🏰 클랜</h2>
     <div id="clanBody" data-notr></div>
   </div>
   <div class="card" id="mstatScreen" style="width:min(620px,94vw); max-height:88vh; overflow-y:auto;">
@@ -4021,7 +4021,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-13-v183';
+const GAME_BUILD='build 2026-10-13-v186';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -6200,7 +6200,7 @@ async function showInviteToast(row){
 }
 /* ================= CLAN (Supabase: clans / clan_members, see supabase-clans.sql) ================= */
 let myClan=null; // {id,name,tag,wins,score,owner,role}
-let clanWar=null, clanWarNext=false, clanChatTimer=null;   // clanWar (host only): {ids:[clanIdA,clanIdB|null], tags:[..]} - a room only for two clans, no bots
+let clanWar=null, clanWarNext=false, clanChatTimer=null, clanRoom=null;   // clanRoom: what a guest learns from the lobby message ({i:1 = clan only room, t:[tags]})   // clanWar (host only): {ids:[clanIdA,clanIdB|null], tags:[..]} - a room only for two clans, no bots
 function cleanClanTag(t){ return String(t||'').toUpperCase().replace(/[^A-Z0-9가-힣]/g,'').slice(0,4); }
 async function clanLoadMine(){
   myClan=null; if(!sb || !sbUser) return null;
@@ -6256,13 +6256,29 @@ function clanRowBtn(icon, name, desc, extraStyle){
   b.innerHTML='<span class="mrIcon" style="font-size:26px; width:36px;"></span><span class="mrText"><div class="mrName" style="font-size:16px;"></div><div class="mrDesc"></div></span>';
   b.querySelector('.mrIcon').textContent=icon; b.querySelector('.mrName').textContent=name; b.querySelector('.mrDesc').textContent=desc||''; return b;
 }
+function clanNotice(t){
+  const pane=document.getElementById('clanPane'); if(!pane) return;
+  const old=document.getElementById('clanNotice'); if(old) old.remove();
+  const r=clanRowBtn('ℹ️', t, '', 'pointer-events:none; margin-bottom:8px; border-color:#ffd34d;'); r.id='clanNotice'; r.querySelector('.mrDesc').remove(); pane.prepend(r);
+  setTimeout(()=>{ if(r.isConnected) r.remove(); }, 3500);
+}
+function clanEditRow(icon, title, value, maxLen, onOk, onCancel){
+  const row=document.createElement('div'); row.className='modeRow'; row.style.cssText='padding:12px 16px; gap:12px; cursor:default; border-color:#3fe0c5; background:#1d2a2a;';
+  row.innerHTML='<span class="mrIcon" style="font-size:26px; width:36px;"></span><span class="mrText"><div class="mrName" style="font-size:16px;"></div><input type="text" style="width:100%; margin-top:4px;"></span>';
+  row.querySelector('.mrIcon').textContent=icon; row.querySelector('.mrName').textContent=title;
+  const inp=row.querySelector('input'); inp.maxLength=maxLen; inp.value=value||'';
+  const ok=clanRowBtn('✔','확인','', 'width:auto; flex:none; padding:10px 16px;'); ok.querySelector('.mrDesc').remove(); ok.onclick=()=>onOk(inp.value);
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter') onOk(inp.value); else if(e.key==='Escape') onCancel(); });
+  row.appendChild(ok); setTimeout(()=>{ try{ inp.focus(); inp.select(); }catch(e){} },0);
+  return row;
+}
 function openClanHub(tab){ clanTab=tab||(myClan?'my':'find'); showScreen('clanScreen'); renderClanScreen(); }
 async function clanJoin(id, btn){
-  if(!sb || !sbUser){ alert('로그인이 필요해요'); return; }
-  if(myClan){ alert('이미 클랜에 가입해 있어요'); return; }
+  if(!sb || !sbUser){ clanNotice('로그인이 필요해요'); return; }
+  if(myClan){ clanNotice('이미 클랜에 가입해 있어요'); return; }
   if(btn) btn.disabled=true;
   const m=await sb.from('clan_members').insert({user_id:sbUser.id, clan_id:id, role:'member', uname:(myNameSet&&myName)?myName:sbUser.username});
-  if(m.error){ alert('가입할 수 없어요'); if(btn) btn.disabled=false; return; }
+  if(m.error){ clanNotice('가입할 수 없어요'); if(btn) btn.disabled=false; return; }
   await clanLoadMine(); clanTab='my'; renderClanScreen();
 }
 async function renderClanScreen(){
@@ -6305,52 +6321,61 @@ async function renderClanFindList(){
     list.appendChild(row);
   }
 }
+function clanInfoRow(icon, title, desc){ const b=clanRowBtn(icon,title,desc,'pointer-events:none;'); return b; }
 async function renderClanMy(pane){
-  if(!myClan){ pane.innerHTML='<div class="hint" style="text-align:center; padding:30px 0;">가입한 클랜이 없어요. 클랜 찾기에서 가입하거나 직접 만들어 보세요.</div>'; return; }
+  if(!myClan){ pane.appendChild(clanInfoRow('🛡️','가입한 클랜이 없어요','클랜 찾기에서 가입하거나 클랜 만들기로 직접 만들어 보세요')); pane.firstElementChild && pane.firstElementChild.classList.contains('hint') && pane.firstElementChild.remove(); return; }
   const [mr, cr]=await Promise.all([
     sb.from('clan_members').select('uname,role,score').eq('clan_id', myClan.id).order('score',{ascending:false}).limit(60),
     sb.from('clans').select('id,name,tag,wins,score,emblem,color,intro,owner').eq('id', myClan.id).maybeSingle()
   ]);
   const members=(mr&&mr.data)||[]; if(cr && cr.data) Object.assign(myClan, cr.data);
-  const esc=escapeHtmlText;
-  let left='<div style="font-size:12px; color:var(--text-dim); font-weight:700; margin-bottom:6px;">클랜원 · 클랜 토큰</div>';
-  members.forEach(m=>{ left+='<div class="socialRow"><span>'+(m.role==='owner'?'👑 ':'')+esc(m.uname||'?')+'</span><span><b>'+(m.score==null?0:m.score)+'</b>점</span></div>'; });
-  pane.innerHTML='<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:14px;"><div id="clanLeft" style="background:rgba(255,255,255,.04); border-radius:12px; padding:12px; max-height:56vh; overflow-y:auto;">'+left+'</div><div id="clanRight" style="background:rgba(255,255,255,.04); border-radius:12px; padding:12px;"></div></div>';
-  const right=document.getElementById('clanRight');
-  right.innerHTML='<div style="display:flex; align-items:center; gap:12px;">'+clanEmblemHtml(myClan,64)+'<div style="min-width:0;"><div style="font-size:22px; font-weight:800;">['+esc(myClan.tag)+'] '+esc(myClan.name)+'</div><div class="hint">'+esc(myClan.intro||'소개가 없어요')+'</div></div></div>'+
-    '<div style="display:flex; gap:10px; margin:12px 0;"><div style="flex:1; text-align:center; background:rgba(255,255,255,.05); border-radius:10px; padding:10px;"><div class="hint">클랜 점수</div><div style="font-size:26px; font-weight:800; color:#ffd34d;">'+(myClan.score==null?1000:myClan.score)+'</div></div><div style="flex:1; text-align:center; background:rgba(255,255,255,.05); border-radius:10px; padding:10px;"><div class="hint">클랜전 승리</div><div style="font-size:26px; font-weight:800;">'+(myClan.wins||0)+'</div></div></div><div id="clanWarSlot"></div>'+
-    '<div class="hint" style="margin:6px 0 10px;">방 코드를 클랜원에게 알려주세요. 같은 클랜원만 들어올 수 있고 봇은 없어요. (점수 변동 없는 클랜 내 경기예요)</div>'+
-    '<div style="font-size:12px; color:var(--text-dim); font-weight:700; margin:8px 0 4px;">💬 클랜 채팅</div><div id="clanChatLog" style="max-height:130px; overflow-y:auto; background:rgba(255,255,255,.05); border-radius:8px; padding:6px 8px; font-size:13px;"></div><div class="row" style="margin-top:6px;"><input type="text" id="clanChatIn" maxlength="100" placeholder="클랜원에게 메시지" style="flex:1;"><button class="btn-secondary" id="clanChatSend">보내기</button></div>'+
-    '<button class="btn-secondary" id="clanLeaveBtn" style="width:100%; margin-top:12px;">'+(myClan.role==='owner'?'클랜 해산':'클랜 탈퇴')+'</button>';
-  const wb=clanRowBtn('⚔','클랜경기 시작','우리 클랜원끼리 하는 방 만들기'); wb.style.width='100%'; wb.onclick=clanWarStart; document.getElementById('clanWarSlot').appendChild(wb);
+  pane.innerHTML='<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:14px; align-items:start;"><div id="clanLeft" style="display:flex; flex-direction:column; gap:8px;"></div><div id="clanRight" style="display:flex; flex-direction:column; gap:8px;"></div></div>';
+  const L=document.getElementById('clanLeft'), R=document.getElementById('clanRight');
+  const lt=document.createElement('div'); lt.style.cssText='font-weight:800; font-size:14px; text-shadow:0 2px 8px rgba(0,0,0,.9);'; lt.textContent='클랜원 · 클랜 토큰'; L.appendChild(lt);
+  members.forEach(m=>{ L.appendChild(clanInfoRow(m.role==='owner'?'👑':'👤', m.uname||'?', '클랜 토큰 '+(m.score==null?0:m.score))); });
+  const prof=clanRowBtn('', '['+myClan.tag+'] '+myClan.name, myClan.intro||'소개가 없어요', 'pointer-events:none;');
+  prof.querySelector('.mrIcon').innerHTML=clanEmblemHtml(myClan,40); R.appendChild(prof);
+  R.appendChild(clanInfoRow('⭐','클랜 점수', String(myClan.score==null?1000:myClan.score)+' (클랜 대항전으로 오르고 내려가요)'));
+  R.appendChild(clanInfoRow('🏆','클랜전 승리', String(myClan.wins||0)+'회'));
+  const wb=clanRowBtn('⚔','클랜경기 시작','우리 클랜원끼리 하는 방 만들기'); wb.onclick=clanWarStart; R.appendChild(wb);
+  const ct=document.createElement('div'); ct.style.cssText='font-weight:800; font-size:14px; margin-top:6px; text-shadow:0 2px 8px rgba(0,0,0,.9);'; ct.textContent='💬 클랜 채팅'; R.appendChild(ct);
+  const log=document.createElement('div'); log.id='clanChatLog'; log.style.cssText='max-height:130px; overflow-y:auto; font-size:13px; text-shadow:0 1px 6px rgba(0,0,0,.95); padding:2px 4px;'; R.appendChild(log);
+  const row=document.createElement('div'); row.className='row'; row.innerHTML='<input type="text" id="clanChatIn" maxlength="100" placeholder="클랜원에게 메시지" style="flex:1;"><button class="btn-secondary" id="clanChatSend">보내기</button>'; R.appendChild(row);
+  const lv=clanRowBtn('🚪', myClan.role==='owner'?'클랜 해산':'클랜 탈퇴', myClan.role==='owner'?'모든 클랜원이 나가게 돼요':'이 클랜에서 나가요'); lv.id='clanLeaveBtn'; R.appendChild(lv);
   const send=async()=>{ const i=document.getElementById('clanChatIn'); const t=i.value.trim().slice(0,100); if(!t||!myClan) return; i.value=''; await sb.from('clan_messages').insert({clan_id:myClan.id, uname:(myNameSet&&myName)?myName:sbUser.username, text:t}); clanChatRefresh(); };
   document.getElementById('clanChatSend').onclick=send; document.getElementById('clanChatIn').addEventListener('keydown',e=>{ if(e.key==='Enter') send(); });
   clanChatRefresh(); clearInterval(clanChatTimer);
   clanChatTimer=setInterval(()=>{ const sc=document.getElementById('clanScreen'); if(!sc || !sc.classList.contains('active') || clanTab!=='my'){ clearInterval(clanChatTimer); return; } clanChatRefresh(); }, 4000);
-  document.getElementById('clanLeaveBtn').onclick=async()=>{
-    if(!confirm(myClan.role==='owner'?'클랜을 해산할까요? 모든 멤버가 나가게 돼요.':'클랜을 탈퇴할까요?')) return;
+  lv.onclick=async()=>{
+    if(!lv.dataset.sure){ lv.dataset.sure='1'; lv.querySelector('.mrName').textContent='정말 '+(myClan.role==='owner'?'해산':'탈퇴')+'할까요?'; lv.querySelector('.mrDesc').textContent='한 번 더 누르면 확정돼요'; setTimeout(()=>{ if(lv.isConnected){ delete lv.dataset.sure; lv.querySelector('.mrName').textContent=myClan.role==='owner'?'클랜 해산':'클랜 탈퇴'; lv.querySelector('.mrDesc').textContent=myClan.role==='owner'?'모든 클랜원이 나가게 돼요':'이 클랜에서 나가요'; } },4000); return; }
     if(myClan.role==='owner') await sb.from('clans').delete().eq('id', myClan.id); else await sb.from('clan_members').delete().eq('user_id', sbUser.id);
     myClan=null; clanTab='find'; renderClanScreen();
   };
 }
 function renderClanCreate(pane){
-  if(myClan){ pane.innerHTML='<div class="hint" style="text-align:center; padding:30px 0;">이미 클랜에 가입해 있어요. 새 클랜을 만들려면 먼저 탈퇴하세요.</div>'; return; }
+  if(myClan){ pane.innerHTML=''; return; }
   const d=clanDraft; pane.innerHTML='<div id="clanCreateBtns" style="display:flex; flex-direction:column; gap:10px;"></div><div id="clanProfPanel"></div><div id="clanMsg" class="hint" style="margin:8px 0; min-height:16px;"></div><div id="clanCreateBottom"></div>';
   const box=document.getElementById('clanCreateBtns');
-  const bn=clanRowBtn('✏️','이름 정하기', d.name||'아직 정하지 않았어요 (2~12자)'); bn.onclick=()=>{ const v=prompt('클랜 이름 (2~12자)', d.name); if(v===null) return; d.name=v.trim().slice(0,12); renderClanCreate(pane); };
-  const bt=clanRowBtn('🏷️','태그 정하기', d.tag?('['+d.tag+']'):'아직 정하지 않았어요 (영문·숫자·한글 2~4자)'); bt.onclick=()=>{ const v=prompt('클랜 태그 (2~4자, 닉네임 앞에 [태그]로 표시돼요)', d.tag); if(v===null) return; d.tag=cleanClanTag(v); renderClanCreate(pane); };
+  const done=()=>{ d.edit=null; renderClanCreate(pane); };
+  const bn = d.edit==='name' ? clanEditRow('✏️','이름 정하기 (2~12자)', d.name, 12, v=>{ d.name=v.trim().slice(0,12); done(); }, done) : clanRowBtn('✏️','이름 정하기', d.name||'아직 정하지 않았어요 (2~12자)');
+  if(d.edit!=='name') bn.onclick=()=>{ d.edit='name'; renderClanCreate(pane); };
+  const bt = d.edit==='tag' ? clanEditRow('🏷️','태그 정하기 (2~4자, 닉네임 앞에 [태그]로 표시)', d.tag, 4, v=>{ d.tag=cleanClanTag(v); done(); }, done) : clanRowBtn('🏷️','태그 정하기', d.tag?('['+d.tag+']'):'아직 정하지 않았어요 (영문·숫자·한글 2~4자)');
+  if(d.edit!=='tag') bt.onclick=()=>{ d.edit='tag'; renderClanCreate(pane); };
   const bp=clanRowBtn(d.emblem,'프로필 정하기', '엠블럼·색·소개'+(d.intro?' · '+d.intro:'')); bp.onclick=()=>{ d.pick=!d.pick; renderClanCreate(pane); };
   box.appendChild(bn); box.appendChild(bt); box.appendChild(bp);
   const pp=document.getElementById('clanProfPanel');
   if(d.pick){
-    pp.innerHTML='<div style="background:rgba(255,255,255,.05); border-radius:12px; padding:12px; margin-top:10px;"><div class="hint" style="margin-bottom:6px;">엠블럼</div><div id="clanEmbGrid" style="display:flex; flex-wrap:wrap; gap:6px;"></div><div class="hint" style="margin:10px 0 6px;">색</div><div id="clanColGrid" style="display:flex; flex-wrap:wrap; gap:8px;"></div><div class="hint" style="margin:10px 0 6px;">소개 (최대 30자)</div><input type="text" id="clanIntroIn" maxlength="30" style="width:100%;" placeholder="클랜 소개"></div>';
-    const eg=document.getElementById('clanEmbGrid'), cg=document.getElementById('clanColGrid');
-    for(const e of CLAN_EMBLEMS){ const b=document.createElement('button'); b.className='btn-secondary'; b.style.cssText='font-size:22px; padding:6px 10px;'+(d.emblem===e?' border-color:#3fe0c5;':''); b.textContent=e; b.onclick=()=>{ d.emblem=e; d.intro=document.getElementById('clanIntroIn').value; renderClanCreate(pane); }; eg.appendChild(b); }
-    for(const c of CLAN_COLORS){ const b=document.createElement('button'); b.style.cssText='width:30px; height:30px; border-radius:50%; cursor:pointer; background:'+c+'; border:3px solid '+(d.color===c?'#fff':'transparent')+';'; b.onclick=()=>{ d.color=c; d.intro=document.getElementById('clanIntroIn').value; renderClanCreate(pane); }; cg.appendChild(b); }
-    const ii=document.getElementById('clanIntroIn'); ii.value=d.intro; ii.oninput=()=>{ d.intro=ii.value; };
+    pp.style.cssText='display:flex; flex-direction:column; gap:10px; margin-top:10px;';
+    const eg=document.createElement('div'); eg.style.cssText='display:flex; flex-wrap:wrap; gap:8px;';
+    for(const e of CLAN_EMBLEMS){ const bt2=document.createElement('button'); bt2.className='modeRow'; bt2.style.cssText='width:auto; padding:8px 14px; gap:0;'+(d.emblem===e?' border-color:#3fe0c5; background:#1d2a2a;':''); bt2.innerHTML='<span class="mrIcon" style="font-size:24px; width:auto;"></span>'; bt2.querySelector('.mrIcon').textContent=e; bt2.onclick=()=>{ d.emblem=e; renderClanCreate(pane); }; eg.appendChild(bt2); }
+    const cg=document.createElement('div'); cg.style.cssText='display:flex; flex-wrap:wrap; gap:8px;';
+    for(const c of CLAN_COLORS){ const bt2=document.createElement('button'); bt2.className='modeRow'; bt2.style.cssText='width:auto; padding:8px 14px; gap:0;'+(d.color===c?' border-color:#3fe0c5; background:#1d2a2a;':''); bt2.innerHTML='<span style="display:inline-block; width:22px; height:22px; border-radius:50%; background:'+c+';"></span>'; bt2.onclick=()=>{ d.color=c; renderClanCreate(pane); }; cg.appendChild(bt2); }
+    const ib = d.edit==='intro' ? clanEditRow('💬','소개 정하기 (최대 30자)', d.intro, 30, v=>{ d.intro=v.trim().slice(0,30); done(); }, done) : clanRowBtn('💬','소개 정하기', d.intro||'아직 정하지 않았어요 (최대 30자)');
+    if(d.edit!=='intro') ib.onclick=()=>{ d.edit='intro'; renderClanCreate(pane); };
+    pp.appendChild(eg); pp.appendChild(cg); pp.appendChild(ib);
   }
   const cb=clanRowBtn('✨','클랜 만들기','위에서 정한 내용으로 클랜을 창설해요'); cb.style.cssText+='width:100%; border-color:#3fe0c5;'; document.getElementById('clanCreateBottom').appendChild(cb);
-  const msg=t=>{ document.getElementById('clanMsg').textContent=t; };
+  const msg=t=>clanNotice(t);
   cb.onclick=async()=>{
     const name=d.name.trim(), tag=cleanClanTag(d.tag);
     if(name.length<2){ msg('이름을 2자 이상으로 정해주세요'); return; }
@@ -6433,7 +6458,7 @@ function renderSocialBox(){
 function updateInviteFriendBox(){
   const btn=document.getElementById('inviteFriendBtn');
   if(!btn) return;
-  const inRoom = document.getElementById('roomScreen').classList.contains('active') && currentMode==='private' && isHost;
+  const inRoom = document.getElementById('roomScreen').classList.contains('active') && currentMode==='private' && isHost && !clanWar;
   btn.style.display = (sbUser && inRoom) ? 'block' : 'none';
   if(!(sbUser && inRoom)){ document.getElementById('inviteFriendBox').style.display='none'; }
 }
@@ -6660,7 +6685,7 @@ function resetFlowState(){
 function showErrorAndReturnToMenu(msg){
   if(peer){ try{peer.destroy();}catch(e){} peer=null; }
   window.__versionNoted=false; chatPending=[];
-  spectatorMode=false; clanWar=null; document.body.classList.remove('specView'); conns={}; players={}; isHost=false; hostConn=null; MAP=null; started=false; currentMode=null; currentMapId=null; countdownEndsAt=null; gameLoopStarted=false; weaponChosenLocally=false; hostRoomLive=false; if(typeof weaponCountdownTimer!=='undefined' && weaponCountdownTimer){ clearInterval(weaponCountdownTimer); weaponCountdownTimer=null; } matchEnded=false; duelScores={}; duelRoundEndsAt=null; duelPick=false; matchTimerEndsAt=null; document.getElementById('matchTimerLabel').style.display='none'; document.getElementById('duelScoreLabel').style.display='none'; cq=null; walls=[]; hostTimers=[]; magicCircles=[]; turrets=[]; weaponPhase=null; document.getElementById('cqLabel').style.display='none'; bombHolderId=null; bombTimerEndsAt=0; hotpotatoOriginalCount=0; seekerId=null; hideseekPhase=null; hideseekPhaseEndsAt=0; survivalRound=0; survivalPhase=null; survivalPhaseEndsAt=0; survivalCurrentDisaster=null; survivalHazards=[]; survivalZombies=[]; document.getElementById('survivalLabel').style.display='none'; ctf=null; ctfEndsLocal=0; document.getElementById('ctfLabel').style.display='none'; { const mini=document.getElementById('ctfMini'); if(mini) mini.style.display='none'; }
+  spectatorMode=false; clanWar=null; clanRoom=null; document.body.classList.remove('specView'); conns={}; players={}; isHost=false; hostConn=null; MAP=null; started=false; currentMode=null; currentMapId=null; countdownEndsAt=null; gameLoopStarted=false; weaponChosenLocally=false; hostRoomLive=false; if(typeof weaponCountdownTimer!=='undefined' && weaponCountdownTimer){ clearInterval(weaponCountdownTimer); weaponCountdownTimer=null; } matchEnded=false; duelScores={}; duelRoundEndsAt=null; duelPick=false; matchTimerEndsAt=null; document.getElementById('matchTimerLabel').style.display='none'; document.getElementById('duelScoreLabel').style.display='none'; cq=null; walls=[]; hostTimers=[]; magicCircles=[]; turrets=[]; weaponPhase=null; document.getElementById('cqLabel').style.display='none'; bombHolderId=null; bombTimerEndsAt=0; hotpotatoOriginalCount=0; seekerId=null; hideseekPhase=null; hideseekPhaseEndsAt=0; survivalRound=0; survivalPhase=null; survivalPhaseEndsAt=0; survivalCurrentDisaster=null; survivalHazards=[]; survivalZombies=[]; document.getElementById('survivalLabel').style.display='none'; ctf=null; ctfEndsLocal=0; document.getElementById('ctfLabel').style.display='none'; { const mini=document.getElementById('ctfMini'); if(mini) mini.style.display='none'; }
   resetFlowState();
   showScreen('menuScreen');
   if(msg) alert(msg);
@@ -6669,7 +6694,9 @@ function showErrorAndReturnToMenu(msg){
 /* ================= ROOM SCREEN ================= */
 function refreshRoomLabel(){
   const el=document.getElementById('roomModeLabel'); if(!el || !MAP) return;
-  el.textContent = (currentMode==='online' ? '🌐 온라인 매칭됨 · ' : '🔒 비공개 방 · ') + MAP.name + ' · ' + (MODES[gameMode]||MODES.ffa).name + (weaponMode==='random' ? ' · 랜덤 무기' : '') + (rulesAreCustom() ? ' · ⚙️ 커스텀 규칙' : '') + (roomOpts.vote ? ' · 🗳️ 맵 투표' : '') + (roomOpts.balance ? ' · ⚖️ 팀 자동 밸런스' : '');
+  const _cr=clanWar?{i:clanWar.inner?1:0,t:clanWar.tags}:clanRoom;
+  const _pre=_cr ? (_cr.i ? '🏰 클랜경기 · ['+(_cr.t&&_cr.t[0]||'')+'] 클랜원 전용 · ' : '⚔ 클랜 대항전 · ['+(_cr.t&&_cr.t[0]||'')+'] vs ['+((_cr.t&&_cr.t[1])||'?')+'] · ') : (currentMode==='online' ? '🌐 온라인 매칭됨 · ' : '🔒 비공개 방 · ');
+  el.textContent = _pre + MAP.name + ' · ' + (MODES[gameMode]||MODES.ffa).name + (weaponMode==='random' ? ' · 랜덤 무기' : '') + (rulesAreCustom() ? ' · ⚙️ 커스텀 규칙' : '') + (roomOpts.vote ? ' · 🗳️ 맵 투표' : '') + (roomOpts.balance ? ' · ⚖️ 팀 자동 밸런스' : '');
 }
 function enterRoomScreen(mode, mapId, code){
   MAP = MAP_TEMPLATES[mapId]; currentMapId=mapId; currentMode=mode;
@@ -6714,7 +6741,7 @@ function updatePlayerListUI(){
 let privateBotLevel='normal';
 function updatePrivateBotUI(){
   const box=document.getElementById('privateBotBox'); if(!box) return;
-  const show = isHost && !started && currentMode==='private';
+  const show = isHost && !started && currentMode==='private' && !clanWar;
   box.style.display = show ? '' : 'none';
   if(!show) return;
   const ok=botSupported(gameMode), cap=currentMapId?effectiveMaxPlayers(currentMapId, gameMode):0, full=Object.keys(players).length>=cap;
@@ -6958,7 +6985,7 @@ setInterval(()=>{
 function broadcastLobby(){
   const list=Object.values(players).map(p=>({id:p.id,name:p.name,color:p.color,team:p.team,joinOrder:p.joinOrder,isHost:p.isHost,sbId:p.sbId||null,sbUsername:p.sbUsername||null,level:p.level||1,isBot:!!p.isBot,nm:(p.cos&&p.cos.name)||null,clan:p.clan||'',ce:p.ce||'',cc:p.cc||''}));
   botFillShowAt=botFillAt;
-  const msg={t:'lobby', build:GAME_BUILD, list, mapId:currentMapId, gameMode, weaponMode, rules:roomRules, opts:roomOpts, started, countdownEndsAt, botFillAt:botFillAt===null?null:botFillAt};
+  const msg={t:'lobby', build:GAME_BUILD, list, mapId:currentMapId, gameMode, weaponMode, rules:roomRules, opts:roomOpts, started, countdownEndsAt, botFillAt:botFillAt===null?null:botFillAt, cr:(clanWar?{i:clanWar.inner?1:0, t:clanWar.tags}:null)};
   broadcastAll(msg);
 }
 function evaluateAutoStart(){
@@ -7167,7 +7194,7 @@ function leaveRoom(){
   else if(hostConn){ try{hostConn.close();}catch(e){} }
   if(peer){ try{peer.destroy();}catch(e){} peer=null; }
   window.__versionNoted=false; chatPending=[];
-  spectatorMode=false; clanWar=null; document.body.classList.remove('specView'); conns={}; players={}; isHost=false; hostConn=null; MAP=null; started=false; currentMode=null; currentMapId=null; countdownEndsAt=null; gameLoopStarted=false; weaponChosenLocally=false; hostRoomLive=false; if(typeof weaponCountdownTimer!=='undefined' && weaponCountdownTimer){ clearInterval(weaponCountdownTimer); weaponCountdownTimer=null; } matchEnded=false; duelScores={}; duelRoundEndsAt=null; duelPick=false; matchTimerEndsAt=null; document.getElementById('matchTimerLabel').style.display='none'; document.getElementById('duelScoreLabel').style.display='none'; cq=null; walls=[]; hostTimers=[]; magicCircles=[]; turrets=[]; weaponPhase=null; document.getElementById('cqLabel').style.display='none'; bombHolderId=null; bombTimerEndsAt=0; hotpotatoOriginalCount=0; seekerId=null; hideseekPhase=null; hideseekPhaseEndsAt=0; survivalRound=0; survivalPhase=null; survivalPhaseEndsAt=0; survivalCurrentDisaster=null; survivalHazards=[]; survivalZombies=[]; document.getElementById('survivalLabel').style.display='none'; ctf=null; ctfEndsLocal=0; document.getElementById('ctfLabel').style.display='none'; { const mini=document.getElementById('ctfMini'); if(mini) mini.style.display='none'; }
+  spectatorMode=false; clanWar=null; clanRoom=null; document.body.classList.remove('specView'); conns={}; players={}; isHost=false; hostConn=null; MAP=null; started=false; currentMode=null; currentMapId=null; countdownEndsAt=null; gameLoopStarted=false; weaponChosenLocally=false; hostRoomLive=false; if(typeof weaponCountdownTimer!=='undefined' && weaponCountdownTimer){ clearInterval(weaponCountdownTimer); weaponCountdownTimer=null; } matchEnded=false; duelScores={}; duelRoundEndsAt=null; duelPick=false; matchTimerEndsAt=null; document.getElementById('matchTimerLabel').style.display='none'; document.getElementById('duelScoreLabel').style.display='none'; cq=null; walls=[]; hostTimers=[]; magicCircles=[]; turrets=[]; weaponPhase=null; document.getElementById('cqLabel').style.display='none'; bombHolderId=null; bombTimerEndsAt=0; hotpotatoOriginalCount=0; seekerId=null; hideseekPhase=null; hideseekPhaseEndsAt=0; survivalRound=0; survivalPhase=null; survivalPhaseEndsAt=0; survivalCurrentDisaster=null; survivalHazards=[]; survivalZombies=[]; document.getElementById('survivalLabel').style.display='none'; ctf=null; ctfEndsLocal=0; document.getElementById('ctfLabel').style.display='none'; { const mini=document.getElementById('ctfMini'); if(mini) mini.style.display='none'; }
   resetFlowState();
   showScreen('menuScreen');
   setChatVisible(false);
@@ -7232,6 +7259,7 @@ function onClientData(data, mode, code){
     // only matters before the match starts, so once started is true, a 'lobby' message updates nothing
     // about players at all - it's stale by definition at that point.
     if(started) return;
+    clanRoom=data.cr||null;
     if(data.rules) roomRules=cleanRules(data.rules);
     if(data.opts) roomOpts=cleanOpts(data.opts);
     if(data.mapId && MAP && data.mapId!==currentMapId && MAP_TEMPLATES[data.mapId]){ MAP=MAP_TEMPLATES[data.mapId]; currentMapId=data.mapId; refreshRoomLabel(); try{ renderMapPreview(data.mapId, document.getElementById('mapPreviewCanvas')); }catch(e){} }
