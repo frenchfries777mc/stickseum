@@ -651,7 +651,7 @@ setTimeout(go,14000);})();</script>
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v196</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v197</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -4076,7 +4076,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-13-v196';
+const GAME_BUILD='build 2026-10-13-v197';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -6397,7 +6397,10 @@ async function renderClanFindList(){
     row.innerHTML=clanEmblemHtml(c,44)+'<span class="mrText"><div class="mrName" style="font-size:16px;"></div><div class="mrDesc"></div></span>';
     row.querySelector('.mrName').textContent='['+c.tag+'] '+c.name;
     row.querySelector('.mrDesc').textContent=(c.intro?c.intro+' · ':'')+'점수 '+(c.score==null?1000:c.score)+' · 멤버 '+cnt+'명';
-    if(!myClan){ const jb=document.createElement('button'); jb.className='btn-primary'; jb.style.cssText='padding:8px 14px; flex:none;'; jb.textContent='가입'; jb.onclick=()=>clanJoin(c.id, jb); row.appendChild(jb); }
+    { const jb=document.createElement('button'); jb.style.cssText='padding:10px 18px; flex:none; border:none; border-radius:10px; background:#2ecc71; color:#06240f; font:800 15px Rajdhani,sans-serif; cursor:pointer; box-shadow:0 0 14px rgba(46,204,113,.55);';
+      if(myClan && myClan.id===c.id){ jb.textContent='내 클랜'; jb.disabled=true; jb.style.opacity='.55'; jb.style.boxShadow='none'; }
+      else { jb.textContent='가입하기'; jb.onclick=()=>clanJoin(c.id, jb); }
+      row.appendChild(jb); }
     list.appendChild(row);
   }
 }
