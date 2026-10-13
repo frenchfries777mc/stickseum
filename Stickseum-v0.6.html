@@ -598,7 +598,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v189</span></div>
+  <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-13-v190</span></div>
 
   <div id="bottomBar">
   <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
@@ -4023,7 +4023,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-13-v189';
+const GAME_BUILD='build 2026-10-13-v190';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -5098,7 +5098,15 @@ const MODE_LIST=[
   {id:'raid', cat:'coop', icon:'🐲', desc:'모두 한 팀이 되어 거대한 보스를 쓰러뜨려요'},
   {id:'tournament', cat:'coop', icon:'🏆', desc:'8명이 1대1로 겨루는 토너먼트, 끝까지 살아남으면 우승'}
 ];
-function dailyModeItem(){ const day=Math.floor((Date.now()-new Date().getTimezoneOffset()*-60000)/86400000); return SPECIAL_ITEMS[(day*7+3)%SPECIAL_ITEMS.length]; }       // today's mode: the same for everybody on the same date, a different one of the ten each day
+function dailyModeItem(){
+  // one mode per calendar day (the person's local date): picked once, saved, and read back - never re-rolled while entering the game again
+  const d=new Date(), key=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+  try{ const sv=JSON.parse(localStorage.getItem('stickseumDailyMode')||'null'); if(sv && sv.key===key){ const it=SPECIAL_ITEMS.find(x=>x.id===sv.id); if(it) return it; } }catch(e){}
+  let h=7; for(let k=0;k<key.length;k++) h=(h*31+key.charCodeAt(k))>>>0;
+  const it=SPECIAL_ITEMS[h%SPECIAL_ITEMS.length];
+  try{ localStorage.setItem('stickseumDailyMode', JSON.stringify({key, id:it.id})); }catch(e){}
+  return it;
+}
 function buildModeList(){
   const body=document.getElementById('modeListBody'); if(!body) return;
   body.innerHTML='';
