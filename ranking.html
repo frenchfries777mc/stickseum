@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="site-i18n.js"></script>
 <style>
   :root{ --bg:#0a0b0f; --bg2:#0e1420; --panel:#121825; --panel-2:#171f2e; --line:#232c3d; --text:#e8eaf0; --text-dim:#8893a6; --red:#ff4d5e; --teal:#3fe0c5; --gold:#ffd34d; }
   *{box-sizing:border-box;}
@@ -26,6 +27,9 @@
   .topbar nav a{color:var(--text-dim); text-decoration:none; font-size:15px; padding:6px 10px; border-radius:7px; white-space:nowrap;}
   .topbar nav a:hover{color:var(--text);}
   .topbar nav a.on{color:var(--text); background:var(--panel); border:1px solid var(--line);}
+  .langSel{background:var(--panel); color:var(--text-dim); border:1px solid var(--line); border-radius:7px; padding:5px 8px; font:inherit; font-size:14px; cursor:pointer; margin-left:6px;}
+  .langSel:hover{color:var(--text); border-color:var(--teal);}
+  .topbar .right{display:flex; align-items:center; gap:4px; max-width:100%; overflow-x:auto;}
   .head{padding:22px 0 4px;}
   .head h1{font-size:clamp(32px,6vw,48px); font-weight:700; text-transform:uppercase; line-height:1.05;}
   .head p{color:var(--text-dim); margin:10px 0 0; font-size:17px; max-width:62ch;}
@@ -76,7 +80,7 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="topbar"><a class="wordmark" href="index.html">STICK<b>SEUM</b></a><nav><a href="index.html">홈</a><a href="codex.html">캐릭터 도감</a><a class="on" href="ranking.html">순위표</a><a href="balance.html">밸런스</a></nav></div>
+  <div class="topbar"><a class="wordmark" href="index.html">STICK<b>SEUM</b></a><div class="right"><nav><a href="index.html">홈</a><a href="codex.html">캐릭터 도감</a><a class="on" href="ranking.html">순위표</a><a href="balance.html">밸런스</a></nav><span data-lang-slot></span></div></div>
   <div class="head">
     <h1>순위표</h1>
     <p>랭크전 시즌 순위와 클랜 순위예요. 시즌은 한국 시간으로 매달 1일에 새로 시작해요.</p>
@@ -104,7 +108,7 @@ function tabs(){
   [['ranked', '🏆 랭크전'], ['clan', '🏰 클랜']].forEach(([k, label]) => { const b = document.createElement('button'); b.className = 'chip' + (tab === k ? ' on' : ''); b.textContent = label; b.onclick = () => { tab = k; tabs(); load(); }; el.appendChild(b); });
   if (tab === 'ranked'){
     const s = document.createElement('select'); s.className = 'chip'; s.setAttribute('aria-label', '시즌');
-    seasons.forEach((k, i) => { const o = document.createElement('option'); o.value = k; o.textContent = k.replace('-', '년 ') + '월 시즌' + (i === 0 ? ' (진행 중)' : ''); if (k === season) o.selected = true; s.appendChild(o); });
+    seasons.forEach((k, i) => { const o = document.createElement('option'); o.value = k; o.textContent = SI18N.F('{0}년 {1}월 시즌', k.slice(0, 4), +k.slice(5)) + (i === 0 ? SI18N.T(' (진행 중)') : ''); if (k === season) o.selected = true; s.appendChild(o); });
     s.onchange = () => { season = s.value; load(); }; el.appendChild(s);
   }
 }
@@ -131,12 +135,12 @@ const medal = i => ['🥇', '🥈', '🥉'][i] || '';
 function ranked(rows){
   if (!rows.length){ out('<div class="panel empty">이 시즌에는 아직 랭크전 기록이 없어요.</div>'); return; }
   let h = '<div class="podium">';
-  rows.slice(0, 3).forEach((x, i) => { const t = tierOf(x.rating); h += '<div class="panel pod' + (i === 0 ? ' p1' : '') + '"><div class="md">' + medal(i) + '</div><div class="n">' + esc(x.name || '이름 없음') + '</div><div class="r">' + x.rating + '</div><div class="t" style="color:' + safeColor(t.color) + '">' + esc(t.name) + '</div></div>'; });
+  rows.slice(0, 3).forEach((x, i) => { const t = tierOf(x.rating); h += '<div class="panel pod' + (i === 0 ? ' p1' : '') + '"><div class="md">' + medal(i) + '</div><div class="n">' + (x.name ? '<span data-notr>' + esc(x.name) + '</span>' : esc(SI18N.T('이름 없음'))) + '</div><div class="r">' + x.rating + '</div><div class="t" style="color:' + safeColor(t.color) + '">' + esc(t.name) + '</div></div>'; });
   h += '</div><div class="panel list"><div class="row hd"><span class="rk">#</span><span>플레이어</span><span>티어</span><span class="num">점수</span><span class="dim c4">전적</span></div>';
   rows.forEach((x, i) => {
     const t = tierOf(x.rating), w = +x.wins || 0, l = +x.losses || 0, pct = (w + l) ? Math.round(w * 100 / (w + l)) : 0;
-    h += '<div class="row' + (myId && x.user_id === myId ? ' me' : '') + '"><span class="rk">' + (i + 1) + '</span><span class="nm">' + esc(x.name || '이름 없음') + (myId && x.user_id === myId ? '<small>나</small>' : '') + '</span>'
-      + '<span class="tier" style="color:' + safeColor(t.color) + '">' + esc(t.name) + '</span><span class="num">' + x.rating + '</span><span class="dim c4">' + w + '승 ' + l + '패 · ' + pct + '%</span></div>';
+    h += '<div class="row' + (myId && x.user_id === myId ? ' me' : '') + '"><span class="rk">' + (i + 1) + '</span><span class="nm">' + (x.name ? '<span data-notr>' + esc(x.name) + '</span>' : esc(SI18N.T('이름 없음'))) + (myId && x.user_id === myId ? '<small>나</small>' : '') + '</span>'
+      + '<span class="tier" style="color:' + safeColor(t.color) + '">' + esc(t.name) + '</span><span class="num">' + x.rating + '</span><span class="dim c4">' + SI18N.F('{0}승 {1}패 · {2}%', w, l, pct) + '</span></div>';
   });
   out(h + '</div>');
 }
@@ -145,8 +149,8 @@ function clans(rows){
   let h = '<div class="panel list"><div class="row hd"><span class="rk">#</span><span>클랜</span><span class="dim">인원</span><span class="num">점수</span><span class="dim c4">승리</span></div>';
   rows.forEach((x, i) => {
     const n = (x.clan_members && x.clan_members[0] && x.clan_members[0].count) || 0, col = safeColor(x.color);
-    h += '<div class="row"><span class="rk">' + (medal(i) || (i + 1)) + '</span><span class="nm"><span class="tag" style="background:' + col + '">' + esc(x.tag) + '</span>' + esc((x.emblem || '') + ' ' + (x.name || '')) + '</span>'
-      + '<span class="dim">' + n + '명</span><span class="num">' + (+x.score || 0) + '</span><span class="dim c4">' + (+x.wins || 0) + '승</span></div>';
+    h += '<div class="row"><span class="rk">' + (medal(i) || (i + 1)) + '</span><span class="nm"><span class="tag" style="background:' + col + '">' + esc(x.tag) + '</span><span data-notr>' + esc((x.emblem || '') + ' ' + (x.name || '')) + '</span></span>'
+      + '<span class="dim">' + SI18N.F('{0}명', n) + '</span><span class="num">' + (+x.score || 0) + '</span><span class="dim c4">' + SI18N.F('{0}승', +x.wins || 0) + '</span></div>';
   });
   out(h + '</div>');
 }
