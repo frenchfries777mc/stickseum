@@ -2,6 +2,15 @@
  "notes": [
   {
    "date": "2026-10-14",
+   "build": "v219",
+   "title": "Frenchfries777 계정",
+   "items": [
+    "로그인 화면의 계정 이름을 Frenchfries777 계정으로 변경",
+    "같은 계정으로 Frenchfries777의 다른 게임에도 로그인할 수 있다는 안내 추가"
+   ]
+  },
+  {
+   "date": "2026-10-14",
    "build": "v218",
    "title": "탈락 화면",
    "items": [
