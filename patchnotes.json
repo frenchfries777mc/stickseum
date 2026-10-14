@@ -2,6 +2,70 @@
  "notes": [
   {
    "date": "2026-10-14",
+   "build": "v224",
+   "title": "밸런스 조정",
+   "items": [
+    "드라큘라 공격 데미지 12 → 21",
+    "화염방사기 초당 피해 28 → 34",
+    "해적 갈고리손 데미지 22 → 27",
+    "암살자 단검 공격 쿨타임 0.3초 → 0.4초",
+    "밸런스 페이지 v224 기준으로 다시 측정"
+   ],
+   "tr": {
+    "en": {
+     "title": "Balance changes",
+     "items": [
+      "Dracula attack damage 12 → 21",
+      "Flamethrower damage per second 28 → 34",
+      "Pirate hook damage 22 → 27",
+      "Assassin dagger attack cooldown 0.3s → 0.4s",
+      "Balance page re-measured on v224"
+     ]
+    },
+    "es": {
+     "title": "Ajustes de equilibrio",
+     "items": [
+      "Daño de ataque de Drácula 12 → 21",
+      "Daño por segundo del lanzallamas 28 → 34",
+      "Daño del garfio del pirata 22 → 27",
+      "Enfriamiento de ataque de la daga del asesino 0.3 s → 0.4 s",
+      "Página de equilibrio medida de nuevo en v224"
+     ]
+    },
+    "fr": {
+     "title": "Ajustements d’équilibrage",
+     "items": [
+      "Dégâts d’attaque de Dracula 12 → 21",
+      "Dégâts par seconde du lance-flammes 28 → 34",
+      "Dégâts du crochet du pirate 22 → 27",
+      "Recharge d’attaque de la dague de l’assassin 0.3 s → 0.4 s",
+      "Page d’équilibrage remesurée sur v224"
+     ]
+    },
+    "de": {
+     "title": "Balance-Anpassungen",
+     "items": [
+      "Dracula Angriffsschaden 12 → 21",
+      "Flammenwerfer Schaden pro Sekunde 28 → 34",
+      "Piraten-Haken Schaden 22 → 27",
+      "Assassinen-Dolch Angriffsabklingzeit 0.3 s → 0.4 s",
+      "Balance-Seite auf v224 neu gemessen"
+     ]
+    },
+    "ja": {
+     "title": "バランス調整",
+     "items": [
+      "ドラキュラの攻撃ダメージ 12 → 21",
+      "火炎放射器の毎秒ダメージ 28 → 34",
+      "海賊のフックダメージ 22 → 27",
+      "暗殺者の短剣の攻撃クールタイム 0.3秒 → 0.4秒",
+      "バランスページをv224で再測定"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-14",
    "build": "v223",
    "title": "등장 연출과 사이트 페이지",
    "items": [
