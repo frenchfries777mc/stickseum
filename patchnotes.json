@@ -8,7 +8,8 @@
     "Crown Envoy 병사와 Beaconfall 생존자 캐릭터 추가 (프로필 아바타, 색상별 63종)",
     "다른 게임 캐릭터는 그 게임을 플레이하면 해금 (상점 판매 없음)",
     "도전과제 Frenchfries777 탐험가 추가 (세 게임 모두 플레이)",
-    "프로필 카드에 플레이한 게임 표시 추가"
+    "프로필 카드에 플레이한 게임 표시 추가",
+    "사이트 밸런스 페이지에 캐릭터별 버전 승률 그래프 추가"
    ],
    "tr": {
     "en": {
@@ -17,7 +18,8 @@
       "Crown Envoy soldiers and Beaconfall survivors added as profile avatars (63 in different colors)",
       "Characters from another game unlock by playing that game (not sold in the shop)",
       "Achievement Frenchfries777 Explorer added (play all three games)",
-      "Profile card shows the games you have played"
+      "Profile card shows the games you have played",
+      "Balance page on the site: win rate per version graph for each character"
      ]
     },
     "es": {
@@ -26,7 +28,8 @@
       "Soldados de Crown Envoy y supervivientes de Beaconfall como avatares de perfil (63 en distintos colores)",
       "Los personajes de otro juego se desbloquean jugando a ese juego (no se venden en la tienda)",
       "Logro Explorador de Frenchfries777 añadido (jugar a los tres juegos)",
-      "La tarjeta de perfil muestra los juegos que has jugado"
+      "La tarjeta de perfil muestra los juegos que has jugado",
+      "Página de equilibrio del sitio: gráfica de tasa de victorias por versión para cada personaje"
      ]
     },
     "fr": {
@@ -35,7 +38,8 @@
       "Soldats de Crown Envoy et survivants de Beaconfall ajoutés comme avatars (63 de différentes couleurs)",
       "Les personnages d’un autre jeu se débloquent en jouant à ce jeu (pas vendus en boutique)",
       "Succès Explorateur Frenchfries777 ajouté (jouer aux trois jeux)",
-      "La carte de profil affiche les jeux joués"
+      "La carte de profil affiche les jeux joués",
+      "Page d’équilibrage du site : graphique du taux de victoire par version pour chaque personnage"
      ]
     },
     "de": {
@@ -44,7 +48,8 @@
       "Crown-Envoy-Soldaten und Beaconfall-Überlebende als Profilbilder (63 in verschiedenen Farben)",
       "Figuren eines anderen Spiels werden durch Spielen dieses Spiels freigeschaltet (nicht im Shop)",
       "Erfolg Frenchfries777-Entdecker hinzugefügt (alle drei Spiele spielen)",
-      "Profilkarte zeigt die gespielten Spiele"
+      "Profilkarte zeigt die gespielten Spiele",
+      "Balance-Seite der Website: Siegquote pro Version als Grafik für jede Figur"
      ]
     },
     "ja": {
@@ -53,7 +58,8 @@
       "Crown Envoyの兵士とBeaconfallの生存者をプロフィールアバターに追加（色違い63種）",
       "ほかのゲームのキャラクターはそのゲームを遊ぶと解放（ショップ販売なし）",
       "実績「Frenchfries777探検家」を追加（3作すべてを遊ぶ）",
-      "プロフィールカードに遊んだゲームを表示"
+      "プロフィールカードに遊んだゲームを表示",
+      "サイトのバランスページにキャラクター別のバージョン勝率グラフを追加"
      ]
     }
    }
