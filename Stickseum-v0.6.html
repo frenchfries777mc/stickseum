@@ -207,11 +207,11 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   #tutBox .tbTop button{ padding:4px 10px; font-size:12px; }
   #tutBox .tbText{ font-size:16px; font-weight:800; margin:6px 0 2px; }
   #tutBox .btn-primary{ margin-top:8px; padding:6px 12px; font-size:13px; }
-  /* panel sizes that stay put: all of private play is one size (moving from screen to screen, changing the mode, people joining the room),
+  /* panel sizes that stay put: room setup and joining by code are one size (changing the mode no longer resizes it),
      and the screens that load or open lists keep one height instead of growing and shrinking with what they show */
-  #privateScreen, #privateSetupScreen, #privateJoinScreen, #roomScreen{ width:min(520px,94vw); height:min(84vh,820px); overflow-y:auto; margin-top:40px; }
-  #privateScreen.active, #privateJoinScreen.active{ display:flex; flex-direction:column; justify-content:center; }
-  #privateScreen .backlink, #privateJoinScreen .backlink{ position:absolute; top:20px; left:22px; }
+  #privateSetupScreen, #privateJoinScreen{ width:min(520px,94vw); height:min(84vh,820px); overflow-y:auto; margin-top:40px; }
+  #privateJoinScreen.active{ display:flex; flex-direction:column; justify-content:center; }
+  #privateJoinScreen .backlink{ position:absolute; top:20px; left:22px; }
   #profileScreen, #recordScreen, #mstatScreen, #codexScreen, #missionScreen, #achievementScreen, #practiceScreen, #settingsScreen, #rankedScreen{ height:86vh; }
   .busyTag{ color:#ffb347; font-size:12px; font-weight:700; white-space:nowrap; }
   #pendingNotice{ position:fixed; top:90px; left:50%; transform:translateX(-50%); z-index:31; width:min(440px,92vw);
@@ -4281,7 +4281,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-14-v214';
+const GAME_BUILD='build 2026-10-14-v215';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -6640,7 +6640,20 @@ async function openPublicProfile(id){
   const ac=document.getElementById('ppAcceptBtn'); if(ac) ac.onclick=async ()=>{ ac.disabled=true; await sbRespondFriendRequest(f.rowId, true); renderSocialBox(); closePublicProfile(); };
 }
 window.addEventListener('keydown', e=>{ if(e.code==='Escape'){ const m=document.getElementById('publicProfileModal'); if(m && m.style.display==='flex') closePublicProfile(); } });
-async function sbSendFriendRequest(targetId){ return await sb.from('friendships').insert({requester_id:sbUser.id, addressee_id:targetId}); }
+/* ===== requests run out after 3 hours =====
+   A friend request, a clan invite or a game invite that nobody answered within REQUEST_TTL_MS no longer shows (on either side),
+   and it can be sent again. The server deletes the old rows (expire_requests() in supabase-request-expiry.sql) so the new request is not refused
+   as a duplicate; without that SQL the old ones are still hidden. */
+const REQUEST_TTL_MS=3*60*60*1000;
+let requestExpireAt=0;
+function requestExpired(row){ const t=row && row.created_at ? Date.parse(row.created_at) : NaN; return Number.isFinite(t) && Date.now()-t>REQUEST_TTL_MS; }
+async function expireRequests(force){
+  if(!sb || !sbUser || (!force && Date.now()-requestExpireAt<60000)) return;
+  requestExpireAt=Date.now();
+  try{ await sb.rpc('expire_requests'); }catch(e){}
+}
+setInterval(()=>{ if(sbUser) refreshFriends().then(()=>{ if(!myClan) clanLoadInvites(); }).catch(()=>{}); }, 10*60*1000);   // (a request that ran out while the game is open disappears too)
+async function sbSendFriendRequest(targetId){ await expireRequests(true); return await sb.from('friendships').insert({requester_id:sbUser.id, addressee_id:targetId}); }
 async function sbRespondFriendRequest(rowId, accept){
   const res = accept ? await sb.from('friendships').update({status:'accepted'}).eq('id',rowId) : await sb.from('friendships').delete().eq('id',rowId);
   await refreshFriends();
@@ -6651,8 +6664,9 @@ async function sbRemoveFriend(rowId){ const r=await sb.from('friendships').delet
 function nicknameOf(p){ const n=p && typeof p.display_name==='string' ? p.display_name.trim() : ''; return n || (p && p.username) || '???'; }
 async function refreshFriends(){
   if(!sb || !sbUser) return;
+  await expireRequests();
   const { data: rows } = await sb.from('friendships').select('*').or('requester_id.eq.'+sbUser.id+',addressee_id.eq.'+sbUser.id);
-  const list=rows||[];
+  const list=(rows||[]).filter(r=>!(r.status==='pending' && requestExpired(r)));          // (an unanswered request older than 3 hours is gone)
   const otherIds=[...new Set(list.map(r=> r.requester_id===sbUser.id ? r.addressee_id : r.requester_id))];
   let profMap={};
   if(otherIds.length){ const { data: profs } = await sb.from('profiles').select('id,username,display_name').in('id', otherIds); (profs||[]).forEach(p=>profMap[p.id]=nicknameOf(p)); }
@@ -6676,7 +6690,7 @@ function subscribeGameInvites(){
     .on('postgres_changes', {event:'INSERT', schema:'public', table:'game_invites', filter:'to_id=eq.'+sbUser.id}, payload=> showInviteToast(payload.new))
     .subscribe();
 }
-async function sbSendGameInvite(targetId, roomCode){ return await sb.from('game_invites').insert({from_id:sbUser.id, to_id:targetId, room_code:roomCode, status:'pending'}); }
+async function sbSendGameInvite(targetId, roomCode){ expireRequests(); return await sb.from('game_invites').insert({from_id:sbUser.id, to_id:targetId, room_code:roomCode, status:'pending'}); }
 /* ===== requests that are waiting when the game starts =====
    Once the intro is over (and the login has loaded the friends and clan invites), a box lists everything that waits for an answer:
    friend requests (accept / decline right there), clan invites (when not in a clan yet) and invites to a private room from the last 30 minutes. */
@@ -7315,7 +7329,8 @@ const CLAN_COLORS=['#3fe0c5','#ff6b6b','#ffd34d','#7ec8ff','#c17bff','#7ef0a8','
 let clanInvites=[], clanInviteTimer=null, clanFriendOpen=false;
 async function clanLoadInvites(){
   clanInvites=[]; if(!sb||!sbUser) return;
-  try{ const r=await sb.from('clan_invites').select('id,clan_id,from_name,clans(id,name,tag,emblem,color)').eq('to_user', sbUser.id).limit(10); if(r && !r.error && Array.isArray(r.data)) clanInvites=r.data.filter(x=>x.clans); }catch(e){}
+  await expireRequests();
+  try{ const r=await sb.from('clan_invites').select('*,clans(id,name,tag,emblem,color)').eq('to_user', sbUser.id).limit(10); if(r && !r.error && Array.isArray(r.data)) clanInvites=r.data.filter(x=>x.clans && !requestExpired(x)); }catch(e){}
   try{ const b=document.getElementById('clanBadge'); if(b) b.classList.toggle('ready', clanInvites.length>0 && !myClan); }catch(e){}
 }
 let clanTab='my', clanFindQ='', clanDraft={name:'', tag:'', emblem:'🏰', color:'#3fe0c5', intro:'', pick:false};
@@ -7455,6 +7470,7 @@ async function renderClanMy(pane){
       if(sbIsBusy(f.otherId)){ const bt=document.createElement('span'); bt.className='busyTag'; bt.style.marginLeft='auto'; bt.textContent='상대가 경기 중이에요'; row.appendChild(bt); }
       row.onclick=async()=>{
         if(row.dataset.sent) return;
+        await expireRequests(true);
         const r=await sb.from('clan_invites').insert({clan_id:myClan.id, from_user:sbUser.id, to_user:f.otherId, from_name:(myNameSet&&myName)?myName:sbUser.username});
         row.dataset.sent='1'; row.querySelector('.mrDesc').textContent=(r&&r.error)?'이미 초대했거나 보낼 수 없어요':'✔ 초대를 보냈어요';
       };
