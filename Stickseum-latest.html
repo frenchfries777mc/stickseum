@@ -145,7 +145,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   #shopSoulTag{display:inline-flex; align-items:center; gap:4px; padding:3px 10px; margin-left:8px; border-radius:999px; font-size:13px; font-weight:800; color:#d9b3ff; background:rgba(184,107,255,.14); border:1px solid rgba(184,107,255,.55);}
   #shopGoldTag{display:inline-flex; align-items:center; gap:4px; padding:3px 10px; margin-left:10px;
     background:rgba(12,14,19,.6); border:1px solid #ffd34d; color:#ffd34d; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12px; border-radius:6px; vertical-align:middle;}
-  #shopScreen{width:min(780px,94vw); max-height:86vh; overflow-y:auto; margin-top:48px;}
+  #shopScreen{width:min(780px,94vw); height:86vh; max-height:86vh; overflow-y:auto; margin-top:48px; box-sizing:border-box;}   /* a fixed size: switching tabs (the box tab is short) no longer makes the panel grow and shrink */
   #shopTabs{display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 16px;}
   @keyframes pfrHue{to{filter:hue-rotate(360deg);}}
   .pfrRainbow{animation:pfrHue 3s linear infinite;}
@@ -4187,7 +4187,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-14-v212';
+const GAME_BUILD='build 2026-10-14-v213';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
