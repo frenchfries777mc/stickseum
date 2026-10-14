@@ -42,6 +42,7 @@
   .rule{height:2px; background:linear-gradient(90deg,var(--red),transparent 40%); margin:9px 0 18px; border:0;}
   .features{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px;}
   .feat{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:16px 16px 14px;}
+  a.feat.link{color:var(--text); text-decoration:none; transition:border-color .12s, transform .12s;} a.feat.link:hover{border-color:var(--teal); transform:translateY(-2px);}
   .feat .ic{font-size:26px;} .feat h3{font-size:17px; margin:6px 0 4px;} .feat p{margin:0; color:var(--text-dim); font-size:15px; line-height:1.5;}
   .latest{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:24px 24px 22px; position:relative; overflow:hidden;}
   .tag{display:inline-block; font-size:12.5px; font-weight:700; color:#0a0b0f; background:var(--gold); padding:2px 10px 3px; border-radius:99px;}
@@ -75,7 +76,7 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="topbar"><div class="wordmark">STICK<b>SEUM</b></div><nav><a href="#play">플레이</a><a href="#versions">버전</a><a href="#notes">패치노트</a><a href="#help">도움말</a></nav></div>
+  <div class="topbar"><div class="wordmark">STICK<b>SEUM</b></div><nav><a href="#play">플레이</a><a href="codex.html">도감</a><a href="ranking.html">순위표</a><a href="balance.html">밸런스</a><a href="#notes">패치노트</a><a href="#help">도움말</a></nav></div>
 
   <div class="hero" id="play">
     <h1>스틱맨들의<br><span class="clash">실시간 난투.</span></h1>
@@ -90,10 +91,19 @@
   <section>
     <h2>이런 게임이에요</h2><hr class="rule">
     <div class="features">
-      <div class="feat"><div class="ic">🧑‍🎤</div><h3>캐릭터 22명</h3><p>저마다 다른 무기·스킬·궁극기. 티어를 올리면 전용 스킨이 열려요.</p></div>
+      <div class="feat"><div class="ic">🧑‍🎤</div><h3>캐릭터 24명</h3><p>저마다 다른 무기·스킬·궁극기. 티어를 올리면 전용 스킨이 열려요.</p></div>
       <div class="feat"><div class="ic">🎮</div><h3>모드가 가득</h3><p>데스매치·팀전·점령전·깃발 뺏기, 좀비·폭탄 돌리기·숨바꼭질·파쿠르·서바이벌.</p></div>
       <div class="feat"><div class="ic">🌐</div><h3>친구와 바로</h3><p>방 코드로 비공개 방을 만들거나, 자동 매칭으로 빠르게 붙어요. 사람이 모자라면 봇이 채워요.</p></div>
       <div class="feat"><div class="ic">🎁</div><h3>꾸미고 모으고</h3><p>상점·랜덤 상자·일일 보상·도전과제·숙련도로 계속 성장해요.</p></div>
+    </div>
+  </section>
+
+  <section id="more">
+    <h2>더 알아보기</h2><hr class="rule">
+    <div class="features">
+      <a class="feat link" href="codex.html"><div class="ic">📖</div><h3>캐릭터 도감</h3><p>24명의 무기·스킬·궁극기와 강한 상대, 약한 상대.</p></a>
+      <a class="feat link" href="ranking.html"><div class="ic">🏆</div><h3>순위표</h3><p>이번 달 랭크전 시즌 순위와 클랜 순위.</p></a>
+      <a class="feat link" href="balance.html"><div class="ic">⚖️</div><h3>밸런스</h3><p>캐릭터별 승률과 패치마다 바뀐 수치.</p></a>
     </div>
   </section>
 
@@ -149,7 +159,7 @@ function render(d){
 }
 render(FALLBACK);
 /* patch notes: read from patchnotes.json (newest first); the copy below is used when the page is opened as a plain file */
-const NOTES_FALLBACK = {"notes": [{"date": "2026-10-14", "build": "v222", "title": "부메랑 데미지 조정", "items": ["부메랑 데미지 30 → 16", "부메랑 돌아올 때 데미지 15 → 16 (던질 때와 같음)"]}, {"date": "2026-10-14", "build": "v221", "title": "캐릭터 밸런스 조정", "items": ["부메랑 사정거리 증가 (약 245 → 350)", "부메랑 데미지 37 → 30, 돌아올 때 데미지 18 → 15", "표창 데미지 13 → 11", "드라큘라 스킬을 피의 안식으로 변경 (1초 동안 이동 불가, 0.1초마다 체력 5 회복)", "마술사 스킬을 카드 일렬 발사로 변경 (카드 5장 일렬 발사, 장당 10 피해)"]}, {"date": "2026-10-14", "build": "v220", "title": "방장 이어받기", "items": ["온라인·비공개 경기 중 방장이 나가거나 튕겨도 경기가 끝나지 않고 다른 플레이어가 방장을 이어받는 기능 추가", "방장이 응답 없이 8초 이상 멈추면 자동으로 방장 교체", "이어받는 동안 화면 위에 연결 중 안내 표시", "탈락 화면에서 방장이 나갈 때 뜨던 확인 창 제거"]}, {"date": "2026-10-14", "build": "v219", "title": "Frenchfries777 계정", "items": ["로그인 화면의 계정 이름을 Frenchfries777 계정으로 변경", "같은 계정으로 Frenchfries777의 다른 게임에도 로그인할 수 있다는 안내 추가"]}, {"date": "2026-10-14", "build": "v218", "title": "탈락 화면", "items": ["배틀로얄·배틀로얄 듀오·토너먼트에서 탈락하면 바로 패배 화면 표시", "패배 화면에 나가기 버튼과 관전 버튼 추가", "관전 중 화면 오른쪽 위에 나가기 버튼 추가"]}, {"date": "2026-10-14", "build": "v217", "title": "토너먼트 화면 정리 · 마법사 봇", "items": ["토너먼트에서 다른 경기의 달리기 먼지·착지·불타는 이펙트가 보이던 문제 수정", "마법사 봇이 발판 뒤에 숨은 상대에게도 계속 공격하도록 수정"]}, {"date": "2026-10-14", "build": "v215", "title": "요청 만료", "items": ["친구 요청·클랜 초대·게임 초대 3시간 뒤 자동 만료, 만료 후 다시 보내기 가능", "비공개 플레이 첫 화면과 대기실 크기 원래대로 복구"]}, {"date": "2026-10-14", "build": "v214", "title": "파티 · 튜토리얼 · 승리 포즈", "items": ["파티 추가 (최대 4명, 팀전·점령전·깃발 뺏기·배틀로얄 듀오·보스 레이드, 파티장이 모드 선택)", "신규 가입자용 7단계 튜토리얼 추가 (완료 보상 100골드)", "승리 포즈 7종 상점에 추가", "방 설정 화면과 목록 화면 크기 고정"]}, {"date": "2026-10-14", "build": "v213", "title": "상점 화면 고정", "items": ["꾸미기 상점 창 크기 고정"]}, {"date": "2026-10-14", "build": "v212", "title": "경기 중 표시 · 받은 요청 모아 보기", "items": ["친구 목록과 초대 옆에 '경기 중' 표시 추가", "인트로 후 받은 친구 요청·클랜 초대·방 초대 모아 보기 추가"]}, {"date": "2026-10-14", "build": "v211", "title": "랭크전 · 선물 · 이모트 상점", "items": ["랭크 1대1 매칭과 시즌 순위표 추가", "친구에게 선물하기 추가", "캐릭터 색 상점·8칸 이모트 휠·게임 안 대화창 추가", "같은 방의 여러 경기가 섞이지 않도록 분리"]}]};
+const NOTES_FALLBACK = {"notes": [{"date": "2026-10-14", "build": "v223", "title": "등장 연출과 사이트 페이지", "items": ["비공개 방 커스텀 규칙 제거 (체력·중력·속도·넉백)", "사무라이 궁극기 발동 중 무적", "경기 시작 때 캐릭터 등장 카드 추가 (1대1은 VS 카드)", "큰 공격에 맞을 때 히트스톱·휘청임 추가", "사이트에 캐릭터 도감·순위표·밸런스 페이지 추가"]}, {"date": "2026-10-14", "build": "v222", "title": "부메랑 데미지 조정", "items": ["부메랑 데미지 30 → 16", "부메랑 돌아올 때 데미지 15 → 16 (던질 때와 같음)"]}, {"date": "2026-10-14", "build": "v221", "title": "캐릭터 밸런스 조정", "items": ["부메랑 사정거리 증가 (약 245 → 350)", "부메랑 데미지 37 → 30, 돌아올 때 데미지 18 → 15", "표창 데미지 13 → 11", "드라큘라 스킬을 피의 안식으로 변경 (1초 동안 이동 불가, 0.1초마다 체력 5 회복)", "마술사 스킬을 카드 일렬 발사로 변경 (카드 5장 일렬 발사, 장당 10 피해)"]}, {"date": "2026-10-14", "build": "v220", "title": "방장 이어받기", "items": ["온라인·비공개 경기 중 방장이 나가거나 튕겨도 경기가 끝나지 않고 다른 플레이어가 방장을 이어받는 기능 추가", "방장이 응답 없이 8초 이상 멈추면 자동으로 방장 교체", "이어받는 동안 화면 위에 연결 중 안내 표시", "탈락 화면에서 방장이 나갈 때 뜨던 확인 창 제거"]}, {"date": "2026-10-14", "build": "v219", "title": "Frenchfries777 계정", "items": ["로그인 화면의 계정 이름을 Frenchfries777 계정으로 변경", "같은 계정으로 Frenchfries777의 다른 게임에도 로그인할 수 있다는 안내 추가"]}, {"date": "2026-10-14", "build": "v218", "title": "탈락 화면", "items": ["배틀로얄·배틀로얄 듀오·토너먼트에서 탈락하면 바로 패배 화면 표시", "패배 화면에 나가기 버튼과 관전 버튼 추가", "관전 중 화면 오른쪽 위에 나가기 버튼 추가"]}, {"date": "2026-10-14", "build": "v217", "title": "토너먼트 화면 정리 · 마법사 봇", "items": ["토너먼트에서 다른 경기의 달리기 먼지·착지·불타는 이펙트가 보이던 문제 수정", "마법사 봇이 발판 뒤에 숨은 상대에게도 계속 공격하도록 수정"]}, {"date": "2026-10-14", "build": "v215", "title": "요청 만료", "items": ["친구 요청·클랜 초대·게임 초대 3시간 뒤 자동 만료, 만료 후 다시 보내기 가능", "비공개 플레이 첫 화면과 대기실 크기 원래대로 복구"]}, {"date": "2026-10-14", "build": "v214", "title": "파티 · 튜토리얼 · 승리 포즈", "items": ["파티 추가 (최대 4명, 팀전·점령전·깃발 뺏기·배틀로얄 듀오·보스 레이드, 파티장이 모드 선택)", "신규 가입자용 7단계 튜토리얼 추가 (완료 보상 100골드)", "승리 포즈 7종 상점에 추가", "방 설정 화면과 목록 화면 크기 고정"]}, {"date": "2026-10-14", "build": "v213", "title": "상점 화면 고정", "items": ["꾸미기 상점 창 크기 고정"]}, {"date": "2026-10-14", "build": "v212", "title": "경기 중 표시 · 받은 요청 모아 보기", "items": ["친구 목록과 초대 옆에 '경기 중' 표시 추가", "인트로 후 받은 친구 요청·클랜 초대·방 초대 모아 보기 추가"]}, {"date": "2026-10-14", "build": "v211", "title": "랭크전 · 선물 · 이모트 상점", "items": ["랭크 1대1 매칭과 시즌 순위표 추가", "친구에게 선물하기 추가", "캐릭터 색 상점·8칸 이모트 휠·게임 안 대화창 추가", "같은 방의 여러 경기가 섞이지 않도록 분리"]}]};
 const NOTES_SHOWN=5;
 function renderNotes(d){
   const list=(d && Array.isArray(d.notes))?d.notes:[], box=document.getElementById('notesBox'), more=document.getElementById('notesMore');
