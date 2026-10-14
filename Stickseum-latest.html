@@ -1109,7 +1109,7 @@ const PLAYER_W = 26, PLAYER_H = 58;
 const BULLET_R = 5, BULLET_LIFE = 1.2;
 
 /* ================= WEAPONS (13) — damage/cooldown balanced by real-world weapon character ================= */
-const FLAME_RANGE=400, FLAME_HALF_ANGLE=0.32, FLAME_DIRECT_DPS=28;
+const FLAME_RANGE=400, FLAME_HALF_ANGLE=0.32, FLAME_DIRECT_DPS=34;
 const VACUUM_RANGE=480, VACUUM_HALF_ANGLE=0.34, VACUUM_MAX_STACKS=8, VACUUM_PULL_FORCE=90;
 const FLAME_MAX_HOLD=10, FLAME_OVERHEAT_COOLDOWN=2;
 const FLAME_SHIELD_MAXHP=75, FLAME_SHIELD_DURATION=8;
@@ -1143,10 +1143,10 @@ const WEAPONS = {
             desc:'데미지 52 · 폭발반경 145 · 쿨타임 2.0초 · 중력에 의해 포물선으로 떨어지며 범위 안 전원에게 피해(자신 포함)'},
   bazooka: {id:'bazooka', name:'바주카포', emoji:'🚀', kind:'explosive',dmg:68, cd:2.8,  bulletSpeed:750, splash:150, shape:'rocket', arcs:true,
             desc:'데미지 68 · 폭발반경 150 · 쿨타임 2.8초 · 중력의 영향을 받는 포물선 궤도, 최고 위력이지만 느린 재장전'},
-  dagger:  {id:'dagger',  name:'단검',     emoji:'🔪', kind:'melee',    dmg:35, cd:0.3,  range:65, shape:'dagger', dashCd:0.7,
-            desc:'데미지 35 · 쿨타임 0.3초 · 사거리 65 · 대쉬 쿨타임이 0.7초로 줄어드는 기동형 단검'},
-  dracula: {id:'dracula', name:'드라큘라', emoji:'🧛', kind:'melee',    dmg:12, cd:0.4, range:65, shape:'claw', lifesteal:true, lifestealFlat:5,
-            desc:'데미지 12 · 쿨타임 0.4초 · 사거리 65 · 빠른 발톱 공격, 적중할 때마다 체력 5 흡수'},
+  dagger:  {id:'dagger',  name:'단검',     emoji:'🔪', kind:'melee',    dmg:35, cd:0.4,  range:65, shape:'dagger', dashCd:0.7,
+            desc:'데미지 35 · 쿨타임 0.4초 · 사거리 65 · 대쉬 쿨타임이 0.7초로 줄어드는 기동형 단검'},
+  dracula: {id:'dracula', name:'드라큘라', emoji:'🧛', kind:'melee',    dmg:21, cd:0.4, range:65, shape:'claw', lifesteal:true, lifestealFlat:5,
+            desc:'데미지 21 · 쿨타임 0.4초 · 사거리 65 · 빠른 발톱 공격, 적중할 때마다 체력 5 흡수'},
   gambler: {id:'gambler', name:'도박사',   emoji:'🎲', kind:'gun', dmg:16, cd:1.0, bulletSpeed:1100, shape:'chip',
             desc:'데미지 16 · 쿨타임 1.0초 · 장거리 · 칩을 곧게 던짐, 맞힐 때마다 칩 +1 (최대 6) · 칩이 많을수록 스킬·궁극기가 강해짐'},
   wizard:  {id:'wizard',  name:'마법사',   emoji:'🧙', kind:'gun',      dmg:9, cd:0.5,  bulletSpeed:750, shape:'fireball', pierce:true,
@@ -1159,8 +1159,8 @@ const WEAPONS = {
             desc:'데미지 12 · 쿨타임 0.55초 · 바닥이나 발판에 닿으면 최대 1번까지 튕기는 탄환'},
   vacuum:{id:'vacuum',name:'청소기',emoji:'🧹', kind:'vacuum', dmg:24, cd:0.9, range:VACUUM_RANGE, shape:'vacuum',
             desc:'사거리 '+VACUUM_RANGE+'(화염방사기보다 조금 김) · 데미지 24 · 쿨타임 0.9초 · 맞힐 때마다 스택 축적(최대 8) · 맞은 상대를 나에게 살짝 끌어당김'},
-  pirate:{id:'pirate',name:'갈고리손',emoji:'🏴‍☠️', kind:'melee', dmg:22, cd:0.3, range:70, shape:'hook',
-            desc:'데미지 22 · 쿨타임 0.3초 · 사거리 70 · 갈고리손으로 빠르게 베는 근접 공격'},
+  pirate:{id:'pirate',name:'갈고리손',emoji:'🏴‍☠️', kind:'melee', dmg:27, cd:0.3, range:70, shape:'hook',
+            desc:'데미지 27 · 쿨타임 0.3초 · 사거리 70 · 갈고리손으로 빠르게 베는 근접 공격'},
   samurai:{id:'samurai',name:'카타나',emoji:'⚔️', kind:'melee', dmg:36, cd:0.65, range:95, shape:'katana',
             desc:'데미지 36 · 쿨타임 0.65초 · 사거리 95 · 한 번 베면 묵직하게 들어가는 카타나'},
   none: {id:'none', name:'맨손', emoji:'', kind:'none', dmg:0, cd:999999, shape:'none', desc:'무기 없음'}
@@ -4303,7 +4303,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-14-v223';
+const GAME_BUILD='build 2026-10-14-v224';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
