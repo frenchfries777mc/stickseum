@@ -4281,7 +4281,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-14-v215';
+const GAME_BUILD='build 2026-10-14-v216';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -13471,6 +13471,7 @@ function updateAmbientFx(dt){
     if(prevHp[id]!==undefined && p.alive && p.hp<prevHp[id]-0.5) hitFlashUntil[id]=now+110;
     prevHp[id]=p.hp;
     if(!p.alive){ prevGround[id]=false; continue; }
+    if(gameMode==='tournament' && tnVisSet && !tnVisSet.has(id)){ prevGround[id]=!!p.grounded; continue; }      // tournament: no dust, landing puffs or burning flames from the other fights
     if(p.burning) for(let i=0;i<poissonSpawns(0.7*rate);i++) addP({x:p.x+RND(-8,8),y:p.y-RND(10,55),vx:RND(-20,20),vy:RND(-80,-30),life:RND(.3,.6),size:RND(3,6),color:['#ff5a1f','#ffb347','#ffd34d'][Math.floor(Math.random()*3)],shape:'fire',drag:1.5});
     const pg=prevGround[id];
     if(pg!==undefined){
