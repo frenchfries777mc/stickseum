@@ -4281,7 +4281,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-14-v216';
+const GAME_BUILD='build 2026-10-14-v217';
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
   {id:'tank',    name:'탱크 파티',   desc:'체력은 3배, 넉백은 절반', rules:{hp:3, kb:0.5}},
@@ -11031,7 +11031,7 @@ function botThink(p, t, dt){
       else if(retreat && (d<band.min || (BOT_CALM && ai.rangeMode==='back' && d<band.min*1.25))){ ai.rangeMode='back'; goalX=p.x-Math.sign(dx||1)*220; goalY=p.y; }   // too close: give some room (until a little beyond the minimum)
       else if(w.kind==='melee' && BOT_MELEE_STICK){ ai.rangeMode='hold'; goalX=target.x; goalY=target.y; }       // melee, in reach: stay on the target (shuffling away only made it miss)
       else { ai.rangeMode='hold'; if(BOT_CALM && tSec<(ai.standUntil||0)) { goalX=p.x; goalY=p.y; } else { if(BOT_CALM && tSec>=ai.strafeUntil-0.05 && Math.random()<0.35) ai.standUntil=tSec+1+Math.random()*1.5; goalX=p.x+ai.strafe*(BOT_CALM?BOT_STRAFE_PX:130); goalY=p.y; } }              // right range: shuffle side to side
-      const blocked=botLineBlocked(p.x,p.y-40,target.x,target.y-29);
+      const blocked=!w.pierce && botLineBlocked(p.x,p.y-40,target.x,target.y-29);                              // (a piercing shot - the wizard's fireball - flies through platforms, so a target behind one is still fair game)
       shoot = d<=band.fire && !blocked && Math.random()<dif.fire;                                             // never fire into a wall
       if(w.kind==='gamble') shoot = d<=band.fire;                                                            // the gambler just keeps rolling
       if(d>420 && !navBusy && Math.random()<0.1) inp.dash=true;                                              // (a dash needed for a climb must never be spent on this)
