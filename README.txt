@@ -10,7 +10,7 @@ Stickseum 사이트 (정적 사이트: 서버 프로그램이 필요 없어요)
   ranking.html               랭크전·클랜 순위표 페이지 (Supabase에서 읽어요)
   balance.html               캐릭터별 승률과 수치 변경 기록 페이지
   site-i18n.js               사이트 번역 (6개 언어, 브라우저 언어로 자동 선택, 게임과 같은 언어 설정 사용)
-  Stickseum-v0.1 ~ v0.6.html 각 버전의 게임 파일
+  Stickseum-v0.1 ~ v0.7.html 각 버전의 게임 파일
   Stickseum-latest.html      최신 버전의 복사본 ("바로 플레이"가 이 파일을 열어요)
 
 [ 올리는 방법: GitHub Pages ]
