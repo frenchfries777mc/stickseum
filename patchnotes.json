@@ -7,7 +7,44 @@
    "items": [
     "학살자 화염 최대 지속시간 9초 → 8초",
     "밸런스 페이지 v236으로 다시 측정 (쌍당 50판)"
-   ]
+   ],
+   "tr": {
+    "en": {
+     "title": "Balance changes",
+     "items": [
+      "Slayer flame max duration 9s → 8s",
+      "Balance page re-measured on v236 (50 games per pair)"
+     ]
+    },
+    "es": {
+     "title": "Ajustes de equilibrio",
+     "items": [
+      "Duración máxima de la llama del Masacrador 9 s → 8 s",
+      "Página de equilibrio medida de nuevo en v236 (50 partidas por pareja)"
+     ]
+    },
+    "fr": {
+     "title": "Ajustements d’équilibrage",
+     "items": [
+      "Durée maximale de la flamme du Massacreur 9 s → 8 s",
+      "Page d’équilibrage remesurée sur v236 (50 parties par paire)"
+     ]
+    },
+    "de": {
+     "title": "Balance-Anpassungen",
+     "items": [
+      "Maximale Flammendauer des Schlächters 9 s → 8 s",
+      "Balance-Seite auf v236 neu gemessen (50 Spiele pro Paar)"
+     ]
+    },
+    "ja": {
+     "title": "バランス調整",
+     "items": [
+      "殺戮者の炎の最大持続時間 9秒 → 8秒",
+      "バランスページをv236で再測定（組み合わせごとに50試合）"
+     ]
+    }
+   }
   },
   {
    "date": "2026-10-15",
