@@ -2,6 +2,46 @@
  "notes": [
   {
    "date": "2026-10-15",
+   "build": "v235",
+   "title": "새 승리 포즈",
+   "items": [
+    "승리 포즈 😝 약 올리기 추가 (1500 G): 메롱 → 엉덩이 흔들며 찰싹 → 바닥 구르며 폭소"
+   ],
+   "tr": {
+    "en": {
+     "title": "New victory pose",
+     "items": [
+      "Victory pose 😝 Taunt Combo added (1500 G): nyah-nyah → wiggling and slapping his behind → rolling on the floor laughing"
+     ]
+    },
+    "es": {
+     "title": "Nueva pose de victoria",
+     "items": [
+      "Pose de victoria 😝 Combo de burlas añadida (1500 G): burla con la lengua → mover y darse palmadas en el trasero → rodar por el suelo de risa"
+     ]
+    },
+    "fr": {
+     "title": "Nouvelle pose de victoire",
+     "items": [
+      "Pose de victoire 😝 Combo moqueur ajoutée (1500 G) : grimace → se trémousser en se tapant les fesses → se rouler par terre de rire"
+     ]
+    },
+    "de": {
+     "title": "Neue Siegerpose",
+     "items": [
+      "Siegerpose 😝 Spott-Kombo hinzugefügt (1500 G): Zunge rausstrecken → mit dem Hintern wackeln und draufklatschen → sich vor Lachen am Boden wälzen"
+     ]
+    },
+    "ja": {
+     "title": "新しい勝利ポーズ",
+     "items": [
+      "勝利ポーズ😝あおりコンボを追加（1500 G）：あっかんべー → お尻を振ってペチン → 床を転げ回って大笑い"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-15",
    "build": "v234",
    "title": "버그 수정",
    "items": [
