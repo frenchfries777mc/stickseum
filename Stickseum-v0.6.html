@@ -6246,8 +6246,10 @@ function ffHasPlayed(g){ return !!ffPlayed[g]; }
 // shared profile card: how many Stickseum achievements are done (needs supabase-ff-achievements.sql on the server; silently does nothing without it)
 function ffSyncAch(){
   if(!sb || !sbUser) return;
-  try{ const done=ACHIEVEMENTS.filter(a=>saveData.achievements&&saveData.achievements[a.id]).length;
-    sb.rpc('ff_set_achievements', {p_game:'stickseum', p_done:done, p_total:ACHIEVEMENTS.length}).then(()=>{},()=>{}); }catch(e){}
+  try{ const ids=ACHIEVEMENTS.filter(a=>saveData.achievements&&saveData.achievements[a.id]).map(a=>a.id), total=ACHIEVEMENTS.length;
+    const counts=()=>sb.rpc('ff_set_achievements', {p_game:'stickseum', p_done:ids.length, p_total:total}).then(()=>{},()=>{});
+    sb.rpc('ff_sync_achievements', {p_game:'stickseum', p_ids:ids, p_total:total}).then(r=>{ if(r && r.error) counts(); }, counts);   // the card lists which ones; falls back to counts before supabase-ff-ach-list.sql is run
+  }catch(e){}
 }
 async function ffSyncPlayed(){
   if(!sb || !sbUser) return;
