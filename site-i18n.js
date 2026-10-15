@@ -37,7 +37,7 @@ function picker(){
   for(var j=0;j<slots.length;j++){
     var sel=document.createElement('select'); sel.className='langSel'; sel.setAttribute('data-notr',''); sel.setAttribute('aria-label',lang==='ko'?'언어':T('언어'));
     LANGS.forEach(function(l){ var o=document.createElement('option'); o.value=l; o.textContent=NAMES[l]; if(l===lang) o.selected=true; sel.appendChild(o); });
-    sel.onchange=function(){ try{ localStorage.setItem(LS,this.value); }catch(e){} location.reload(); };
+    sel.onchange=function(){ try{ localStorage.setItem(LS,this.value); }catch(e){} try{ if(window.FFLang) FFLang.set(this.value); }catch(e){} location.reload(); };
     slots[j].appendChild(sel);
   }
 }

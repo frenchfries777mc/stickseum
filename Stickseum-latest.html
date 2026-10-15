@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Stickseum</title>
+<script src="https://frenchfries777mc.github.io/games/ff-lang.js"></script>   <!-- Frenchfries777 공용 언어: 허브·다른 게임과 언어 설정을 맞춤 (언어를 읽는 코드보다 먼저) -->
 <script id="i18nEngine">
 (function(){
 var LS='arenaClashLang', LANGS=['ko','en','es','fr','de','ja'];
@@ -93,6 +94,7 @@ window.getLangPref=function(){return langPref;};
 window.setLang=function(l){
   if(LANGS.indexOf(l)<0 && l!=='auto') return; langPref=l; lang=(l==='auto')?detectLang():l;
   try{localStorage.setItem(LS,l);}catch(e){}
+  try{ if(window.FFLang) FFLang.set(l); }catch(e){}   // also the hub and the other games
   build();
   if(lang!=='ko') startObs();
   applyAll();
@@ -1723,6 +1725,7 @@ function checkAchievements(match){          // match: {me, won, mode} of the mat
   }
   if(newlyUnlocked.length===0) return;
   persistSave();
+  ffSyncAch();
   let totalReward=0;
   for(const a of newlyUnlocked) totalReward+=a.reward;
   if(totalReward>0) addGold(totalReward, null); // silent gold add (no kill-feed label) - the achievement toast itself already announces the reward
@@ -6240,6 +6243,12 @@ function extImage(id, onload){
 }
 let ffPlayed={};                       // {gameId: {plays, last}} of the logged-in account (empty when logged out)
 function ffHasPlayed(g){ return !!ffPlayed[g]; }
+// shared profile card: how many Stickseum achievements are done (needs supabase-ff-achievements.sql on the server; silently does nothing without it)
+function ffSyncAch(){
+  if(!sb || !sbUser) return;
+  try{ const done=ACHIEVEMENTS.filter(a=>saveData.achievements&&saveData.achievements[a.id]).length;
+    sb.rpc('ff_set_achievements', {p_game:'stickseum', p_done:done, p_total:ACHIEVEMENTS.length}).then(()=>{},()=>{}); }catch(e){}
+}
 async function ffSyncPlayed(){
   if(!sb || !sbUser) return;
   const uid=sbUser.id;
@@ -6249,6 +6258,7 @@ async function ffSyncPlayed(){
     if(!r || r.error || !r.data || !sbUser || sbUser.id!==uid) return;
     const o={}; for(const x of r.data) o[x.game]={plays:x.plays, last:x.last_at}; ffPlayed=o;
     try{ checkAchievements(null); }catch(e){}
+    ffSyncAch();                                                        // once after every login, too
     try{ if(document.getElementById('profileScreen').classList.contains('active')) renderProfile(); }catch(e){}
   }catch(e){}
 }
