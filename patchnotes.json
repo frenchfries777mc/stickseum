@@ -10,7 +10,7 @@
     "도전과제 Frenchfries777 탐험가 추가 (세 게임 모두 플레이)",
     "프로필 카드에 플레이한 게임 표시 추가",
     "사이트 밸런스 페이지에 캐릭터별 버전 승률 그래프 추가",
-    "버전 번호 뒤에 버전 제목 표시 추가 (게임 상단, 패치노트)",
+    "버전 이름 추가 (v0.1 콜로세움의 문 ~ v0.6 챔피언의 길, 사이트 버전 목록과 게임 상단)",
     "사이트에 Frenchfries777 계정 로그인 추가 (허브에서 로그인하면 이어짐, 닉네임과 프로필 카드)"
    ],
    "tr": {
@@ -22,7 +22,7 @@
       "Achievement Frenchfries777 Explorer added (play all three games)",
       "Profile card shows the games you have played",
       "Balance page on the site: win rate per version graph for each character",
-      "Version title shown after the version number (in-game top bar, patch notes)",
+      "Version names added (v0.1 The Colosseum Opens to v0.6 Road to Champion; site version list and in-game top bar)",
       "Frenchfries777 account login on the site (carries over from the hub; nickname and profile card)"
      ]
     },
@@ -34,7 +34,7 @@
       "Logro Explorador de Frenchfries777 añadido (jugar a los tres juegos)",
       "La tarjeta de perfil muestra los juegos que has jugado",
       "Página de equilibrio del sitio: gráfica de tasa de victorias por versión para cada personaje",
-      "Título de versión junto al número de versión (barra superior del juego, notas del parche)",
+      "Nombres de versión añadidos (de v0.1 Se abre el Coliseo a v0.6 El camino del campeón; lista de versiones y barra superior del juego)",
       "Inicio de sesión con la cuenta Frenchfries777 en el sitio (se mantiene desde el hub; apodo y tarjeta de perfil)"
      ]
     },
@@ -46,7 +46,7 @@
       "Succès Explorateur Frenchfries777 ajouté (jouer aux trois jeux)",
       "La carte de profil affiche les jeux joués",
       "Page d’équilibrage du site : graphique du taux de victoire par version pour chaque personnage",
-      "Titre de version affiché après le numéro (barre du haut en jeu, notes de mise à jour)",
+      "Noms de version ajoutés (de v0.1 Le Colisée ouvre ses portes à v0.6 La voie du champion ; liste des versions et barre du haut en jeu)",
       "Connexion au compte Frenchfries777 sur le site (reprise depuis le hub ; pseudo et carte de profil)"
      ]
     },
@@ -58,7 +58,7 @@
       "Erfolg Frenchfries777-Entdecker hinzugefügt (alle drei Spiele spielen)",
       "Profilkarte zeigt die gespielten Spiele",
       "Balance-Seite der Website: Siegquote pro Version als Grafik für jede Figur",
-      "Versionstitel hinter der Versionsnummer (obere Leiste im Spiel, Patchnotes)",
+      "Versionsnamen hinzugefügt (v0.1 Das Kolosseum öffnet bis v0.6 Der Weg zum Champion; Versionsliste und obere Leiste im Spiel)",
       "Frenchfries777-Konto-Anmeldung auf der Website (übernommen vom Hub; Spitzname und Profilkarte)"
      ]
     },
@@ -70,7 +70,7 @@
       "実績「Frenchfries777探検家」を追加（3作すべてを遊ぶ）",
       "プロフィールカードに遊んだゲームを表示",
       "サイトのバランスページにキャラクター別のバージョン勝率グラフを追加",
-      "バージョン番号の後ろにバージョンタイトルを表示（ゲーム上部、パッチノート）",
+      "バージョン名を追加（v0.1 コロシアムの門〜v0.6 チャンピオンへの道、サイトのバージョン一覧とゲーム上部）",
       "サイトにFrenchfries777アカウントのログインを追加（ハブでのログインを引き継ぎ、ニックネームとプロフィールカード）"
      ]
     }
