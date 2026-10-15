@@ -29,7 +29,7 @@
   .topbar nav a.on{color:var(--text); background:var(--panel); border:1px solid var(--line);}
   .langSel{background:var(--panel); color:var(--text-dim); border:1px solid var(--line); border-radius:7px; padding:5px 8px; font:inherit; font-size:14px; cursor:pointer; margin-left:6px;}
   .langSel:hover{color:var(--text); border-color:var(--teal);}
-  .topbar .right{display:flex; align-items:center; gap:4px; max-width:100%; overflow-x:auto;}
+  .topbar .right{display:flex; align-items:center; gap:4px; max-width:100%; min-width:0; flex-wrap:wrap; justify-content:flex-end;}   /* no overflow here: it would clip the account menu */
   .head{padding:22px 0 4px;}
   .head h1{font-size:clamp(32px,6vw,48px); font-weight:700; text-transform:uppercase; line-height:1.05;}
   .head p{color:var(--text-dim); margin:10px 0 0; font-size:17px; max-width:62ch;}
@@ -80,7 +80,7 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="topbar"><a class="wordmark" href="index.html">STICK<b>SEUM</b></a><div class="right"><nav><a href="index.html">홈</a><a href="codex.html">캐릭터 도감</a><a class="on" href="ranking.html">순위표</a><a href="balance.html">밸런스</a></nav><span data-lang-slot></span></div></div>
+  <div class="topbar"><a class="wordmark" href="index.html">STICK<b>SEUM</b></a><div class="right"><nav><a href="index.html">홈</a><a href="codex.html">캐릭터 도감</a><a class="on" href="ranking.html">순위표</a><a href="balance.html">밸런스</a></nav><span data-lang-slot></span><span data-ff-account></span></div></div>
   <div class="head">
     <h1>순위표</h1>
     <p>랭크전 시즌 순위와 클랜 순위예요. 시즌은 한국 시간으로 매달 1일에 새로 시작해요.</p>
@@ -96,6 +96,7 @@ const SUPABASE_URL = "https://kebsbuvuutilitwlvxzv.supabase.co";
 const SUPABASE_KEY = "sb_publishable_4Egu0zm3p6cxWGvP_-GlIw_mlCpO1Nf";
 const TIERS = [{"min":0,"name":"브론즈","color":"#c47a3d"},{"min":950,"name":"실버","color":"#c7ccd6"},{"min":1050,"name":"골드","color":"#ffd34d"},{"min":1150,"name":"플래티넘","color":"#4dd9ff"},{"min":1250,"name":"다이아","color":"#7bf3ff"},{"min":1400,"name":"마스터","color":"#ff5fd2"},{"min":1550,"name":"그랜드 마스터","color":"#ff5252"}];
 let sb = null; try { if (window.supabase) sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch (e) {}
+window.FFAuthClient = sb;   // ff-auth.js 로그인 버튼이 같은 클라이언트를 쓰도록
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const safeColor = c => /^#[0-9a-fA-F]{3,8}$/.test(c || '') ? c : '#3fe0c5';
 const tierOf = r => { let t = TIERS[0]; for (const x of TIERS) if ((+r || 0) >= x.min) t = x; return t; };
@@ -157,5 +158,6 @@ function clans(rows){
 tabs();
 (async () => { try { if (sb){ const s = await sb.auth.getSession(); myId = s && s.data && s.data.session && s.data.session.user ? s.data.session.user.id : null; } } catch (e) {} load(); })();
 </script>
+<script src="https://frenchfries777mc.github.io/games/ff-auth.js"></script>
 </body>
 </html>

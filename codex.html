@@ -29,7 +29,7 @@
   .topbar nav a.on{color:var(--text); background:var(--panel); border:1px solid var(--line);}
   .langSel{background:var(--panel); color:var(--text-dim); border:1px solid var(--line); border-radius:7px; padding:5px 8px; font:inherit; font-size:14px; cursor:pointer; margin-left:6px;}
   .langSel:hover{color:var(--text); border-color:var(--teal);}
-  .topbar .right{display:flex; align-items:center; gap:4px; max-width:100%; overflow-x:auto;}
+  .topbar .right{display:flex; align-items:center; gap:4px; max-width:100%; min-width:0; flex-wrap:wrap; justify-content:flex-end;}   /* no overflow here: it would clip the account menu */
   .head{padding:22px 0 4px;}
   .head h1{font-size:clamp(32px,6vw,48px); font-weight:700; text-transform:uppercase; line-height:1.05;}
   .head p{color:var(--text-dim); margin:10px 0 0; font-size:17px; max-width:62ch;}
@@ -88,7 +88,7 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="topbar"><a class="wordmark" href="index.html">STICK<b>SEUM</b></a><div class="right"><nav><a href="index.html">홈</a><a class="on" href="codex.html">캐릭터 도감</a><a href="ranking.html">순위표</a><a href="balance.html">밸런스</a></nav><span data-lang-slot></span></div></div>
+  <div class="topbar"><a class="wordmark" href="index.html">STICK<b>SEUM</b></a><div class="right"><nav><a href="index.html">홈</a><a class="on" href="codex.html">캐릭터 도감</a><a href="ranking.html">순위표</a><a href="balance.html">밸런스</a></nav><span data-lang-slot></span><span data-ff-account></span></div></div>
   <div class="head">
     <h1>캐릭터 도감</h1>
     <p id="sub"></p>
@@ -147,5 +147,6 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChar();
 window.addEventListener('hashchange', () => openChar(location.hash.slice(1)));
 draw(); openChar(location.hash.slice(1));
 </script>
+<script src="https://frenchfries777mc.github.io/games/ff-auth.js"></script>
 </body>
 </html>
