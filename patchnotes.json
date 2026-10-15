@@ -1,6 +1,76 @@
 {
  "notes": [
   {
+   "date": "2026-10-15",
+   "build": "v226",
+   "title": "좀비게임과 마술사 조정",
+   "items": [
+    "좀비게임 좀비 승리 시 처음 좀비만 승리 (좀비가 된 사람은 제외)",
+    "마술사 일반 공격 카드당 데미지 8 → 12",
+    "마술사 상대 위치로 순간이동과 쿨타임 없는 3연속 발사를 궁극기로 이동 (일반 공격은 3장 적중 시 추가 5 데미지 + 0.5초 기절만 유지)",
+    "좀비게임 봇이 근거리 캐릭터를 덜 고르고 좀비에게서 도망",
+    "허브·다른 게임과 언어 설정 공유 (한 곳에서 바꾸면 모두 같은 언어)",
+    "공용 프로필 카드에 Stickseum 도전과제 진행상황 표시"
+   ],
+   "tr": {
+    "en": {
+     "title": "Zombie game and Magician changes",
+     "items": [
+      "Zombie game: when zombies win, only the first zombie wins (players who were turned do not)",
+      "Magician normal attack: damage per card 8 → 12",
+      "Magician: teleport to the opponent and 3 cooldown-free volleys moved to the ultimate (landing all 3 cards now only adds 5 damage + 0.5s stun)",
+      "Zombie game bots pick fewer close-range characters and run from zombies",
+      "Language setting shared with the hub and the other games (change it in one place, all follow)",
+      "Shared profile card shows your Stickseum achievement progress"
+     ]
+    },
+    "es": {
+     "title": "Cambios en el juego zombi y el Mago",
+     "items": [
+      "Juego zombi: si ganan los zombis, solo gana el primer zombi (no los convertidos)",
+      "Ataque normal del Mago: daño por carta 8 → 12",
+      "Mago: el teletransporte al rival y las 3 ráfagas sin enfriamiento pasan a la habilidad definitiva (acertar las 3 cartas ahora solo añade 5 de daño + aturdimiento de 0,5 s)",
+      "Los bots del juego zombi eligen menos personajes cuerpo a cuerpo y huyen de los zombis",
+      "Idioma compartido con el hub y los otros juegos (cámbialo en un sitio y todos lo siguen)",
+      "La tarjeta de perfil compartida muestra tu progreso de logros de Stickseum"
+     ]
+    },
+    "fr": {
+     "title": "Jeu zombie et Magicien ajustés",
+     "items": [
+      "Jeu zombie : si les zombies gagnent, seul le premier zombie gagne (pas les joueurs transformés)",
+      "Attaque normale du Magicien : dégâts par carte 8 → 12",
+      "Magicien : la téléportation sur l’adversaire et les 3 salves sans recharge passent dans l’ultime (toucher avec les 3 cartes ajoute seulement 5 dégâts + 0,5 s d’étourdissement)",
+      "Les bots du jeu zombie choisissent moins de personnages au corps à corps et fuient les zombies",
+      "Langue partagée avec le hub et les autres jeux (changée à un endroit, partout pareil)",
+      "La carte de profil commune affiche ta progression des succès Stickseum"
+     ]
+    },
+    "de": {
+     "title": "Zombie-Spiel und Magier angepasst",
+     "items": [
+      "Zombie-Spiel: Gewinnen die Zombies, gewinnt nur der erste Zombie (nicht die Verwandelten)",
+      "Normalangriff des Magiers: Schaden pro Karte 8 → 12",
+      "Magier: Teleport zum Gegner und 3 Salven ohne Abklingzeit gehören jetzt zur Ultimate (treffen alle 3 Karten, gibt es nur noch 5 Bonusschaden + 0,5 s Betäubung)",
+      "Bots im Zombie-Spiel wählen seltener Nahkämpfer und fliehen vor Zombies",
+      "Spracheinstellung mit dem Hub und den anderen Spielen geteilt (an einer Stelle ändern, überall gleich)",
+      "Gemeinsame Profilkarte zeigt deinen Stickseum-Erfolgsfortschritt"
+     ]
+    },
+    "ja": {
+     "title": "ゾンビゲームとマジシャンの調整",
+     "items": [
+      "ゾンビゲーム：ゾンビが勝ったとき、最初のゾンビだけが勝利（ゾンビになった人は除く）",
+      "マジシャンの通常攻撃：カード1枚のダメージ 8 → 12",
+      "マジシャン：相手の位置への瞬間移動とクールタイムなしの3連続発射を必殺技へ移動（通常攻撃は3枚命中で追加5ダメージ＋0.5秒スタンのみ）",
+      "ゾンビゲームのボットが近接キャラクターをあまり選ばず、ゾンビから逃げるように",
+      "ハブやほかのゲームと言語設定を共有（1か所で変えるとすべて同じ言語に）",
+      "共通プロフィールカードにStickseumの実績の進行状況を表示"
+     ]
+    }
+   }
+  },
+  {
    "date": "2026-10-14",
    "build": "v225",
    "title": "세 게임 공용 프로필",
