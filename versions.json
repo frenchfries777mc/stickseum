@@ -1,16 +1,27 @@
 {
  "name": "Stickseum",
- "latest": "0.6",
+ "latest": "0.7",
  "latestFile": "Stickseum-latest.html",
- "updated": "2026-10-10",
+ "updated": "2026-10-15",
  "versions": [
+  {
+   "version": "0.7",
+   "date": "2026-10-15",
+   "file": "Stickseum-v0.7.html",
+   "title": "어둠의 늪",
+   "summary": "새 캐릭터 쿠루스(어둠의 물약·어둠의 검·어둠 이동), 비공개 게임 보상 제거, 밸런스 페이지를 궁극기·스킬·대쉬를 모두 쓰는 평지 측정으로 변경",
+   "latest": true,
+   "size": 2212377,
+   "sha256": "07d7a4042e64",
+   "build": "v227"
+  },
   {
    "version": "0.6",
    "date": "2026-10-10",
    "file": "Stickseum-v0.6.html",
    "title": "챔피언의 길",
    "summary": "모바일 터치 조작(자동 감지)·전적 화면·무기 밸런스 조정·보스 레이드와 토너먼트·주간 이벤트·새 맵 3장·하이라이트 저장, 모드 목록 통합, 이모트·프로필 카드·방 규칙, 일일/주간 미션·시즌 패스·킬 이펙트, 언어 자동 설정",
-   "latest": true,
+   "latest": false,
    "size": 2179761,
    "sha256": "2065047fbd55",
    "build": "v226"
