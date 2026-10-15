@@ -2,6 +2,46 @@
  "notes": [
   {
    "date": "2026-10-15",
+   "build": "v232",
+   "title": "버그 수정",
+   "items": [
+    "듀얼에서 다음 라운드에도 쿠루스의 어둠이 남아 있던 문제 수정"
+   ],
+   "tr": {
+    "en": {
+     "title": "Bug fix",
+     "items": [
+      "Fixed Kurus darkness staying into the next round in Duel"
+     ]
+    },
+    "es": {
+     "title": "Corrección de errores",
+     "items": [
+      "Corregido que la oscuridad de Kurus se quedara en la siguiente ronda del Duelo"
+     ]
+    },
+    "fr": {
+     "title": "Correction de bug",
+     "items": [
+      "Correction des ténèbres de Kurus qui restaient à la manche suivante en Duel"
+     ]
+    },
+    "de": {
+     "title": "Fehlerbehebung",
+     "items": [
+      "Behoben, dass die Dunkelheit von Kurus im Duell in der nächsten Runde liegen blieb"
+     ]
+    },
+    "ja": {
+     "title": "バグ修正",
+     "items": [
+      "デュエルで次のラウンドにもクルスの闇が残っていた問題を修正"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-15",
    "build": "v231",
    "title": "밸런스 조정",
    "items": [

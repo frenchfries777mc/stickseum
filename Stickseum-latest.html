@@ -4354,7 +4354,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-15-v231';
+const GAME_BUILD='build 2026-10-15-v232';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
@@ -4976,7 +4976,7 @@ function tnBeginRound(first){
   }
   tnStartPick(R);                                                                                     // the ones still in choose a character again
 }
-function tnIntroGo(){ if(!tn) return; tn.phase='intro'; tn.introAt=Date.now()+TN_INTRO_MS; tnSendBk(true); }
+function tnIntroGo(){ if(!tn) return; darkPools=[]; tn.phase='intro'; tn.introAt=Date.now()+TN_INTRO_MS; tnSendBk(true); }
 function tnStartPick(R){
   try{
     const ids=new Set(); for(const m of R){ if(m.a) ids.add(m.a); if(m.b) ids.add(m.b); }
@@ -12795,7 +12795,7 @@ function broadcastDuelScore(){
   broadcastAll({t:'duelScore', scores:duelScores});
 }
 function startNewDuelRound(){
-  duelRoundEndsAt=null;
+  duelRoundEndsAt=null; darkPools=[];   // Kurus darkness belongs to the round it was spread in
   for(const id in players){
     const p=players[id];
     const sp=spawnPoint(); p.x=sp.x; p.y=sp.y; p.vx=0; p.vy=0; p.hp=ruleHp(); p.alive=true; p.respawnAt=0;
