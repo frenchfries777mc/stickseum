@@ -2,6 +2,58 @@
  "notes": [
   {
    "date": "2026-10-15",
+   "build": "v233",
+   "title": "쿠루스 어둠 이동 개선",
+   "items": [
+    "쿠루스 어둠 속에서 W/S로 바로 위·아래에 있는 내 어둠으로 이동 추가",
+    "봇 쿠루스도 다른 높이의 상대를 향해 어둠 사이를 이동",
+    "밸런스 페이지 v233으로 다시 측정 (쿠루스만 새로 측정)"
+   ],
+   "tr": {
+    "en": {
+     "title": "Kurus darkness movement improved",
+     "items": [
+      "Kurus can now press W/S inside the darkness to move to his own darkness right above or below",
+      "Bot Kurus also moves between pools toward opponents on another level",
+      "Balance page re-measured on v233 (only Kurus measured again)"
+     ]
+    },
+    "es": {
+     "title": "Mejor movimiento en la oscuridad de Kurus",
+     "items": [
+      "Kurus ahora puede pulsar W/S dentro de la oscuridad para pasar a su oscuridad justo encima o debajo",
+      "Kurus bot también se mueve entre charcos hacia rivales a otra altura",
+      "Página de equilibrio medida de nuevo en v233 (solo se volvió a medir a Kurus)"
+     ]
+    },
+    "fr": {
+     "title": "Déplacement dans les ténèbres de Kurus amélioré",
+     "items": [
+      "Kurus peut maintenant appuyer sur W/S dans les ténèbres pour passer à ses ténèbres juste au-dessus ou en dessous",
+      "Kurus bot se déplace aussi entre les flaques vers les adversaires à un autre niveau",
+      "Page d’équilibrage remesurée sur v233 (seul Kurus a été remesuré)"
+     ]
+    },
+    "de": {
+     "title": "Bewegung in der Dunkelheit von Kurus verbessert",
+     "items": [
+      "Kurus kann jetzt in der Dunkelheit mit W/S zu seiner Dunkelheit direkt darüber oder darunter wechseln",
+      "Bot-Kurus wechselt ebenfalls zwischen Pfützen zu Gegnern auf anderer Höhe",
+      "Balance-Seite auf v233 neu gemessen (nur Kurus neu gemessen)"
+     ]
+    },
+    "ja": {
+     "title": "クルスの闇の中の移動を改善",
+     "items": [
+      "クルスが闇の中でW/Sを押すと真上・真下にある自分の闇へ移動できるように追加",
+      "ボットのクルスも別の高さの相手に向かって闇の間を移動",
+      "バランスページをv233で再測定（クルスのみ再測定）"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-15",
    "build": "v232",
    "title": "버그 수정",
    "items": [
