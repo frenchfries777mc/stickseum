@@ -2,6 +2,88 @@
  "notes": [
   {
    "date": "2026-10-15",
+   "build": "v227",
+   "title": "새 캐릭터 쿠루스",
+   "items": [
+    "새 캐릭터 쿠루스 추가",
+    "쿠루스 일반 공격 어둠의 물약: 포물선 투척, 데미지 12, 떨어진 자리에 캐릭터 3명 너비의 어둠 생성 (발판 옆면·아랫면에 맞으면 아래로 흘러내림)",
+    "어둠 위에서 쿠루스는 초당 체력 3 회복, 상대는 초당 3 피해",
+    "쿠루스 스킬 어둠의 검: 데미지 60, 매우 큰 넉백, 1초 기절, 상대가 착지한 자리에 어둠 생성",
+    "쿠루스 궁극기 어둠 이동: 어둠 속으로 들어가 투명·공격 무시, 다시 쓰면 어둠 탈출로 근처 상대 1초 기절",
+    "비공개 게임 보상 제거 (경험치·골드·영혼석·시즌패스 XP·캐릭터 경험치·미션·도전과제)",
+    "밸런스 페이지 평지 측정만 표시 (궁극기·스킬·대쉬를 모두 쓰는 봇으로 측정)",
+    "밸런스 페이지 변화 색 통일 (+ 초록, - 빨강)"
+   ],
+   "tr": {
+    "en": {
+     "title": "New character Kurus",
+     "items": [
+      "New character Kurus added",
+      "Kurus normal attack Dark Potion: thrown in an arc, 12 damage, leaves darkness 3 characters wide where it lands (drips down when it hits a platform side or underside)",
+      "On the darkness Kurus heals 3 HP per second, opponents take 3 damage per second",
+      "Kurus skill Dark Sword: 60 damage, huge knockback, 1s stun, darkness where the opponent lands",
+      "Kurus ultimate Dark Passage: sink into the darkness, invisible and untouchable; use again for Dark Escape, stunning nearby opponents for 1s",
+      "Private games give no rewards (XP, gold, soul stones, season pass XP, character XP, missions, achievements)",
+      "Balance page shows only the flat map (measured with bots using ultimates, skills and dashes)",
+      "Balance page change colors unified (+ green, - red)"
+     ]
+    },
+    "es": {
+     "title": "Nuevo personaje: Kurus",
+     "items": [
+      "Nuevo personaje Kurus",
+      "Ataque normal de Kurus, Poción oscura: lanzada en parábola, 12 de daño, deja oscuridad de 3 personajes de ancho donde cae (gotea hacia abajo si golpea el lateral o la parte inferior de una plataforma)",
+      "Sobre la oscuridad Kurus recupera 3 de vida por segundo y los rivales reciben 3 de daño por segundo",
+      "Habilidad de Kurus, Espada oscura: 60 de daño, retroceso enorme, aturdimiento de 1 s, oscuridad donde aterriza el rival",
+      "Definitiva de Kurus, Paso oscuro: se hunde en la oscuridad, invisible e intocable; úsala de nuevo para Escape oscuro y aturdir 1 s a los rivales cercanos",
+      "Las partidas privadas no dan recompensas (XP, oro, piedras de alma, XP del pase de temporada, XP de personaje, misiones, logros)",
+      "La página de equilibrio solo muestra el mapa plano (medido con bots que usan definitivas, habilidades e impulsos)",
+      "Colores de cambio unificados en la página de equilibrio (+ verde, - rojo)"
+     ]
+    },
+    "fr": {
+     "title": "Nouveau personnage : Kurus",
+     "items": [
+      "Nouveau personnage Kurus",
+      "Attaque normale de Kurus, Potion des ténèbres : lancée en cloche, 12 dégâts, laisse des ténèbres larges de 3 personnages là où elle tombe (coule vers le bas si elle touche le côté ou le dessous d’une plateforme)",
+      "Sur les ténèbres, Kurus récupère 3 PV par seconde, les adversaires subissent 3 dégâts par seconde",
+      "Compétence de Kurus, Épée des ténèbres : 60 dégâts, énorme recul, étourdissement de 1 s, ténèbres là où l’adversaire retombe",
+      "Ultime de Kurus, Passage des ténèbres : s’enfonce dans les ténèbres, invisible et intouchable ; réutilisez-le pour Évasion des ténèbres et étourdir 1 s les adversaires proches",
+      "Les parties privées ne donnent aucune récompense (XP, or, pierres d’âme, XP du passe de saison, XP de personnage, missions, succès)",
+      "La page d’équilibrage n’affiche que la carte plate (mesurée avec des bots qui utilisent ultimes, compétences et sprints)",
+      "Couleurs des changements unifiées sur la page d’équilibrage (+ vert, - rouge)"
+     ]
+    },
+    "de": {
+     "title": "Neue Figur Kurus",
+     "items": [
+      "Neue Figur Kurus",
+      "Kurus Normalangriff Dunkler Trank: im Bogen geworfen, 12 Schaden, hinterlässt 3 Figuren breite Dunkelheit am Aufschlagort (tropft hinunter, wenn er Seite oder Unterseite einer Plattform trifft)",
+      "Auf der Dunkelheit heilt Kurus 3 LP pro Sekunde, Gegner erleiden 3 Schaden pro Sekunde",
+      "Kurus Fähigkeit Dunkelschwert: 60 Schaden, gewaltiger Rückstoß, 1 s Betäubung, Dunkelheit dort, wo der Gegner landet",
+      "Kurus Ultimative Dunkelgang: in der Dunkelheit versinken, unsichtbar und unberührbar; erneut einsetzen für Dunkelflucht, die nahe Gegner 1 s betäubt",
+      "Private Spiele geben keine Belohnungen (EP, Gold, Seelensteine, Saisonpass-EP, Figuren-EP, Missionen, Erfolge)",
+      "Balance-Seite zeigt nur die flache Karte (gemessen mit Bots, die Ultimates, Fähigkeiten und Sprints nutzen)",
+      "Änderungsfarben auf der Balance-Seite vereinheitlicht (+ grün, - rot)"
+     ]
+    },
+    "ja": {
+     "title": "新キャラクター クルス",
+     "items": [
+      "新キャラクター クルスを追加",
+      "クルスの通常攻撃 闇の薬：放物線で投げる、ダメージ12、落ちた場所にキャラクター3人分の幅の闇を作る（足場の側面・下面に当たると下へ垂れ落ちる）",
+      "闇の上ではクルスは毎秒体力3回復、相手は毎秒3ダメージ",
+      "クルスのスキル 闇の剣：ダメージ60、非常に大きなノックバック、1秒スタン、相手が着地した場所に闇を作る",
+      "クルスのアルティメット 闇移動：闇の中に入り透明・攻撃無効、もう一度使うと闇脱出で近くの相手を1秒スタン",
+      "非公開ゲームの報酬を削除（経験値・ゴールド・魂石・シーズンパスXP・キャラクター経験値・ミッション・実績）",
+      "バランスページは平地の測定のみ表示（アルティメット・スキル・ダッシュをすべて使うボットで測定）",
+      "バランスページの変化の色を統一（+ 緑、- 赤）"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-15",
    "build": "v226",
    "title": "좀비게임과 마술사 조정",
    "items": [
