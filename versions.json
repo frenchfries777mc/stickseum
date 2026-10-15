@@ -1,68 +1,28 @@
 {
- "name": "Stickseum",
- "latest": "0.6",
- "latestFile": "Stickseum-latest.html",
- "updated": "2026-10-10",
+ "name": "Crown Envoy",
+ "latest": "0.2",
+ "latestFile": "CrownEnvoy-v0.2.html",
+ "updated": "2026-10-15",
  "versions": [
   {
-   "version": "0.6",
-   "date": "2026-10-10",
-   "file": "Stickseum-v0.6.html",
-   "title": "모바일 · 보스 레이드 · 토너먼트",
-   "summary": "모바일 터치 조작(자동 감지)·전적 화면·무기 밸런스 조정·보스 레이드와 토너먼트·주간 이벤트·새 맵 3장·하이라이트 저장, 모드 목록 통합, 이모트·프로필 카드·방 규칙, 일일/주간 미션·시즌 패스·킬 이펙트, 언어 자동 설정",
-   "latest": true,
-   "size": 1997462,
-   "sha256": "36e49bad99ca"
-  },
-  {
-   "version": "0.5",
-   "date": "2026-10-07",
-   "file": "Stickseum-v0.5.html",
-   "size": 1542488,
-   "sha256": "9e788e3bac33",
-   "title": "캐릭터 22명 · 상자 · 채팅",
-   "summary": "자다이·호렘헵 추가, 티어 스킨과 화려한 연출, 깃발 뺏기, 랜덤 상자·영혼석·일일 보상, 닉네임 검색, 승리/패배 음악, 채팅 개선, 성능 최적화, 다른 기기에서도 진행 상황 이어하기, 이름이 StickmanRumble로 바뀜",
-   "latest": false
-  },
-  {
-   "version": "0.4",
-   "date": "2026-10-05",
-   "file": "Stickseum-v0.4.html",
-   "size": 788610,
-   "sha256": "173d54b14b3c",
-   "title": "미니게임 · 봇",
-   "summary": "좀비 · 폭탄 돌리기 · 숨바꼭질 · 파쿠르 · 서바이벌, 킬캠 리플레이, 도전과제와 무기 숙련도, 온라인 AI 봇",
-   "latest": false
-  },
-  {
-   "version": "0.3",
-   "date": "2026-10-02",
-   "file": "Stickseum-v0.3.html",
-   "size": 282123,
-   "sha256": "ce9c39fae96f",
-   "title": "캐릭터 17명 · 소셜",
-   "summary": "드라큘라·도박사·마법사 추가, 킬캠과 킬 배너, 상점·프로필·레벨, 친구와 게임 초대",
-   "latest": false
-  },
-  {
    "version": "0.2",
-   "date": "2026-09-29",
-   "file": "Stickseum-v0.2.html",
-   "size": 195634,
-   "sha256": "3ab313578dd5",
-   "title": "다듬기",
-   "summary": "화면과 이펙트 정리, 밸런스 조정",
-   "latest": false
+   "date": "2026-10-15",
+   "file": "CrownEnvoy-v0.2.html",
+   "title": "상황별 튜토리얼과 로그인",
+   "summary": "상황에 맞춰 안내하는 튜토리얼, Frenchfries777 계정 로그인·프로필 카드, 로비 배경의 랜덤 시대 전투, 병사로 바뀐 신문 사진",
+   "latest": true,
+   "size": 7388154,
+   "sha256": "941d02049f15"
   },
   {
    "version": "0.1",
-   "date": "2026-09-29",
-   "file": "Stickseum-v0.1.html",
-   "size": 195433,
-   "sha256": "e2a2978c5565",
+   "date": "2026-10-14",
+   "file": "CrownEnvoy-v0.1.html",
    "title": "첫 버전",
-   "summary": "2~32인 온라인 스틱맨 난투, 무기와 궁극기, 점령전, 코스튬·골드의 기본 틀",
-   "latest": false
+   "summary": "유럽 전장 위에서 펼치는 외교·전쟁 전략. 역사 템플릿 16개, 온라인·비공개·AI 대전, 동맹·속국·연합 외교, 토큰 평화 협상, 시나리오 편집기",
+   "latest": false,
+   "size": 7341885,
+   "sha256": "bdbe6bab7b56"
   }
  ]
 }
