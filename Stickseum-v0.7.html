@@ -1128,8 +1128,8 @@ const WEAPONS = {
             desc:'데미지 34 · 쿨타임 0.55초 · 사거리 105 · 쇠스랑을 휘둘러 근접 공격'},
   sword:   {id:'sword',   name:'칼',       emoji:'🗡️', kind:'melee',    dmg:30, cd:0.5,  range:100, shape:'blade',
             desc:'데미지 30 · 쿨타임 0.5초 · 사거리 100 · 빠르고 날카로운 근접 베기'},
-  bat:     {id:'bat',     name:'방망이',   emoji:'🏏', kind:'melee',    dmg:40, cd:0,  range:105, shape:'club',
-            desc:'데미지 40 · 쿨타임 없음 · 사거리 105 · 클릭한 채 마우스를 아래로 내렸다가 다시 올리면(스윙) 그때 맞은 상대에게 타격'},
+  bat:     {id:'bat',     name:'방망이',   emoji:'🏏', kind:'melee',    dmg:43, cd:0,  range:105, shape:'club',
+            desc:'데미지 43 · 쿨타임 없음 · 사거리 105 · 클릭한 채 마우스를 아래로 내렸다가 다시 올리면(스윙) 그때 맞은 상대에게 타격'},
   boomerang:{id:'boomerang',name:'부메랑', emoji:'🪃', kind:'boomerang',dmg:20, cd:0,  bulletSpeed:700, shape:'boomerang',
             desc:'데미지 20(돌아올 때도 20) · 쿨타임 없음 · 더 멀리 날아가는 부메랑 · 던진 부메랑이 돌아와 나에게 닿고 0.25초 뒤에 다시 던질 수 있음 · 사람은 관통하고, 발판·바닥·벽에 닿으면 즉시 귀환'},
   shuriken:{id:'shuriken',name:'표창',     emoji:'⭐', kind:'gun',      dmg:13, cd:0.48, bulletSpeed:1050, shape:'star',
@@ -1147,12 +1147,12 @@ const WEAPONS = {
             desc:'데미지 68 · 폭발반경 150 · 쿨타임 2.8초 · 중력의 영향을 받는 포물선 궤도, 최고 위력이지만 느린 재장전'},
   dagger:  {id:'dagger',  name:'단검',     emoji:'🔪', kind:'melee',    dmg:35, cd:0.4,  range:65, shape:'dagger', dashCd:0.7,
             desc:'데미지 35 · 쿨타임 0.4초 · 사거리 65 · 대쉬 쿨타임이 0.7초로 줄어드는 기동형 단검'},
-  dracula: {id:'dracula', name:'드라큘라', emoji:'🧛', kind:'melee',    dmg:16, cd:0.4, range:65, shape:'claw', lifesteal:true, lifestealFlat:5,
-            desc:'데미지 16 · 쿨타임 0.4초 · 사거리 65 · 빠른 발톱 공격, 적중할 때마다 체력 5 흡수'},
+  dracula: {id:'dracula', name:'드라큘라', emoji:'🧛', kind:'melee',    dmg:12, cd:0.4, range:65, shape:'claw', lifesteal:true, lifestealFlat:5,
+            desc:'데미지 12 · 쿨타임 0.4초 · 사거리 65 · 빠른 발톱 공격, 적중할 때마다 체력 5 흡수'},
   gambler: {id:'gambler', name:'도박사',   emoji:'🎲', kind:'gun', dmg:16, cd:1.0, bulletSpeed:1100, shape:'chip',
             desc:'데미지 16 · 쿨타임 1.0초 · 장거리 · 칩을 곧게 던짐, 맞힐 때마다 칩 +1 (최대 6) · 칩이 많을수록 스킬·궁극기가 강해짐'},
-  wizard:  {id:'wizard',  name:'마법사',   emoji:'🧙', kind:'gun',      dmg:14, cd:0.8,  bulletSpeed:750, shape:'fireball', pierce:true,
-            desc:'데미지 14 · 쿨타임 0.8초 · 발판과 플레이어를 그대로 통과하며 계속 날아가는 화염 마법'},
+  wizard:  {id:'wizard',  name:'마법사',   emoji:'🧙', kind:'gun',      dmg:14, cd:0.6,  bulletSpeed:750, shape:'fireball', pierce:true,
+            desc:'데미지 14 · 쿨타임 0.6초 · 발판과 플레이어를 그대로 통과하며 계속 날아가는 화염 마법'},
   magiccard:{id:'magiccard',name:'마술 카드',emoji:'🃏', kind:'cards',    dmg:10,  cd:1.0,  bulletSpeed:820, shape:'card', hitR:26, comboBonus:5, freeVolleys:3,
             desc:'트럼프 카드 3장이 넓게 퍼져 날아감 · 장당 데미지 10 · 쿨타임 1.0초 · 맞은 상대는 이동속도가 조금 느려짐 · 3장이 모두 맞으면 추가 5 데미지 + 0.5초 기절'},
   flamethrower:{id:'flamethrower',name:'화염방사기',emoji:'🔥', kind:'flame', dmg:0, cd:0, range:FLAME_RANGE, shape:'flamethrower',
@@ -4354,7 +4354,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-15-v230';
+const GAME_BUILD='build 2026-10-15-v231';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
