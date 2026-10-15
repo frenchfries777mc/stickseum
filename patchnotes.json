@@ -2,6 +2,100 @@
  "notes": [
   {
    "date": "2026-10-15",
+   "build": "v230",
+   "title": "밸런스 조정",
+   "items": [
+    "마법사 공격 쿨타임 0.5초 → 0.8초",
+    "야구선수 궁극기 홈런: 1.5초 동안 이동속도 50% 증가",
+    "부메랑 데미지 16 → 20 (돌아올 때도 20)",
+    "닌자 표창 데미지 11 → 13",
+    "쿠루스 어둠 위 상대가 받던 피해 제거",
+    "쿠루스 어둠 탈출 최대 피해 100 → 90",
+    "드라큘라 박쥐 변신 중 발판 통과 불가",
+    "드라큘라 일반 공격 데미지 18 → 16",
+    "밸런스 페이지 v230으로 다시 측정",
+    "사이트 상단 메뉴를 항상 버튼 아래 줄에 표시 (넓은 화면에서도 줄바꿈되던 문제 수정)"
+   ],
+   "tr": {
+    "en": {
+     "title": "Balance changes",
+     "items": [
+      "Mage attack cooldown 0.5s → 0.8s",
+      "Baseball Player ultimate Home Run: 50% more move speed for 1.5s",
+      "Boomerang damage 16 → 20 (20 on the return too)",
+      "Ninja shuriken damage 11 → 13",
+      "Opponents no longer take damage on Kurus darkness",
+      "Kurus Dark Escape max damage 100 → 90",
+      "Dracula can no longer pass through platforms in Bat Form",
+      "Dracula normal attack damage 18 → 16",
+      "Balance page re-measured on v230",
+      "Site top menu always shown on its own row under the buttons (fixes the wrapping on wide screens too)"
+     ]
+    },
+    "es": {
+     "title": "Ajustes de equilibrio",
+     "items": [
+      "Enfriamiento del ataque del Mago 0,5 s → 0,8 s",
+      "Definitiva Home run del Beisbolista: 50% más de velocidad durante 1,5 s",
+      "Daño del bumerán 16 → 20 (20 también a la vuelta)",
+      "Daño del shuriken del Ninja 11 → 13",
+      "Los rivales ya no reciben daño sobre la oscuridad de Kurus",
+      "Daño máximo del Escape oscuro de Kurus 100 → 90",
+      "Drácula ya no atraviesa plataformas en Transformación en murciélago",
+      "Daño del ataque normal de Drácula 18 → 16",
+      "Página de equilibrio medida de nuevo en v230",
+      "El menú superior del sitio siempre va en su propia fila bajo los botones (corrige el salto de línea también en pantallas anchas)"
+     ]
+    },
+    "fr": {
+     "title": "Ajustements d’équilibrage",
+     "items": [
+      "Recharge d’attaque du Magicien 0,5 s → 0,8 s",
+      "Ultime Home run du Joueur de baseball : 50 % de vitesse en plus pendant 1,5 s",
+      "Dégâts du boomerang 16 → 20 (20 au retour aussi)",
+      "Dégâts du shuriken du Ninja 11 → 13",
+      "Les adversaires ne subissent plus de dégâts sur les ténèbres de Kurus",
+      "Dégâts max de l’Évasion des ténèbres de Kurus 100 → 90",
+      "Dracula ne traverse plus les plateformes en Transformation en chauve-souris",
+      "Dégâts de l’attaque normale de Dracula 18 → 16",
+      "Page d’équilibrage remesurée sur v230",
+      "Le menu du haut du site est toujours sur sa propre ligne sous les boutons (corrige le retour à la ligne aussi sur grand écran)"
+     ]
+    },
+    "de": {
+     "title": "Balance-Anpassungen",
+     "items": [
+      "Angriffsabklingzeit des Magiers 0,5 s → 0,8 s",
+      "Ultimative Homerun des Baseballspielers: 1,5 s lang 50 % mehr Tempo",
+      "Bumerang-Schaden 16 → 20 (auch 20 auf dem Rückweg)",
+      "Shuriken-Schaden des Ninjas 11 → 13",
+      "Gegner erleiden auf der Dunkelheit von Kurus keinen Schaden mehr",
+      "Maximaler Schaden der Dunkelflucht von Kurus 100 → 90",
+      "Dracula kann in der Fledermaus-Verwandlung nicht mehr durch Plattformen",
+      "Normalangriffsschaden von Dracula 18 → 16",
+      "Balance-Seite auf v230 neu gemessen",
+      "Das obere Menü der Website steht immer in einer eigenen Zeile unter den Knöpfen (behebt den Umbruch auch auf breiten Bildschirmen)"
+     ]
+    },
+    "ja": {
+     "title": "バランス調整",
+     "items": [
+      "魔法使いの攻撃クールタイム 0.5秒 → 0.8秒",
+      "野球選手のアルティメット ホームラン：1.5秒間移動速度50%上昇",
+      "ブーメランのダメージ 16 → 20（戻りも20）",
+      "忍者の手裏剣ダメージ 11 → 13",
+      "クルスの闇の上で相手が受けていたダメージを削除",
+      "クルスの闇脱出の最大ダメージ 100 → 90",
+      "ドラキュラのコウモリ変身中は足場を通り抜けられないように",
+      "ドラキュラの通常攻撃ダメージ 18 → 16",
+      "バランスページをv230で再測定",
+      "サイト上部のメニューを常にボタンの下の行に表示（広い画面でも改行されていた問題を修正）"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-15",
    "build": "v229",
    "title": "새 맵 어둠의 늪과 쿠루스 어둠 개편",
    "items": [
