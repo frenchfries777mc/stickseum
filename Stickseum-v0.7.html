@@ -4315,7 +4315,7 @@ function safeSend(conn, data){
 function safeHandler(fn){ return function(...args){ try{ return fn.apply(this, args); }catch(e){ console.error('[handler]', e); } }; }
 function broadcastAll(msg){ for(const id in conns) safeSend(conns[id], msg); }
 let effectLocalTimes={}; // client-side only: maps effect id -> this tab's own performance.now() at first sight
-let localInput={left:false,right:false,jump:false,down:false,angle:0,shoot:false,dash:false};
+let localInput={left:false,right:false,jump:false,down:false,up:false,angle:0,shoot:false,dash:false};
 let started=false;
 let lastStateReceivedAt=0; // client-side only: when the last 'state' broadcast actually arrived (0 = never)
 let gameLoopStartedAt=0; // when THIS client's own loop started - the fallback baseline for staleness when
@@ -4354,7 +4354,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-15-v233';
+const GAME_BUILD='build 2026-10-15-v234';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
@@ -11753,7 +11753,7 @@ function darkHopTarget(p, up){      // W/S inside the darkness: the nearest pudd
   return best;
 }
 function darkSubMove(p, input, dt, tMs){
-  const hop=input.jump ? 1 : (input.down ? -1 : 0);
+  const hop=(input.up || input.jump) ? 1 : (input.down ? -1 : 0);
   if(hop && !p.darkHopHeld){
     const h=darkHopTarget(p, hop>0);
     if(h){ pushFx('darksplash', p.x, p.y-4, tMs, {}); p.darkSub.pi=h.z.pi; p.x=clamp(p.x, h.r.x0+4, h.r.x1-4); p.y=h.r.y; pushFx('darksink', p.x, p.y, tMs, {}); }
@@ -13218,7 +13218,7 @@ function showKillBanner(killerName, victimName){
 // alongside whatever the player has configured in settings - this guarantees the game can never become
 // genuinely unplayable from a bad or forgotten rebind, while WASD-equivalents (and dash/teleport/ultimate)
 // remain fully configurable. KeyS/ArrowDown for 'down' isn't exposed in settings (rarely used, no conflict risk).
-const DOWN_KEYS={KeyS:1, ArrowDown:1};
+const DOWN_KEYS={KeyS:1, ArrowDown:1}, UP_KEYS={KeyW:1, ArrowUp:1};   // W/S: 쿠루스 hops between his puddles (W is not jump; jump stays on its own key)
 window.addEventListener('keydown', e=>{
   if(document.activeElement && (document.activeElement.tagName==='INPUT' || document.activeElement.tagName==='TEXTAREA')) return;
   if(keybindListenFor){ if(captureKeybind(e.code)) e.preventDefault(); return; } // settings screen is waiting to capture a new binding - consume this keypress instead of letting it move the player
@@ -13226,6 +13226,7 @@ window.addEventListener('keydown', e=>{
   if(e.code===keyBindings.left || e.code==='ArrowLeft') localInput.left=true;
   if(e.code===keyBindings.right || e.code==='ArrowRight') localInput.right=true;
   if(DOWN_KEYS[e.code]) localInput.down=true;
+  if(UP_KEYS[e.code]) localInput.up=true;
   if(e.code===keyBindings.jump || e.code==='ArrowUp' || e.code==='Space'){ localInput.jump=true; if(e.code==='Space') e.preventDefault(); }
   abilityKeyDown(e.code, e.repeat, e.shiftKey);       // dash / teleport / ultimate / skill: held to aim, used when released (or when you click while holding it); with Shift: ultimate / skill at once on the nearest enemy
   if(e.code==='Escape') abilityCancel();
@@ -13235,6 +13236,7 @@ window.addEventListener('keyup', e=>{
   if(e.code===keyBindings.left || e.code==='ArrowLeft') localInput.left=false;
   if(e.code===keyBindings.right || e.code==='ArrowRight') localInput.right=false;
   if(DOWN_KEYS[e.code]) localInput.down=false;
+  if(UP_KEYS[e.code]) localInput.up=false;
   if(e.code===keyBindings.jump || e.code==='ArrowUp' || e.code==='Space') localInput.jump=false;
   abilityKeyUp(e.code);
   if(e.code==='Tab') document.getElementById('scoreboard').style.display='none';
@@ -13454,8 +13456,8 @@ function ensureTouchUi(){
     el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
   }
   let jumpBtnHeld=false;
-  bindStick(document.getElementById('tsMove'), v=>{ localInput.left=v.dx<-0.3; localInput.right=v.dx>0.3; localInput.down=v.dy>0.6; localInput.jump=jumpBtnHeld || v.dy<-0.55; },
-    ()=>{ localInput.left=localInput.right=localInput.down=false; localInput.jump=jumpBtnHeld; });
+  bindStick(document.getElementById('tsMove'), v=>{ localInput.left=v.dx<-0.3; localInput.right=v.dx>0.3; localInput.down=v.dy>0.6; localInput.up=v.dy<-0.55; localInput.jump=jumpBtnHeld || v.dy<-0.55; },
+    ()=>{ localInput.left=localInput.right=localInput.down=localInput.up=false; localInput.jump=jumpBtnHeld; });
   bindStick(document.getElementById('tsAim'), (v,e)=>{ if(Math.hypot(v.dx,v.dy)>0.18){ localInput.angle=Math.atan2(v.dy,v.dx); touchAimActive=true; } trackBatSwing(e.clientY); },
     ()=>{ localInput.shoot=false; touchAimActive=false; batSwingY=null; },
     e=>{ localInput.shoot=true; const me=players[myId]; if(!me || me.weapon!=='bat') fireInstant(); });
