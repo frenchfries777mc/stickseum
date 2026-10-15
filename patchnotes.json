@@ -10,7 +10,59 @@
     "드라큘라 일반 공격 데미지 16 → 12",
     "밸런스 페이지 v231로 다시 측정 (바뀐 캐릭터만 새로 측정)",
     "옛 이름(ArenaClash·StickmanRumble) 게임 파일 삭제"
-   ]
+   ],
+   "tr": {
+    "en": {
+     "title": "Balance changes",
+     "items": [
+      "Mage attack cooldown 0.8s → 0.6s",
+      "Baseball Player bat damage 40 → 43",
+      "Dracula normal attack damage 16 → 12",
+      "Balance page re-measured on v231 (only the changed characters measured again)",
+      "Old-name (ArenaClash, StickmanRumble) game files removed"
+     ]
+    },
+    "es": {
+     "title": "Ajustes de equilibrio",
+     "items": [
+      "Enfriamiento del ataque del Mago 0,8 s → 0,6 s",
+      "Daño del bate del Beisbolista 40 → 43",
+      "Daño del ataque normal de Drácula 16 → 12",
+      "Página de equilibrio medida de nuevo en v231 (solo se volvieron a medir los personajes cambiados)",
+      "Eliminados los archivos del juego con nombres antiguos (ArenaClash, StickmanRumble)"
+     ]
+    },
+    "fr": {
+     "title": "Ajustements d’équilibrage",
+     "items": [
+      "Recharge d’attaque du Magicien 0,8 s → 0,6 s",
+      "Dégâts de la batte du Joueur de baseball 40 → 43",
+      "Dégâts de l’attaque normale de Dracula 16 → 12",
+      "Page d’équilibrage remesurée sur v231 (seuls les personnages modifiés ont été remesurés)",
+      "Fichiers du jeu aux anciens noms (ArenaClash, StickmanRumble) supprimés"
+     ]
+    },
+    "de": {
+     "title": "Balance-Anpassungen",
+     "items": [
+      "Angriffsabklingzeit des Magiers 0,8 s → 0,6 s",
+      "Schlägerschaden des Baseballspielers 40 → 43",
+      "Normalangriffsschaden von Dracula 16 → 12",
+      "Balance-Seite auf v231 neu gemessen (nur die geänderten Figuren neu gemessen)",
+      "Spieldateien mit alten Namen (ArenaClash, StickmanRumble) entfernt"
+     ]
+    },
+    "ja": {
+     "title": "バランス調整",
+     "items": [
+      "魔法使いの攻撃クールタイム 0.8秒 → 0.6秒",
+      "野球選手のバットのダメージ 40 → 43",
+      "ドラキュラの通常攻撃ダメージ 16 → 12",
+      "バランスページをv231で再測定（変更したキャラクターのみ再測定）",
+      "旧名（ArenaClash・StickmanRumble）のゲームファイルを削除"
+     ]
+    }
+   }
   },
   {
    "date": "2026-10-15",
