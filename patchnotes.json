@@ -2,6 +2,94 @@
  "notes": [
   {
    "date": "2026-10-15",
+   "build": "v228",
+   "title": "마법사 충격파와 상점 정리",
+   "items": [
+    "마법사 스킬 마법 방벽 → 충격파 (주변 상대 10 피해 + 아주 큰 넉백)",
+    "마술사 카드 데미지 12 → 10",
+    "드라큘라 박쥐 변신 지속시간 8초 → 7초",
+    "무지개 이름표 가격 2000 → 6000 G",
+    "상점 신상 탭 제거 (신상 스킨은 스킨 탭 맨 아래로 이동)",
+    "쿠루스 스킨 2종 추가 (독초 늪의 두건 1000 G, 잿빛 안개 두건 300 G)",
+    "이모트 메롱 😜 추가 (500 G)",
+    "밸런스 페이지 v228로 다시 측정",
+    "밸런스 페이지 쌍마다 판 수 표시 오류 수정"
+   ],
+   "tr": {
+    "en": {
+     "title": "Mage Shockwave and shop cleanup",
+     "items": [
+      "Mage skill Magic Barrier → Shockwave (10 damage to nearby opponents + huge knockback)",
+      "Magician card damage 12 → 10",
+      "Dracula Bat Form duration 8s → 7s",
+      "Rainbow Nametag price 2000 → 6000 G",
+      "Shop New tab removed (its skins moved to the end of the Skins tab)",
+      "2 Kurus skins added (Poison Bog Hood 1000 G, Ash Mist Hood 300 G)",
+      "Emote Bleh 😜 added (500 G)",
+      "Balance page re-measured on v228",
+      "Balance page games-per-pair count fixed"
+     ]
+    },
+    "es": {
+     "title": "Onda de choque del Mago y tienda ordenada",
+     "items": [
+      "Habilidad del Mago Barrera mágica → Onda de choque (10 de daño a los rivales cercanos + retroceso enorme)",
+      "Daño por carta del Mago ilusionista 12 → 10",
+      "Duración de Transformación en murciélago de Drácula 8 s → 7 s",
+      "Precio de la Etiqueta de nombre arcoíris 2000 → 6000 G",
+      "Pestaña Novedades de la tienda eliminada (sus aspectos pasan al final de la pestaña Aspectos)",
+      "2 aspectos de Kurus añadidos (Capucha del pantano venenoso 1000 G, Capucha de niebla cenicienta 300 G)",
+      "Emoticono Burla 😜 añadido (500 G)",
+      "Página de equilibrio medida de nuevo en v228",
+      "Corregido el número de partidas por pareja en la página de equilibrio"
+     ]
+    },
+    "fr": {
+     "title": "Onde de choc du Magicien et boutique rangée",
+     "items": [
+      "Compétence du Magicien Barrière magique → Onde de choc (10 dégâts aux adversaires proches + énorme recul)",
+      "Dégâts par carte de l’Illusionniste 12 → 10",
+      "Durée de la Transformation en chauve-souris de Dracula 8 s → 7 s",
+      "Prix de l’Étiquette de nom arc-en-ciel 2000 → 6000 G",
+      "Onglet Nouveautés de la boutique supprimé (ses skins passent à la fin de l’onglet Skins)",
+      "2 skins de Kurus ajoutés (Capuche du marais empoisonné 1000 G, Capuche de brume cendrée 300 G)",
+      "Émote Na na nère 😜 ajoutée (500 G)",
+      "Page d’équilibrage remesurée sur v228",
+      "Nombre de parties par paire corrigé sur la page d’équilibrage"
+     ]
+    },
+    "de": {
+     "title": "Schockwelle des Magiers und Shop aufgeräumt",
+     "items": [
+      "Fähigkeit des Magiers Magische Barriere → Schockwelle (10 Schaden an nahen Gegnern + gewaltiger Rückstoß)",
+      "Kartenschaden des Zauberers 12 → 10",
+      "Dauer der Fledermaus-Verwandlung von Dracula 8 s → 7 s",
+      "Preis des Regenbogen-Namensschilds 2000 → 6000 G",
+      "Shop-Tab Neu entfernt (seine Skins stehen jetzt am Ende des Skin-Tabs)",
+      "2 Kurus-Skins hinzugefügt (Giftsumpf-Kapuze 1000 G, Aschnebel-Kapuze 300 G)",
+      "Emote Bätsch 😜 hinzugefügt (500 G)",
+      "Balance-Seite auf v228 neu gemessen",
+      "Anzahl der Spiele pro Paar auf der Balance-Seite korrigiert"
+     ]
+    },
+    "ja": {
+     "title": "魔法使いの衝撃波とショップ整理",
+     "items": [
+      "魔法使いのスキル 魔法の障壁 → 衝撃波（近くの相手に10ダメージ＋非常に大きなノックバック）",
+      "マジシャンのカードダメージ 12 → 10",
+      "ドラキュラのコウモリ変身の持続時間 8秒 → 7秒",
+      "虹色の名札の価格 2000 → 6000 G",
+      "ショップの新作タブを削除（新作スキンはスキンタブの最後へ移動）",
+      "クルスのスキン2種を追加（毒草の沼のフード 1000 G、灰色の霧のフード 300 G）",
+      "エモート「あっかんべー」😜を追加（500 G）",
+      "バランスページをv228で再測定",
+      "バランスページの組み合わせごとの試合数表示を修正"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-15",
    "build": "v227",
    "title": "새 캐릭터 쿠루스",
    "items": [
