@@ -16,7 +16,89 @@
     "쿠루스 어둠 탈출: 근처 상대에게 뿌린 어둠의 넓이만큼 피해 (최대 100), 쓰면 내 어둠이 모두 사라짐",
     "밸런스 페이지 v229로 다시 측정",
     "사이트 상단 메뉴·버튼 배치 수정 (좁은 화면에서는 메뉴가 버튼 아래로)"
-   ]
+   ],
+   "tr": {
+    "en": {
+     "title": "New map Swamp of Darkness and Kurus darkness rework",
+     "items": [
+      "New map Swamp of Darkness added (walking through the bog on the floor halves your speed)",
+      "Mage normal attack damage 9 → 14",
+      "Dracula normal attack damage 21 → 18",
+      "Slayer flame max duration 10s → 9s",
+      "Slayer flame no longer passes through platforms",
+      "Kurus darkness width 3 → 5 characters",
+      "Kurus darkness no longer fades on its own (touching pools join into one)",
+      "Kurus Dark Sword damage 60 → 10",
+      "Kurus Dark Escape: damage to nearby opponents equal to the size of the darkness spread (max 100); using it removes all your darkness",
+      "Balance page re-measured on v229",
+      "Site top menu and button layout fixed (on narrow screens the menu goes under the buttons)"
+     ]
+    },
+    "es": {
+     "title": "Nuevo mapa El pantano de la oscuridad y cambios en la oscuridad de Kurus",
+     "items": [
+      "Nuevo mapa El pantano de la oscuridad (cruzar la ciénaga del suelo reduce tu velocidad a la mitad)",
+      "Daño del ataque normal del Mago 9 → 14",
+      "Daño del ataque normal de Drácula 21 → 18",
+      "Duración máxima de la llama del Masacrador 10 s → 9 s",
+      "La llama del Masacrador ya no atraviesa plataformas",
+      "Ancho de la oscuridad de Kurus 3 → 5 personajes",
+      "La oscuridad de Kurus ya no desaparece sola (los charcos que se tocan se unen)",
+      "Daño de la Espada oscura de Kurus 60 → 10",
+      "Escape oscuro de Kurus: daño a los rivales cercanos según el tamaño de la oscuridad extendida (máx. 100); al usarlo desaparece toda tu oscuridad",
+      "Página de equilibrio medida de nuevo en v229",
+      "Corregida la disposición del menú y los botones superiores del sitio (en pantallas estrechas el menú va debajo de los botones)"
+     ]
+    },
+    "fr": {
+     "title": "Nouvelle carte Le marais des ténèbres et refonte des ténèbres de Kurus",
+     "items": [
+      "Nouvelle carte Le marais des ténèbres (traverser le marais au sol divise votre vitesse par deux)",
+      "Dégâts de l’attaque normale du Magicien 9 → 14",
+      "Dégâts de l’attaque normale de Dracula 21 → 18",
+      "Durée maximale de la flamme du Massacreur 10 s → 9 s",
+      "La flamme du Massacreur ne traverse plus les plateformes",
+      "Largeur des ténèbres de Kurus 3 → 5 personnages",
+      "Les ténèbres de Kurus ne disparaissent plus d’elles-mêmes (les flaques qui se touchent fusionnent)",
+      "Dégâts de l’Épée des ténèbres de Kurus 60 → 10",
+      "Évasion des ténèbres de Kurus : dégâts aux adversaires proches selon la taille des ténèbres répandues (max 100) ; l’utiliser efface toutes vos ténèbres",
+      "Page d’équilibrage remesurée sur v229",
+      "Disposition du menu et des boutons en haut du site corrigée (sur écran étroit, le menu passe sous les boutons)"
+     ]
+    },
+    "de": {
+     "title": "Neue Karte Der Sumpf der Dunkelheit und überarbeitete Dunkelheit von Kurus",
+     "items": [
+      "Neue Karte Der Sumpf der Dunkelheit (durch den Sumpf am Boden läufst du nur halb so schnell)",
+      "Normalangriffsschaden des Magiers 9 → 14",
+      "Normalangriffsschaden von Dracula 21 → 18",
+      "Maximale Flammendauer des Schlächters 10 s → 9 s",
+      "Die Flamme des Schlächters geht nicht mehr durch Plattformen",
+      "Breite der Dunkelheit von Kurus 3 → 5 Figuren",
+      "Die Dunkelheit von Kurus verschwindet nicht mehr von selbst (sich berührende Pfützen verschmelzen)",
+      "Schaden des Dunkelschwerts von Kurus 60 → 10",
+      "Dunkelflucht von Kurus: Schaden an nahen Gegnern je nach Größe der verteilten Dunkelheit (max. 100); beim Einsatz verschwindet deine ganze Dunkelheit",
+      "Balance-Seite auf v229 neu gemessen",
+      "Anordnung von Menü und Knöpfen oben auf der Website korrigiert (auf schmalen Bildschirmen steht das Menü unter den Knöpfen)"
+     ]
+    },
+    "ja": {
+     "title": "新マップ「闇の沼」とクルスの闇の改編",
+     "items": [
+      "新マップ「闇の沼」を追加（床の沼を通ると移動速度が半分）",
+      "魔法使いの通常攻撃ダメージ 9 → 14",
+      "ドラキュラの通常攻撃ダメージ 21 → 18",
+      "殺戮者の炎の最大持続時間 10秒 → 9秒",
+      "殺戮者の炎が足場を通り抜けないように変更",
+      "クルスの闇の幅 キャラクター3人分 → 5人分",
+      "クルスの闇が自然に消えないように（触れ合う闇はひとつにつながる）",
+      "クルスの闇の剣のダメージ 60 → 10",
+      "クルスの闇脱出：近くの相手にまいた闇の広さ分のダメージ（最大100）、使うと自分の闇がすべて消える",
+      "バランスページをv229で再測定",
+      "サイト上部のメニューとボタンの配置を修正（狭い画面ではメニューがボタンの下に）"
+     ]
+    }
+   }
   },
   {
    "date": "2026-10-15",
