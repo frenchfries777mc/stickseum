@@ -2,6 +2,46 @@
  "notes": [
   {
    "date": "2026-10-15",
+   "build": "v234",
+   "title": "버그 수정",
+   "items": [
+    "쿠루스 어둠 속에서 W를 눌러도 위 어둠으로 올라가지 않던 문제 수정 (W·↑ 모두 가능)"
+   ],
+   "tr": {
+    "en": {
+     "title": "Bug fix",
+     "items": [
+      "Fixed W not moving Kurus up to the darkness above (both W and ↑ work)"
+     ]
+    },
+    "es": {
+     "title": "Corrección de errores",
+     "items": [
+      "Corregido que W no subiera a Kurus a la oscuridad de arriba (funcionan W y ↑)"
+     ]
+    },
+    "fr": {
+     "title": "Correction de bug",
+     "items": [
+      "Correction de W qui ne faisait pas monter Kurus vers les ténèbres du dessus (W et ↑ fonctionnent)"
+     ]
+    },
+    "de": {
+     "title": "Fehlerbehebung",
+     "items": [
+      "Behoben, dass W Kurus nicht zur Dunkelheit darüber brachte (W und ↑ funktionieren)"
+     ]
+    },
+    "ja": {
+     "title": "バグ修正",
+     "items": [
+      "クルスが闇の中でWを押しても上の闇へ移動しなかった問題を修正（W・↑どちらも可）"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-15",
    "build": "v233",
    "title": "쿠루스 어둠 이동 개선",
    "items": [
