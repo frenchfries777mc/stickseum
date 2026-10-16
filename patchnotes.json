@@ -2,6 +2,70 @@
  "notes": [
   {
    "date": "2026-10-16",
+   "build": "v240",
+   "title": "쿠루스·기사 강화",
+   "items": [
+    "쿠루스 어둠 속 이동속도 230 → 350 (걷기 250보다 빠름)",
+    "쿠루스 스킬 어둠의 검 사거리 85 → 120",
+    "기사 궁극기 천검 피해 100 → 120",
+    "기사 궁극기 천검 판정 너비 190 → 280",
+    "밸런스 측정: 모든 맵 23개에서 쌍마다 맵당 4판 (모두 27,600판)"
+   ],
+   "tr": {
+    "en": {
+     "title": "Kurus & Knight buff",
+     "items": [
+      "Kurus movement speed inside darkness 230 → 350 (faster than walking at 250)",
+      "Kurus skill Dark Sword range 85 → 120",
+      "Knight ultimate Heaven Sword damage 100 → 120",
+      "Knight ultimate Heaven Sword hit width 190 → 280",
+      "Balance measurement: every pair 4 times on each of all 23 maps (27,600 matches)"
+     ]
+    },
+    "es": {
+     "title": "Mejora de Kurus y Caballero",
+     "items": [
+      "Velocidad de Kurus dentro de la oscuridad 230 → 350 (más rápido que caminar, 250)",
+      "Alcance de la habilidad Espada oscura de Kurus 85 → 120",
+      "Daño de la definitiva Espada celestial del Caballero 100 → 120",
+      "Anchura de impacto de la Espada celestial del Caballero 190 → 280",
+      "Medición del equilibrio: cada pareja 4 veces en cada uno de los 23 mapas (27.600 partidas)"
+     ]
+    },
+    "fr": {
+     "title": "Renforcement de Kurus et du Chevalier",
+     "items": [
+      "Vitesse de Kurus dans les ténèbres 230 → 350 (plus rapide que la marche, 250)",
+      "Portée de la compétence Épée des ténèbres de Kurus 85 → 120",
+      "Dégâts de l’ultime Épée céleste du Chevalier 100 → 120",
+      "Largeur de frappe de l’Épée céleste du Chevalier 190 → 280",
+      "Mesure de l’équilibrage : chaque paire 4 fois sur chacune des 23 cartes (27 600 parties)"
+     ]
+    },
+    "de": {
+     "title": "Kurus- und Ritter-Stärkung",
+     "items": [
+      "Kurus-Tempo in der Dunkelheit 230 → 350 (schneller als Gehen mit 250)",
+      "Reichweite der Kurus-Fähigkeit Dunkelschwert 85 → 120",
+      "Schaden der Ritter-Ultimativen Himmelsschwert 100 → 120",
+      "Trefferbreite des Ritter-Himmelsschwerts 190 → 280",
+      "Balance-Messung: jedes Paar 4-mal auf jeder der 23 Karten (27.600 Matches)"
+     ]
+    },
+    "ja": {
+     "title": "クルス・騎士強化",
+     "items": [
+      "クルスの闇の中の移動速度 230 → 350（歩き250より速い）",
+      "クルスのスキル「闇の剣」の射程 85 → 120",
+      "騎士のアルティメット「天剣」のダメージ 100 → 120",
+      "騎士のアルティメット「天剣」の判定幅 190 → 280",
+      "バランス測定：全23マップで各ペアをマップごとに4戦（計27,600戦）"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-16",
    "build": "v238",
    "title": "Hub Coin",
    "items": [
