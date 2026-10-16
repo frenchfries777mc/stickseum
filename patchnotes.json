@@ -7,7 +7,7 @@
    "items": [
     "학살자 화염 최대 지속시간 8초 → 7.5초",
     "학살자 스킬 화염 방패 내구도 75 → 60",
-    "밸런스 페이지 v237로 다시 측정 (학살자만 새로 측정)"
+    "밸런스 측정 방식 변경: 평지만 → 모든 맵 23개에서 쌍마다 맵당 3판 (모두 20,700판)"
    ],
    "tr": {
     "en": {
@@ -15,7 +15,7 @@
      "items": [
       "Slayer flame max duration 8s → 7.5s",
       "Slayer skill Flame Shield durability 75 → 60",
-      "Balance page re-measured on v237 (only Slayer measured again)"
+      "Balance measurement changed: flat map only → every pair 3 times on each of all 23 maps (20,700 matches)"
      ]
     },
     "es": {
@@ -23,7 +23,7 @@
      "items": [
       "Duración máxima de la llama del Masacrador 8 s → 7,5 s",
       "Resistencia del Escudo de llamas del Masacrador 75 → 60",
-      "Página de equilibrio medida de nuevo en v237 (solo se volvió a medir al Masacrador)"
+      "Cambio en la medición del equilibrio: solo el mapa llano → cada pareja 3 veces en cada uno de los 23 mapas (20.700 partidas)"
      ]
     },
     "fr": {
@@ -31,7 +31,7 @@
      "items": [
       "Durée maximale de la flamme du Massacreur 8 s → 7,5 s",
       "Résistance du Bouclier de flammes du Massacreur 75 → 60",
-      "Page d’équilibrage remesurée sur v237 (seul le Massacreur a été remesuré)"
+      "Nouvelle mesure de l’équilibrage : carte plate seule → chaque paire 3 fois sur chacune des 23 cartes (20 700 parties)"
      ]
     },
     "de": {
@@ -39,7 +39,7 @@
      "items": [
       "Maximale Flammendauer des Schlächters 8 s → 7,5 s",
       "Haltbarkeit des Flammenschilds des Schlächters 75 → 60",
-      "Balance-Seite auf v237 neu gemessen (nur der Schlächter neu gemessen)"
+      "Balance-Messung geändert: nur flache Karte → jedes Paar 3-mal auf jeder der 23 Karten (20.700 Spiele)"
      ]
     },
     "ja": {
@@ -47,7 +47,7 @@
      "items": [
       "殺戮者の炎の最大持続時間 8秒 → 7.5秒",
       "殺戮者のスキル炎の盾の耐久度 75 → 60",
-      "バランスページをv237で再測定（殺戮者のみ再測定）"
+      "バランス測定方法を変更：平地のみ → 全23マップでそれぞれ組み合わせごとに3試合（合計20,700試合）"
      ]
     }
    }
