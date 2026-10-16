@@ -2,6 +2,52 @@
  "notes": [
   {
    "date": "2026-10-16",
+   "build": "v242",
+   "title": "토너먼트 리플레이 수정",
+   "items": [
+    "토너먼트 리플레이에서 한 경기만 보이도록 수정 (내 경기 우선)",
+    "토너먼트 리플레이에서 ◀ ▶로 다른 경기 보기 추가"
+   ],
+   "tr": {
+    "en": {
+     "title": "Tournament replay fix",
+     "items": [
+      "Tournament replays show one match at a time (your own first)",
+      "Switch between matches with ◀ ▶ in tournament replays"
+     ]
+    },
+    "es": {
+     "title": "Corrección de repeticiones de torneo",
+     "items": [
+      "Las repeticiones de torneo muestran un combate a la vez (primero el tuyo)",
+      "Cambia de combate con ◀ ▶ en las repeticiones de torneo"
+     ]
+    },
+    "fr": {
+     "title": "Correction des replays de tournoi",
+     "items": [
+      "Les replays de tournoi montrent un seul match à la fois (le vôtre d’abord)",
+      "Passez d’un match à l’autre avec ◀ ▶ dans les replays de tournoi"
+     ]
+    },
+    "de": {
+     "title": "Turnier-Wiederholungen korrigiert",
+     "items": [
+      "Turnier-Wiederholungen zeigen ein Match auf einmal (zuerst dein eigenes)",
+      "Mit ◀ ▶ zwischen den Matches einer Turnier-Wiederholung wechseln"
+     ]
+    },
+    "ja": {
+     "title": "トーナメントリプレイ修正",
+     "items": [
+      "トーナメントのリプレイで一試合だけ表示（自分の試合を優先）",
+      "トーナメントのリプレイで ◀ ▶ で他の試合を見る機能を追加"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-16",
    "build": "v241",
    "title": "멀티 렉 개선",
    "items": [
