@@ -1,6 +1,58 @@
 {
  "notes": [
   {
+   "date": "2026-10-16",
+   "build": "v237",
+   "title": "밸런스 조정",
+   "items": [
+    "학살자 화염 최대 지속시간 8초 → 7.5초",
+    "학살자 스킬 화염 방패 내구도 75 → 60",
+    "밸런스 페이지 v237로 다시 측정 (학살자만 새로 측정)"
+   ],
+   "tr": {
+    "en": {
+     "title": "Balance changes",
+     "items": [
+      "Slayer flame max duration 8s → 7.5s",
+      "Slayer skill Flame Shield durability 75 → 60",
+      "Balance page re-measured on v237 (only Slayer measured again)"
+     ]
+    },
+    "es": {
+     "title": "Ajustes de equilibrio",
+     "items": [
+      "Duración máxima de la llama del Masacrador 8 s → 7,5 s",
+      "Resistencia del Escudo de llamas del Masacrador 75 → 60",
+      "Página de equilibrio medida de nuevo en v237 (solo se volvió a medir al Masacrador)"
+     ]
+    },
+    "fr": {
+     "title": "Ajustements d’équilibrage",
+     "items": [
+      "Durée maximale de la flamme du Massacreur 8 s → 7,5 s",
+      "Résistance du Bouclier de flammes du Massacreur 75 → 60",
+      "Page d’équilibrage remesurée sur v237 (seul le Massacreur a été remesuré)"
+     ]
+    },
+    "de": {
+     "title": "Balance-Anpassungen",
+     "items": [
+      "Maximale Flammendauer des Schlächters 8 s → 7,5 s",
+      "Haltbarkeit des Flammenschilds des Schlächters 75 → 60",
+      "Balance-Seite auf v237 neu gemessen (nur der Schlächter neu gemessen)"
+     ]
+    },
+    "ja": {
+     "title": "バランス調整",
+     "items": [
+      "殺戮者の炎の最大持続時間 8秒 → 7.5秒",
+      "殺戮者のスキル炎の盾の耐久度 75 → 60",
+      "バランスページをv237で再測定（殺戮者のみ再測定）"
+     ]
+    }
+   }
+  },
+  {
    "date": "2026-10-15",
    "build": "v236",
    "title": "밸런스 조정",
