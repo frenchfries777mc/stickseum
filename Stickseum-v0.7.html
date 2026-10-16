@@ -4391,7 +4391,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-16-v241';
+const GAME_BUILD='build 2026-10-16-v242';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
@@ -5098,13 +5098,13 @@ tryFire=tnActorWrap(tryFire); tryUltimate=tnActorWrap(tryUltimate); trySkill=tnA
 /* ---- the client side of the tournament: who is on screen, the bracket picture, the champion ---- */
 function tnApplyBk(m){ tnBk=m; if(m.intro) tnShowIntro(m); }
 function tnOrdId(i){ return (tnBk && i>=0 && tnBk.ord && tnBk.ord[i]) || null; }
-function tnViewNow(){ return isHost ? buildTnView() : tnView; }
-function tnMyMatch(tv){ if(!tv || !tv.ms) return null; for(const m of tv.ms){ if(tnOrdId(m[0])===myId || tnOrdId(m[1])===myId) return m; } return null; }
+function tnViewNow(){ return (isHost && !rpView) ? buildTnView() : tnView; }      // (a replay plays the recorded view like a guest)
+function tnMyMatch(tv){ if(!tv || !tv.ms) return null; const me=(rpView && rpView.meta.me) || myId; for(const m of tv.ms){ if(tnOrdId(m[0])===me || tnOrdId(m[1])===me) return m; } return null; }      // (in a replay: the one who recorded it)
 function tnLiveMatches(tv){ return (tv && tv.ms) ? tv.ms.filter(m=>(m[4]===1||m[4]===2) && tnOrdId(m[0]) && tnOrdId(m[1])) : []; }
 function tnShownMatch(tv){                       // my own match while it is still going on, otherwise the one I am watching
   tv=tv||tnViewNow(); if(!tv || !tv.ms) return null;
   const mine=tnMyMatch(tv); if(mine && (mine[4]===1 || mine[4]===2)) return mine;
-  const live=tnLiveMatches(tv); if(!live.length) return mine;
+  const live=tnLiveMatches(tv); if(!live.length){ if(mine || !rpView) return mine; const all=tv.ms.filter(m=>tnOrdId(m[0]) && tnOrdId(m[1])); return all.length ? all[((tnSpec%all.length)+all.length)%all.length] : null; }      // (a replay always shows one fight)
   return live[((tnSpec%live.length)+live.length)%live.length];
 }
 function tnComputeVis(){
@@ -5915,13 +5915,14 @@ async function rpGzip(str){ try{ if(typeof CompressionStream==='undefined') retu
 async function rpGunzip(buf){ if(typeof buf==='string') return buf; const s=new Blob([buf]).stream().pipeThrough(new DecompressionStream('gzip')); return await new Response(s).text(); }
 function rpRecStart(){
   if(practiceMode || highlightViewing || spectatorMode || !MAP){ rpRec=null; return; }
-  rpRec={mapId:currentMapId, mode:gameMode, buf:[], chunks:[], seq:0, pend:[], n:0, tick:0, t0:Date.now(), saved:false};
+  rpRec={mapId:currentMapId, mode:gameMode, me:myId, buf:[], chunks:[], seq:0, pend:[], n:0, tick:0, t0:Date.now(), saved:false};
 }
 function rpFlush(r){ const part=r.buf; r.buf=[]; if(!part.length) return; const idx=r.seq++; r.pend.push(rpGzip('['+part.join(',')+']').then(b=>{ r.chunks[idx]=b; })); }
 function rpRecAdd(snap){
   const r=rpRec; if(!r || r.saved || !snap) return;
   if((r.tick++)&1) return; if(r.n>=RP_MAX_FRAMES) return;
-  try{ const o=Object.assign({}, snap); delete o.chat; o.ts=Date.now()-r.t0; r.buf.push(JSON.stringify(o)); r.n++; if(r.buf.length>=RP_CHUNK) rpFlush(r); }catch(e){}
+  try{ const o=Object.assign({}, snap); delete o.chat; o.ts=Date.now()-r.t0;
+    if(gameMode==='tournament' && tnBk){ const k=JSON.stringify(tnBk.ord)+'|'+tnBk.r+'|'+JSON.stringify(tnBk.rounds); if(k!==r.bkKey){ r.bkKey=k; o.bk=Object.assign({}, tnBk, {intro:0}); } }      /* (a tournament replay needs the bracket to know which fight to show) */ r.buf.push(JSON.stringify(o)); r.n++; if(r.buf.length>=RP_CHUNK) rpFlush(r); }catch(e){}
 }
 function rpDb(){ return new Promise((res,rej)=>{ try{ const q=indexedDB.open('stickseum-replays',1); q.onupgradeneeded=()=>{ q.result.createObjectStore('m',{keyPath:'id'}); q.result.createObjectStore('d',{keyPath:'id'}); }; q.onsuccess=()=>res(q.result); q.onerror=()=>rej(q.error); }catch(e){ rej(e); } }); }
 function rpReq(r){ return new Promise((res,rej)=>{ r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
@@ -5938,7 +5939,7 @@ async function rpRecFinish(resultText, winnerIds){
   try{
     if(r.n<30) return; rpFlush(r); await Promise.all(r.pend);
     const names=Object.values(players).filter(p=>p && !p.isMinion && !p.isBoss && p.name).map(p=>p.name).slice(0,8);
-    const meta={id:Date.now(), ts:Date.now(), mapId:r.mapId, mode:r.mode, text:String(resultText||'').slice(0,80), names, win:(winnerIds||[]).indexOf(myId)!==-1, n:r.n, dur:Math.round((Date.now()-r.t0)/1000)};
+    const meta={id:Date.now(), ts:Date.now(), mapId:r.mapId, mode:r.mode, me:r.me, text:String(resultText||'').slice(0,80), names, win:(winnerIds||[]).indexOf(myId)!==-1, n:r.n, dur:Math.round((Date.now()-r.t0)/1000)};
     await rpSave(meta, r.chunks.filter(Boolean));
   }catch(e){ console.warn('[replay save]', e); }
 }
@@ -5953,8 +5954,8 @@ function rpBar(){
   b.querySelector('#rpPlay').onclick=()=>{ const s=v(); if(!s) return; s.playing=!s.playing; b.querySelector('#rpPlay').textContent=s.playing?'⏸':'▶'; };
   b.querySelector('#rpSpd').onclick=()=>{ const s=v(); if(!s) return; const L=[0.5,1,2,4]; s.speed=L[(L.indexOf(s.speed)+1)%L.length]; b.querySelector('#rpSpd').textContent=s.speed+'x'; };
   b.querySelector('#rpSeek').oninput=e=>{ const s=v(); if(!s) return; s.T=(+e.target.value/1000)*s.total; s.dirty=true; };
-  b.querySelector('#rpPrev').onclick=()=>spectateCycle(-1);
-  b.querySelector('#rpNext').onclick=()=>spectateCycle(1);
+  b.querySelector('#rpPrev').onclick=()=>{ if(gameMode==='tournament') tnSpec--; else spectateCycle(-1); };      // (a tournament replay switches between the fights)
+  b.querySelector('#rpNext').onclick=()=>{ if(gameMode==='tournament') tnSpec++; else spectateCycle(1); };
   b.querySelector('#rpClose').onclick=()=>rpStop();
   return b;
 }
@@ -5981,7 +5982,8 @@ function rpLoop(){
   if(s.playing){ s.T+=dt*s.speed; if(s.T>=s.total){ s.T=s.total; s.playing=false; document.getElementById('rpPlay').textContent='▶'; } }
   const i=rpFrameAt(s.frames,s.T), A=s.frames[i], B=s.frames[Math.min(i+1,s.frames.length-1)];
   try{
-    if(i!==s.i || s.dirty){ const from=(!s.dirty && i>s.i && i-s.i<=40) ? s.i+1 : i; s.i=i; s.dirty=false; for(let k=from;k<=i;k++) onClientData(s.frames[k],'practice'); }      // (frames skipped at high speed still play: each effect is in one frame only)
+    if(i!==s.i || s.dirty){ const from=(!s.dirty && i>s.i && i-s.i<=40) ? s.i+1 : i;
+      if(from===i && s.meta.mode==='tournament'){ for(let k=i;k>=0;k--) if(s.frames[k].bk){ tnBk=s.frames[k].bk; break; } } s.i=i; s.dirty=false; for(let k=from;k<=i;k++) onClientData(s.frames[k],'practice'); }      // (frames skipped at high speed still play: each effect is in one frame only)
     const span=B.ts-A.ts, f=span>0?Math.min(1,Math.max(0,(s.T-A.ts)/span)):0;
     if(f>0 && f<1) for(const pb of B.players){ const p=players[pb.id], pa=A.players.find(q=>q.id===pb.id); if(p && pa && pa.alive && pb.alive && Math.hypot(pb.x-pa.x,pb.y-pa.y)<400){ p.x=pa.x+(pb.x-pa.x)*f; p.y=pa.y+(pb.y-pa.y)*f; p.angle=lerpAngle(pa.angle||0,pb.angle||0,f); } }
   }catch(e){ console.warn('[replay]', e); }
@@ -5990,7 +5992,7 @@ function rpLoop(){
 }
 function rpStop(){
   const s=rpView; if(!s) return;
-  cancelAnimationFrame(s.raf); rpView=null;
+  cancelAnimationFrame(s.raf); rpView=null; tnBk=null; tnView=null; tnVisSet=null;
   const b=document.getElementById('rpBar'); if(b) b.style.display='none';
   highlightViewing=false; document.body.classList.remove('hlView'); killcamActive=false;
   try{ exitPractice(); }catch(e){}
@@ -8914,7 +8916,7 @@ function onClientData(data, mode, code){
     magicCircles=data.magicCircles||[]; turrets=data.turrets||[]; hzDraw=data.hz||null; if(data.dark!==undefined){ const nowS=performance.now()/1000; darkView=(data.dark||[]).map(z=>Object.assign(z, {t0:nowS-(z.age||0)})); }
     if(data.cq && cq){ cq.scores=data.cq.s; cq.holder=data.cq.h; cq.contested=data.cq.c; }
     xmV=data.xm||null;
-    raidView=data.raid||null; tnView=data.tn||null;
+    raidView=data.raid||null; tnView=data.tn||null; if(data.bk && rpView) tnBk=data.bk;
     if(data.survival){
       survivalZombies=data.survival.zombies||[];
       // rebuild each hazard's warnUntil from THIS client's own performance.now() clock plus the relative
