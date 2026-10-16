@@ -1113,8 +1113,8 @@ const BULLET_R = 5, BULLET_LIFE = 1.2;
 /* ================= WEAPONS (13) — damage/cooldown balanced by real-world weapon character ================= */
 const FLAME_RANGE=400, FLAME_HALF_ANGLE=0.32, FLAME_DIRECT_DPS=34;
 const VACUUM_RANGE=480, VACUUM_HALF_ANGLE=0.34, VACUUM_MAX_STACKS=8, VACUUM_PULL_FORCE=90;
-const FLAME_MAX_HOLD=8, FLAME_OVERHEAT_COOLDOWN=2;
-const FLAME_SHIELD_MAXHP=75, FLAME_SHIELD_DURATION=8;
+const FLAME_MAX_HOLD=7.5, FLAME_OVERHEAT_COOLDOWN=2;
+const FLAME_SHIELD_MAXHP=60, FLAME_SHIELD_DURATION=8;
 const WEAPONS = {
   pistol:  {id:'pistol',  name:'권총',     emoji:'🔫', kind:'gun',      dmg:17, cd:0.85, bulletSpeed:950, shape:'bullet',
             desc:'데미지 17 · 연사속도 0.85초 · 준수한 위력과 안정적인 명중률의 표준형 권총'},
@@ -1156,7 +1156,7 @@ const WEAPONS = {
   magiccard:{id:'magiccard',name:'마술 카드',emoji:'🃏', kind:'cards',    dmg:10,  cd:1.0,  bulletSpeed:820, shape:'card', hitR:26, comboBonus:5, freeVolleys:3,
             desc:'트럼프 카드 3장이 넓게 퍼져 날아감 · 장당 데미지 10 · 쿨타임 1.0초 · 맞은 상대는 이동속도가 조금 느려짐 · 3장이 모두 맞으면 추가 5 데미지 + 0.5초 기절'},
   flamethrower:{id:'flamethrower',name:'화염방사기',emoji:'🔥', kind:'flame', dmg:0, cd:0, range:FLAME_RANGE, shape:'flamethrower',
-            desc:'중거리 화염방사 · 꾹 눌러 최대 8초간 유지 · 닿으면 초당 '+FLAME_DIRECT_DPS+' 직접 피해 · 발판에 막힘 · 8초 다 쓰면 2초간 과열'},
+            desc:'중거리 화염방사 · 꾹 눌러 최대 7.5초간 유지 · 닿으면 초당 '+FLAME_DIRECT_DPS+' 직접 피해 · 발판에 막힘 · 7.5초 다 쓰면 2초간 과열'},
   portalgun:{id:'portalgun',name:'포탈건',emoji:'🌀', kind:'gun', dmg:12, cd:0.55, bulletSpeed:700, shape:'portalbullet', bounces:1,
             desc:'데미지 12 · 쿨타임 0.55초 · 바닥이나 발판에 닿으면 최대 1번까지 튕기는 탄환'},
   vacuum:{id:'vacuum',name:'청소기',emoji:'🧹', kind:'vacuum', dmg:24, cd:0.9, range:VACUUM_RANGE, shape:'vacuum',
@@ -1238,7 +1238,7 @@ const ULTS = {
   shotgun:  {name:'삼연발',       desc:'산탄을 0.2초 간격으로 3연속 발사'},
   gloves:   {name:'연타 러시',     desc:'4초간 공격 속도 3배'},
   grenade:  {name:'집속탄',       desc:'소형 수류탄 5개를 부채꼴로 투척'},
-  flamethrower:{name:'화염 방패', desc:'내 앞에 최대 75 피해를 막는 방패를 설치 (8초 지속, 나를 따라 이동하며 항상 바라보는 방향 앞에 위치, 그만큼 막으면 소멸) · 관통 공격은 막지 못하지만 데미지가 절반으로 줄고 그만큼 방패 내구도도 깎임'},
+  flamethrower:{name:'화염 방패', desc:'내 앞에 최대 60 피해를 막는 방패를 설치 (8초 지속, 나를 따라 이동하며 항상 바라보는 방향 앞에 위치, 그만큼 막으면 소멸) · 관통 공격은 막지 못하지만 데미지가 절반으로 줄고 그만큼 방패 내구도도 깎임'},
   portalgun:{name:'포탈 연결', desc:'현재 위치와 조준한 위치에 보라색 포탈 한 쌍을 생성 · 둘 중 하나에 닿으면 반대쪽으로 순간이동 (나만 사용 가능, 새로 생성하면 기존 포탈은 사라짐)'},
   pirate:{name:'대포 포탑', desc:'10초 동안 내 위치에 대포 포탑을 소환 · 가장 가까운 상대에게 포물선을 그리는 대포알을 발사 (대포알 데미지 20)'},
   samurai:{name:'심안 연참', desc:'사정거리 안의 가까운 적 최대 5명을 차례로 순간이동하며 베어 25 피해씩 주고, 끝나면 원래 자리로 돌아옴 · 발동하는 동안 무적'},
@@ -4391,7 +4391,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-15-v236';
+const GAME_BUILD='build 2026-10-16-v237';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
@@ -6084,7 +6084,7 @@ function renderRecord(){
     }
   }
 }
-const CODEX_MATCHUP={"bat":{"s":["lightsaber","bazooka","dagger"],"w":["gloves","shotgun","samurai"]},"bazooka":{"s":["kurus","bow","boomerang"],"w":["lightsaber","samurai","dagger"]},"boomerang":{"s":["horemheb","lightsaber","bat"],"w":["flamethrower","bow","shuriken"]},"bow":{"s":["shotgun","boomerang","gloves"],"w":["samurai","vacuum","lightsaber"]},"dagger":{"s":["vacuum","lightsaber","bazooka"],"w":["shotgun","magiccard","gloves"]},"dracula":{"s":["vacuum","lightsaber","bazooka"],"w":["pirate","magiccard","gloves"]},"flamethrower":{"s":["lightsaber","vacuum","wizard"],"w":["horemheb","shotgun","samurai"]},"gambler":{"s":["portalgun","kurus","wizard"],"w":["flamethrower","vacuum","samurai"]},"gloves":{"s":["bat","dagger","dracula"],"w":["kurus","shotgun","magiccard"]},"grenade":{"s":["gloves","shotgun","dagger"],"w":["lightsaber","vacuum","samurai"]},"horemheb":{"s":["lightsaber","vacuum","dagger"],"w":["shotgun","samurai","gloves"]},"kurus":{"s":["gloves","dagger","dracula"],"w":["shuriken","bazooka","gambler"]},"lightsaber":{"s":["rifle","smg","bazooka"],"w":["samurai","pirate","gloves"]},"magiccard":{"s":["dagger","dracula","gloves"],"w":["vacuum","rifle","pistol"]},"pirate":{"s":["dracula","lightsaber","horemheb"],"w":["shotgun","gloves","kurus"]},"pistol":{"s":["shotgun","gloves","boomerang"],"w":["lightsaber","shuriken","flamethrower"]},"portalgun":{"s":["gloves","shotgun","sword"],"w":["gambler","vacuum","shuriken"]},"rifle":{"s":["grenade","shotgun","boomerang"],"w":["lightsaber","bat","flamethrower"]},"samurai":{"s":["lightsaber","horemheb","bat"],"w":["gloves","kurus","pirate"]},"shotgun":{"s":["dagger","pirate","bat"],"w":["shuriken","pistol","bow"]},"shuriken":{"s":["portalgun","shotgun","kurus"],"w":["lightsaber","vacuum","rifle"]},"smg":{"s":["gloves","dagger","grenade"],"w":["lightsaber","flamethrower","vacuum"]},"sword":{"s":["lightsaber","vacuum","bazooka"],"w":["gloves","shotgun","kurus"]},"vacuum":{"s":["portalgun","gambler","magiccard"],"w":["dracula","flamethrower","dagger"]},"wizard":{"s":["gloves","portalgun","sword"],"w":["flamethrower","vacuum","gambler"]}};
+const CODEX_MATCHUP={"bat":{"s":["lightsaber","bazooka","dagger"],"w":["gloves","shotgun","samurai"]},"bazooka":{"s":["kurus","bow","boomerang"],"w":["lightsaber","samurai","dagger"]},"boomerang":{"s":["horemheb","lightsaber","bat"],"w":["bow","flamethrower","shuriken"]},"bow":{"s":["shotgun","boomerang","gloves"],"w":["samurai","vacuum","lightsaber"]},"dagger":{"s":["vacuum","lightsaber","bazooka"],"w":["shotgun","magiccard","gloves"]},"dracula":{"s":["vacuum","lightsaber","bazooka"],"w":["pirate","magiccard","gloves"]},"flamethrower":{"s":["portalgun","smg","wizard"],"w":["kurus","samurai","horemheb"]},"gambler":{"s":["portalgun","kurus","wizard"],"w":["vacuum","samurai","flamethrower"]},"gloves":{"s":["bat","dagger","dracula"],"w":["kurus","shotgun","magiccard"]},"grenade":{"s":["gloves","shotgun","dagger"],"w":["lightsaber","vacuum","samurai"]},"horemheb":{"s":["lightsaber","vacuum","dagger"],"w":["shotgun","samurai","gloves"]},"kurus":{"s":["gloves","dagger","dracula"],"w":["shuriken","bazooka","gambler"]},"lightsaber":{"s":["rifle","smg","bazooka"],"w":["samurai","pirate","gloves"]},"magiccard":{"s":["dagger","dracula","gloves"],"w":["vacuum","rifle","pistol"]},"pirate":{"s":["dracula","lightsaber","horemheb"],"w":["shotgun","gloves","kurus"]},"pistol":{"s":["shotgun","gloves","boomerang"],"w":["lightsaber","shuriken","vacuum"]},"portalgun":{"s":["gloves","shotgun","sword"],"w":["gambler","vacuum","shuriken"]},"rifle":{"s":["grenade","shotgun","boomerang"],"w":["lightsaber","bat","dracula"]},"samurai":{"s":["lightsaber","horemheb","bat"],"w":["gloves","kurus","pirate"]},"shotgun":{"s":["dagger","pirate","bat"],"w":["shuriken","pistol","bow"]},"shuriken":{"s":["portalgun","shotgun","kurus"],"w":["lightsaber","vacuum","rifle"]},"smg":{"s":["gloves","dagger","grenade"],"w":["lightsaber","flamethrower","vacuum"]},"sword":{"s":["lightsaber","vacuum","bazooka"],"w":["gloves","shotgun","kurus"]},"vacuum":{"s":["portalgun","gambler","magiccard"],"w":["dracula","dagger","samurai"]},"wizard":{"s":["gloves","portalgun","sword"],"w":["flamethrower","vacuum","gambler"]}};
 function renderCodex(){
   const body=document.getElementById('codexBody'); if(!body) return; body.innerHTML='';
   const st=lsGet(ST_KEY,null), per=(st&&st.weapon)||{};
