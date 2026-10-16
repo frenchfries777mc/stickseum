@@ -2,6 +2,46 @@
  "notes": [
   {
    "date": "2026-10-16",
+   "build": "v238",
+   "title": "Hub Coin",
+   "items": [
+    "Hub Coin으로 환전한 골드 받기 추가"
+   ],
+   "tr": {
+    "en": {
+     "title": "Hub Coin",
+     "items": [
+      "Receive gold exchanged with Hub Coin"
+     ]
+    },
+    "es": {
+     "title": "Hub Coin",
+     "items": [
+      "Recibe el oro cambiado con Hub Coin"
+     ]
+    },
+    "fr": {
+     "title": "Hub Coin",
+     "items": [
+      "Réception de l’or échangé contre des Hub Coin"
+     ]
+    },
+    "de": {
+     "title": "Hub Coin",
+     "items": [
+      "Mit Hub Coin getauschtes Gold erhalten"
+     ]
+    },
+    "ja": {
+     "title": "Hub Coin",
+     "items": [
+      "Hub Coinで両替したゴールドの受け取りを追加"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-16",
    "build": "v237",
    "title": "밸런스 조정",
    "items": [
