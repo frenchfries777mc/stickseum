@@ -4391,7 +4391,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-16-v240';
+const GAME_BUILD='build 2026-10-16-v241';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
@@ -5981,7 +5981,7 @@ function rpLoop(){
   if(s.playing){ s.T+=dt*s.speed; if(s.T>=s.total){ s.T=s.total; s.playing=false; document.getElementById('rpPlay').textContent='▶'; } }
   const i=rpFrameAt(s.frames,s.T), A=s.frames[i], B=s.frames[Math.min(i+1,s.frames.length-1)];
   try{
-    if(i!==s.i || s.dirty){ s.i=i; s.dirty=false; onClientData(A,'practice'); }
+    if(i!==s.i || s.dirty){ const from=(!s.dirty && i>s.i && i-s.i<=40) ? s.i+1 : i; s.i=i; s.dirty=false; for(let k=from;k<=i;k++) onClientData(s.frames[k],'practice'); }      // (frames skipped at high speed still play: each effect is in one frame only)
     const span=B.ts-A.ts, f=span>0?Math.min(1,Math.max(0,(s.T-A.ts)/span)):0;
     if(f>0 && f<1) for(const pb of B.players){ const p=players[pb.id], pa=A.players.find(q=>q.id===pb.id); if(p && pa && pa.alive && pb.alive && Math.hypot(pb.x-pa.x,pb.y-pa.y)<400){ p.x=pa.x+(pb.x-pa.x)*f; p.y=pa.y+(pb.y-pa.y)*f; p.angle=lerpAngle(pa.angle||0,pb.angle||0,f); } }
   }catch(e){ console.warn('[replay]', e); }
@@ -8911,7 +8911,7 @@ function onClientData(data, mode, code){
     if(Array.isArray(data.chat)) for(const m of data.chat.slice(0,12)){ if(m && typeof m.text==='string') onChatRelayed(m); }       // chat lines that ride along with the state (the second road: a state certainly arrives during a match)
     bullets=data.bullets;
     walls=data.walls||[];
-    magicCircles=data.magicCircles||[]; turrets=data.turrets||[]; hzDraw=data.hz||null; darkView=data.dark||[];
+    magicCircles=data.magicCircles||[]; turrets=data.turrets||[]; hzDraw=data.hz||null; if(data.dark!==undefined){ const nowS=performance.now()/1000; darkView=(data.dark||[]).map(z=>Object.assign(z, {t0:nowS-(z.age||0)})); }
     if(data.cq && cq){ cq.scores=data.cq.s; cq.holder=data.cq.h; cq.contested=data.cq.c; }
     xmV=data.xm||null;
     raidView=data.raid||null; tnView=data.tn||null;
@@ -11728,6 +11728,13 @@ function darkSurfaceAt(x, y){       // the platform (moving ones too) whose top 
   return best;
 }
 function darkPoolRect(z){ const pl=MAP && MAP.platforms[z.pi]; if(!pl) return null; return {x0:pl.x+z.rl, x1:pl.x+z.rr, y:pl.y}; }
+let darkSentKey='[]', darkSentAt=0;
+function darkSnap(t){                      // (host) the darkness for the snapshot: only when it changed, or once a second while there is any; undefined = no change
+  const v=darkPools.length ? darkPoolsView(t) : [];
+  const key=JSON.stringify(v.map(z=>[z.x0,z.x1,z.y,z.owner,z.id]));
+  if(key===darkSentKey && (!v.length || t-darkSentAt<1000)) return undefined;
+  darkSentKey=key; darkSentAt=t; return v;
+}
 function darkPoolsView(t){ const tS=t/1000, out=[]; for(const z of darkPools){ const r=darkPoolRect(z); if(r) out.push({x0:Math.round(r.x0), x1:Math.round(r.x1), y:Math.round(r.y), owner:z.owner, team:z.team, id:z.id, age:Math.round((tS-z.born)*10)/10}); } return out; }
 function addDarkPool(owner, pl, cx, tMs, hugLeft, hugRight){
   if(!pl || !owner) return null;
@@ -11867,7 +11874,7 @@ function drawDarkPools(list){
   for(const z of list){
     if(!tnOwnerShown(z.owner)) continue;
     const w=z.x1-z.x0; if(w<2 || !inView((z.x0+z.x1)/2, z.y, w)) continue;
-    const fade=1, grow=clamp((z.age===undefined?1:z.age)/0.25, 0.25, 1);
+    const ag=(z.t0!==undefined) ? performance.now()/1000-z.t0 : z.age, fade=1, grow=clamp((ag===undefined?1:ag)/0.25, 0.25, 1);
     const cx=(z.x0+z.x1)/2, hw=w/2*grow;
     ctx.save(); ctx.globalAlpha=fade;
     const g=ctx.createLinearGradient(0, z.y-7, 0, z.y+4); g.addColorStop(0,'rgba(60,25,95,0.95)'); g.addColorStop(0.5,'rgba(22,10,34,0.97)'); g.addColorStop(1,'rgba(8,4,14,0.9)');
@@ -12239,8 +12246,8 @@ function hostTick(dt,t){
       magicCircles:magicCircles.map(z=>({x:z.x,y:z.y,r:z.r,owner:z.owner,team:z.team,rem:z.until-t/1000})),
       hz:hzDraw,
       turrets:turrets.map(z=>({x:Math.round(z.x),y:Math.round(z.y),a:Math.round(z.ang*100)/100,owner:z.owner,team:z.team,rem:z.until-t/1000})),
-      dark:darkPools.length ? darkPoolsView(t) : undefined,
-      effects:effects.map(e=>({x:e.x,y:e.y,type:e.type,born:e.born,id:e.id,color:e.color,ang:e.ang,v:e.v,dir:e.dir,face:e.face,doubled:e.doubled,name:e.name,k:e.k,x2:e.x2,y2:e.y2,r:e.r,w:e.w,ta:e.ta}))
+      dark:darkSnap(t),
+      effects:effects.filter(e=>!e._sent).map(e=>{ e._sent=1; return e; }).map(e=>({x:e.x,y:e.y,type:e.type,born:e.born,id:e.id,color:e.color,ang:e.ang,v:e.v,dir:e.dir,face:e.face,doubled:e.doubled,name:e.name,k:e.k,x2:e.x2,y2:e.y2,r:e.r,w:e.w,ta:e.ta}))
     };
     { const now=Date.now(); chatOutbox=chatOutbox.filter(m=>now-m.at<CHAT_CARRY_MS); if(chatOutbox.length) snap.chat=chatOutbox.map(m=>({cid:m.cid, from:m.from, text:m.text, fromId:m.fromId})); }
     rpRecAdd(snap);
@@ -13768,7 +13775,7 @@ function hexA(col,a){
 const RND=(a,b)=>a+Math.random()*(b-a);
 function addP(o){
   if(tnVisSet && gameMode==='tournament' && o.x!==undefined && !tnFxNear(o)) return;      // tournament: nothing of the other fights is ever drawn
-  if(particles.length>(fxQuality>=2?900:(fxQuality===1?650:400))) particles.splice(0,200);
+  if(particles.length>(fxQuality>=2?600:(fxQuality===1?450:300))) particles.splice(0,150);
   particles.push(Object.assign({x:0,y:0,vx:0,vy:0,grav:0,drag:0,size:3,shape:'dot',add:true,rot:0,vr:0,color:'#fff'}, o, {max:o.life}));
 }
 function burst(x,y,n,o){
@@ -13787,7 +13794,11 @@ function shakeFrom(x,y,amp,range){
 }
 function dmgText(x,y,v,col){
   if(otherSettings.damageNumbers===false) return; // convenience setting - some players prefer a cleaner screen without floating numbers
-  addP({x:x+RND(-8,8),y:y-18,vx:RND(-22,22),vy:-95,drag:1.3,life:0.85,size:12+Math.min(13,v/3),color:'#ffffff',outline:col||'#000',shape:'text',add:false,text:String(Math.round(v))});
+  for(let i=particles.length-1, lo=Math.max(0,particles.length-150); i>=lo; i--){        // a hit near a number that is still fresh: added to it instead of a new number
+    const q=particles[i]; if(q.dmgSum===undefined || q.max-q.life>0.35 || Math.abs(q.x0-x)>45 || Math.abs(q.y0-y)>55) continue;
+    q.dmgSum+=v; q.text=String(Math.round(q.dmgSum)); q.size=12+Math.min(13,q.dmgSum/3); q.life=q.max; q.x0=x; q.y0=y; return;
+  }
+  addP({x:x+RND(-8,8),y:y-18,vx:RND(-22,22),vy:-95,drag:1.3,life:0.85,size:12+Math.min(13,v/3),color:'#ffffff',outline:col||'#000',shape:'text',add:false,text:String(Math.round(v)), dmgSum:v, x0:x, y0:y});
 }
 const ULT_THEMES={   // colours (3) + an extra flavour per character for the ultimate burst; f = the tint of the screen flash
   _:{c:['#ffd23f','#ff6fb5','#35e0ff'],k:'',f:'255,235,180'},

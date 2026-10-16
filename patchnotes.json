@@ -2,6 +2,64 @@
  "notes": [
   {
    "date": "2026-10-16",
+   "build": "v241",
+   "title": "멀티 렉 개선",
+   "items": [
+    "효과를 한 번만 보내도록 변경 (상태 데이터 약 절반으로 감소)",
+    "쿠루스 어둠 정보는 바뀔 때만 전송",
+    "화면 입자 수 상한 축소",
+    "같은 자리에 겹치는 피해 숫자 합치기"
+   ],
+   "tr": {
+    "en": {
+     "title": "Multiplayer lag fixes",
+     "items": [
+      "Effects are sent only once (game state data about halved)",
+      "Kurus darkness data is sent only when it changes",
+      "Lower on-screen particle limit",
+      "Damage numbers landing on the same spot are added together"
+     ]
+    },
+    "es": {
+     "title": "Mejoras de lag en multijugador",
+     "items": [
+      "Los efectos se envían una sola vez (datos de estado a la mitad aprox.)",
+      "Los datos de la oscuridad de Kurus solo se envían cuando cambian",
+      "Límite de partículas en pantalla más bajo",
+      "Los números de daño en el mismo punto se suman"
+     ]
+    },
+    "fr": {
+     "title": "Moins de lag en multijoueur",
+     "items": [
+      "Les effets ne sont envoyés qu’une fois (données d’état environ divisées par deux)",
+      "Les ténèbres de Kurus ne sont envoyées que lorsqu’elles changent",
+      "Limite de particules à l’écran réduite",
+      "Les chiffres de dégâts au même endroit s’additionnent"
+     ]
+    },
+    "de": {
+     "title": "Weniger Lag im Mehrspieler",
+     "items": [
+      "Effekte werden nur einmal gesendet (Zustandsdaten etwa halbiert)",
+      "Kurus-Dunkelheit wird nur bei Änderungen gesendet",
+      "Niedrigeres Partikellimit auf dem Bildschirm",
+      "Schadenszahlen an derselben Stelle werden zusammengezählt"
+     ]
+    },
+    "ja": {
+     "title": "マルチのラグ改善",
+     "items": [
+      "エフェクトを一度だけ送信（状態データが約半分に）",
+      "クルスの闇の情報は変化したときだけ送信",
+      "画面のパーティクル上限を縮小",
+      "同じ場所に重なるダメージ数字を合算"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-16",
    "build": "v240",
    "title": "쿠루스·기사 강화",
    "items": [
