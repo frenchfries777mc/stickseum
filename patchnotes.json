@@ -2,6 +2,58 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v264",
+   "title": "방 찾기 속도와 폭탄 돌리기 소리",
+   "items": [
+    "온라인 방 찾기가 더 빨라짐 (방을 6개씩 동시에 확인하고, 모든 방을 확인하는 것은 그대로)",
+    "폭탄 돌리기에 폭탄 째깍 소리 추가 (시간이 줄수록 빨라지고 폭탄에서 멀수록 작아짐)",
+    "폭탄 돌리기에 폭탄을 넘길 때 나는 소리 추가"
+   ],
+   "tr": {
+    "en": {
+     "title": "Faster room search and hot potato sounds",
+     "items": [
+      "Online room search is faster (6 rooms are checked at once; every room is still checked)",
+      "Hot potato: a bomb ticking sound that speeds up as time runs out and gets quieter the farther you are from the bomb",
+      "Hot potato: a sound when the bomb is passed on"
+     ]
+    },
+    "es": {
+     "title": "Búsqueda de sala más rápida y sonidos de la bomba",
+     "items": [
+      "La búsqueda de sala en línea es más rápida (se comprueban 6 salas a la vez; se siguen comprobando todas)",
+      "Patata caliente: sonido de tictac de la bomba que se acelera al acabarse el tiempo y baja de volumen con la distancia",
+      "Patata caliente: sonido al pasar la bomba"
+     ]
+    },
+    "fr": {
+     "title": "Recherche de salon plus rapide et sons de la bombe",
+     "items": [
+      "La recherche de salon en ligne est plus rapide (6 salons vérifiés en même temps ; tous sont toujours vérifiés)",
+      "Patate chaude : tic-tac de la bombe qui s’accélère quand le temps s’écoule et baisse avec la distance",
+      "Patate chaude : un son quand la bombe est passée"
+     ]
+    },
+    "de": {
+     "title": "Schnellere Raumsuche und Bombensounds",
+     "items": [
+      "Die Online-Raumsuche ist schneller (6 Räume gleichzeitig; es werden weiterhin alle Räume geprüft)",
+      "Heiße Kartoffel: Ticken der Bombe, das schneller wird und mit der Entfernung leiser",
+      "Heiße Kartoffel: Geräusch beim Weitergeben der Bombe"
+     ]
+    },
+    "ja": {
+     "title": "部屋探しの高速化と爆弾の音",
+     "items": [
+      "オンラインの部屋探しが速くなった（6部屋を同時に確認、すべての部屋を確認する点は変わらない）",
+      "爆弾ゲーム：時間が減るほど速くなり、爆弾から遠いほど小さくなるカチカチ音を追加",
+      "爆弾ゲーム：爆弾を渡すときの音を追加"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v263",
    "title": "봇 보급 상자와 빠른 무기 선택",
    "items": [
