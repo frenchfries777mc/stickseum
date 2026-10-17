@@ -2,6 +2,52 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v267",
+   "title": "클랜 이름·태그 변경과 깃발 뺏기 봇 개선",
+   "items": [
+    "클랜을 만든 뒤에도 클랜장이 클랜 이름과 태그를 바꿀 수 있음 (내 클랜 화면, supabase-clan-rename.sql 실행 필요)",
+    "깃발 뺏기에서 기지에 서 있기만 하던 봇을 없애고, 우리 편 쪽으로 오는 상대를 가까운 봇이 맞서 싸움 (길에서 마주친 상대도 그 자리에서 싸움)"
+   ],
+   "tr": {
+    "en": {
+     "title": "Clan name and tag change, better Capture the Flag bots",
+     "items": [
+      "The clan leader can now change the clan name and tag after the clan was made (My Clan screen; supabase-clan-rename.sql must be run)",
+      "Capture the Flag: no more bots that only stand at the base; the nearest bots meet enemies coming toward our side, and enemies met on the way are fought on the spot"
+     ]
+    },
+    "es": {
+     "title": "Cambio de nombre y etiqueta del clan, mejores bots de Capturar la bandera",
+     "items": [
+      "El líder del clan ahora puede cambiar el nombre y la etiqueta del clan después de crearlo (pantalla Mi clan; hay que ejecutar supabase-clan-rename.sql)",
+      "Capturar la bandera: ya no hay bots que solo se quedan en la base; los más cercanos salen al encuentro de los enemigos que vienen a nuestro lado y a los que se cruzan en el camino se les combate en el momento"
+     ]
+    },
+    "fr": {
+     "title": "Changement du nom et du tag du clan, bots de Capture du drapeau améliorés",
+     "items": [
+      "Le chef du clan peut désormais changer le nom et le tag du clan après sa création (écran Mon clan ; il faut exécuter supabase-clan-rename.sql)",
+      "Capture du drapeau : plus de bots qui restent seulement à la base ; les plus proches vont à la rencontre des ennemis qui arrivent de notre côté, et ceux croisés en chemin sont combattus sur place"
+     ]
+    },
+    "de": {
+     "title": "Clanname und Tag ändern, bessere Capture-the-Flag-Bots",
+     "items": [
+      "Der Clanleiter kann Clannamen und Tag jetzt nach der Gründung ändern (Bildschirm „Mein Clan“; supabase-clan-rename.sql muss ausgeführt werden)",
+      "Capture the Flag: keine Bots mehr, die nur in der Basis stehen; die nächsten Bots stellen sich Gegnern entgegen, die auf unsere Seite kommen, und Gegner auf dem Weg werden sofort bekämpft"
+     ]
+    },
+    "ja": {
+     "title": "クラン名とタグの変更、旗取りボットの改善",
+     "items": [
+      "クラン作成後も、クランリーダーがクラン名とタグを変更できるように（マイクラン画面、supabase-clan-rename.sql の実行が必要）",
+      "旗取り：基地に立っているだけのボットをなくし、自陣側に来る相手を近いボットが迎え撃つ（道中で会った相手もその場で戦う）"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v266",
    "title": "깃발 뺏기 봇 수비 개선",
    "items": [
