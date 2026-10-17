@@ -33,11 +33,13 @@
   .topbar{align-items:flex-start;} .topbar .right{flex-wrap:wrap; justify-content:flex-end; row-gap:10px;} .topbar nav{order:3; flex-basis:100%; text-align:right; margin-top:2px;}   /* the page is too narrow for one row: the menu sits under the language and account buttons */
   .langSel{background:var(--panel); color:var(--text-dim); border:1px solid var(--line); border-radius:7px; padding:5px 8px; font:inherit; font-size:14px; cursor:pointer; margin-left:16px;}
   .langSel:hover{color:var(--text); border-color:var(--teal);}
-  .hero{position:relative; margin-top:8px; padding:40px 30px 30px; border-radius:16px; overflow:hidden; border:1px solid var(--line); background:#0f2a21; isolation:isolate;}
-  .hero > *:not(canvas){position:relative; z-index:1;}
-  #heroScene{position:absolute; inset:0; width:100%; height:100%; z-index:0; display:block;}
-  .hero h1{text-shadow:0 3px 18px rgba(0,0,0,.65);} .hero p{color:#c4ccda !important; text-shadow:0 2px 10px rgba(0,0,0,.7);} .hero .meta{text-shadow:0 2px 10px rgba(0,0,0,.7);}
-  @media(max-width:620px){ .hero{padding:28px 18px 22px;} }
+  .hero{position:relative; padding:150px 0 40px;}
+  .heroBg{position:absolute; top:0; left:0; right:0; height:760px; z-index:0; pointer-events:none; overflow:hidden; -webkit-mask-image:linear-gradient(#000 52%, transparent 96%); mask-image:linear-gradient(#000 52%, transparent 96%);}
+  #heroScene{width:100%; height:100%; display:block;}
+  .wrap{position:relative; z-index:1;}
+  .hero h1{text-shadow:0 3px 20px rgba(0,0,0,.8);} .hero p{color:#d3dae6 !important; text-shadow:0 2px 12px rgba(0,0,0,.85);} .hero .meta{text-shadow:0 2px 10px rgba(0,0,0,.85);}
+  .topbar .wordmark, .topbar nav a{text-shadow:0 2px 10px rgba(0,0,0,.85);} .topbar nav a{color:#c4ccda;}
+  @media(max-width:620px){ .hero{padding:90px 0 30px;} .heroBg{height:600px;} }
   .hero h1{font-size:clamp(40px,8vw,66px); font-weight:700; line-height:1.02; text-transform:uppercase;}
   .hero h1 .clash{color:var(--red);}
   .hero p{color:var(--text-dim); font-size:19px; margin:14px 0 0; max-width:48ch;}
@@ -89,11 +91,11 @@
 </style>
 </head>
 <body>
+<div class="heroBg" aria-hidden="true"><canvas id="heroScene"></canvas></div>
 <div class="wrap">
   <div class="topbar"><div class="wordmark">STICK<b>SEUM</b></div><div class="right"><nav><a href="#play">플레이</a><a href="codex.html">도감</a><a href="ranking.html">순위표</a><a href="balance.html">밸런스</a><a href="#notes">패치노트</a><a href="#help">도움말</a></nav><span data-lang-slot></span><span data-ff-account></span></div></div>
 
   <div class="hero" id="play">
-    <canvas id="heroScene" aria-hidden="true"></canvas>
     <h1>스틱맨들의<br><span class="clash">실시간 난투.</span></h1>
     <p>설치 없이 브라우저에서 바로. 링크 하나로 친구들과 같은 방에서 붙어요.</p>
     <div class="cta">
@@ -198,13 +200,13 @@ fetch('versions.json',{cache:'no-store'}).then(r=>r.ok?r.json():Promise.reject()
 /* the banner behind the title: a little Stickseum arena (platforms like the game's maps) where stick fighters run, jump and shoot each other, forever */
 (function(){
   var cv=document.getElementById('heroScene'); if(!cv || !cv.getContext) return;
-  var cx=cv.getContext('2d'), W=1000, H=380, still=false, SC=1.25;
+  var cx=cv.getContext('2d'), W=1000, H=380, still=false, SC=1.25, XMIN=12, XMAX=988;
   try{ still=window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
   var PL=[{x:40,y:300,w:200},{x:300,y:300,w:200},{x:560,y:300,w:200},{x:790,y:300,w:190},{x:150,y:215,w:170},{x:420,y:200,w:190},{x:690,y:215,w:170},{x:300,y:120,w:150},{x:560,y:110,w:150}], GY=352;
   var COL=['#3fe0c5','#ff4d5e','#ffd34d','#a58bff','#ff9a3c','#6bd0ff'], F=[], B=[], PT=[], TX=[], T=0;
   function surf(x,y){ var best=GY; for(var i=0;i<PL.length;i++){ var p=PL[i]; if(x>=p.x-4 && x<=p.x+p.w+4 && p.y>=y-2 && p.y<best) best=p.y; } return best; }
-  function spawn(f){ var p=PL[Math.floor(Math.random()*PL.length)]; f.x=p.x+20+Math.random()*(p.w-40); f.y=p.y-60; f.vx=0; f.vy=0; f.hp=100; f.dead=0; f.cd=0.5+Math.random(); f.jt=Math.random()*2; f.face=Math.random()<.5?-1:1; f.ph=0; f.sw=0; }
-  for(var i=0;i<6;i++){ var f={c:COL[i],kind:i%3===1?'sword':'gun'}; spawn(f); F.push(f); }
+  function spawn(f){ var ok=PL.filter(function(q){ return q.x+q.w>XMIN+30 && q.x<XMAX-30; }); if(!ok.length) ok=PL; var p=ok[Math.floor(Math.random()*ok.length)]; f.x=Math.max(XMIN+10,Math.min(XMAX-10,p.x+20+Math.random()*(p.w-40))); f.y=p.y-60; f.vx=0; f.vy=0; f.hp=100; f.dead=0; f.cd=0.5+Math.random(); f.jt=Math.random()*2; f.face=Math.random()<.5?-1:1; f.ph=0; f.sw=0; }
+  for(var i=0;i<8;i++){ var f={c:COL[i%6],kind:i%3===1?'sword':'gun'}; spawn(f); F.push(f); }
   function near(f){ var b=null,d=1e9; for(var i=0;i<F.length;i++){ var o=F[i]; if(o===f||o.dead) continue; var dd=Math.abs(o.x-f.x)+Math.abs(o.y-f.y)*0.7; if(dd<d){d=dd;b=o;} } return b; }
   function hit(o,dmg,dir,col){ o.hp-=dmg; o.vx+=dir*(dmg>20?260:140); o.vy=-150; o.flash=0.12; for(var k=0;k<5;k++) PT.push({x:o.x,y:o.y-30,vx:(Math.random()-.5)*160+dir*60,vy:-Math.random()*140,l:.4,c:col}); TX.push({x:o.x,y:o.y-70,t:0,v:Math.round(dmg)}); if(o.hp<=0&&!o.dead){ o.dead=1.6; for(var k=0;k<14;k++) PT.push({x:o.x,y:o.y-30,vx:(Math.random()-.5)*300,vy:-Math.random()*260,l:.7,c:o.c}); } }
   function step(dt){
@@ -219,7 +221,7 @@ fetch('versions.json',{cache:'no-store'}).then(r=>r.ok?r.json():Promise.reject()
       if(on && f.jt<=0){ f.vy=-420-Math.random()*90; f.jt=0.9+Math.random()*2.2; if(t&&t.y<f.y-60) f.vy=-520; }
       f.vy+=900*dt; f.x+=f.vx*dt; var py=f.y; f.y+=f.vy*dt;
       if(f.vy>=0){ var sy=surf(f.x,py-1); if(py<=sy+1 && f.y>=sy){ f.y=sy; f.vy=0; } }
-      if(f.x<12){f.x=12;f.vx=Math.abs(f.vx);} if(f.x>W-12){f.x=W-12;f.vx=-Math.abs(f.vx);}
+      if(f.x<XMIN){f.x=XMIN;f.vx=Math.abs(f.vx);} if(f.x>XMAX){f.x=XMAX;f.vx=-Math.abs(f.vx);}
       f.ph+=Math.abs(f.vx)*dt*0.045;
       if(t && f.cd<=0){
         if(f.kind==='gun' && ad<520){ var a=Math.atan2((t.y-30)-(f.y-34),dx)+(Math.random()-.5)*.12; B.push({x:f.x+f.face*14,y:f.y-34,vx:Math.cos(a)*520,vy:Math.sin(a)*520,o:f,c:f.c,l:1.3}); f.cd=0.55+Math.random()*0.7; f.sw=0.1; }
@@ -249,8 +251,10 @@ fetch('versions.json',{cache:'no-store'}).then(r=>r.ok?r.json():Promise.reject()
     if(!f.dead){ cx.fillStyle='rgba(0,0,0,.45)'; cx.fillRect(f.x-14,f.y-80*SC,28,4); cx.fillStyle=f.c; cx.fillRect(f.x-14,f.y-80*SC,28*Math.max(0,f.hp)/100,4); }
   }
   function draw(){
-    var w=cv.width, h=cv.height, nar=w<h*1.25+300*(window.devicePixelRatio||1)&&w<720*(window.devicePixelRatio||1), s=w/W, ox=0, oy=h-H*s;     // the whole arena always fits the width, along the bottom (the rest above it is just the dark backdrop)
-    SC=nar?1.9:1.25;
+    var w=cv.width, h=cv.height, nar=w<h*1.25+300*(window.devicePixelRatio||1)&&w<720*(window.devicePixelRatio||1), s=Math.max(w/W,h/H), ox=(w-W*s)/2, oy=h-H*s;     // the arena fills the banner (bottom aligned); on a narrow screen the fighters stay inside what is visible (XMIN/XMAX)
+    SC=Math.max(0.7,Math.min(1.6,1.4/Math.pow(s/(window.devicePixelRatio||1),0.7)));
+    XMIN=Math.max(12,-ox/s+12); XMAX=Math.min(W-12,(w-ox)/s-12);
+    if(w/(window.devicePixelRatio||1)>900) XMIN=Math.max(XMIN,(w*0.46-ox)/s);     // on a wide screen the fighters keep to the right half, away from the title
     cx.setTransform(1,0,0,1,0,0); cx.clearRect(0,0,w,h);
     var g=cx.createLinearGradient(0,0,0,h); g.addColorStop(0,'#10372c'); g.addColorStop(1,'#0b241c'); cx.fillStyle=g; cx.fillRect(0,0,w,h);
     cx.setTransform(s,0,0,s,ox,oy);
@@ -262,7 +266,7 @@ fetch('versions.json',{cache:'no-store'}).then(r=>r.ok?r.json():Promise.reject()
     for(var n=0;n<PT.length;n++){ var q=PT[n]; cx.globalAlpha=Math.max(0,q.l*2); cx.fillStyle=q.c; cx.fillRect(q.x-2,q.y-2,4,4); } cx.globalAlpha=1;
     cx.font='700 15px Oswald,sans-serif'; cx.textAlign='center'; for(var t=0;t<TX.length;t++){ var d=TX[t]; cx.globalAlpha=Math.max(0,1-d.t/0.7); cx.fillStyle='#ffd34d'; cx.fillText(d.v, d.x, d.y-d.t*40); } cx.globalAlpha=1;
     cx.setTransform(1,0,0,1,0,0);          // a dark veil from the left keeps the title readable
-    var v=cx.createLinearGradient(0,0,w,0); v.addColorStop(0,'rgba(8,16,14,.78)'); v.addColorStop(0.5,'rgba(8,16,14,.38)'); v.addColorStop(1,'rgba(8,16,14,0)'); cx.fillStyle=v; cx.fillRect(0,0,w,h);
+    var v=cx.createLinearGradient(0,0,w,0); v.addColorStop(0,'rgba(8,12,18,.62)'); v.addColorStop(0.55,'rgba(8,12,18,.28)'); v.addColorStop(1,'rgba(8,12,18,.05)'); cx.fillStyle=v; cx.fillRect(0,0,w,h);
   }
   function size(){ var r=cv.getBoundingClientRect(), d=Math.min(window.devicePixelRatio||1,2); cv.width=Math.max(2,Math.round(r.width*d)); cv.height=Math.max(2,Math.round(r.height*d)); draw(); }
   var last=0, run=true;
