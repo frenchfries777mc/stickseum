@@ -2,6 +2,52 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v261",
+   "title": "MVP 투표 팀전 한정",
+   "items": [
+    "MVP는 팀을 이루는 모드에서만 뽑음",
+    "승리한 팀원만 투표하고 후보도 승리한 팀원 중에서 고름 (진 팀에는 투표창이 안 뜸)"
+   ],
+   "tr": {
+    "en": {
+     "title": "MVP vote in team modes only",
+     "items": [
+      "MVP is now chosen only in team modes",
+      "Only members of the winning team vote, and the candidates come from the winning team (the losing team sees no vote window)"
+     ]
+    },
+    "es": {
+     "title": "Votación de MVP solo en modos por equipos",
+     "items": [
+      "El MVP ahora se elige solo en los modos por equipos",
+      "Solo votan los miembros del equipo ganador y los candidatos salen del equipo ganador (el equipo perdedor no ve la ventana de votación)"
+     ]
+    },
+    "fr": {
+     "title": "Vote MVP réservé aux modes par équipes",
+     "items": [
+      "Le MVP n’est désormais désigné que dans les modes par équipes",
+      "Seuls les membres de l’équipe gagnante votent et les candidats viennent de l’équipe gagnante (l’équipe perdante ne voit pas la fenêtre de vote)"
+     ]
+    },
+    "de": {
+     "title": "MVP-Abstimmung nur in Teammodi",
+     "items": [
+      "Der MVP wird jetzt nur in Teammodi gewählt",
+      "Nur Mitglieder des Siegerteams stimmen ab, und die Kandidaten stammen aus dem Siegerteam (das Verliererteam sieht kein Abstimmungsfenster)"
+     ]
+    },
+    "ja": {
+     "title": "MVP投票はチームモードのみ",
+     "items": [
+      "MVPはチームを組むモードでのみ選ばれる",
+      "投票できるのは勝ったチームのメンバーだけで、候補も勝ったチームから選ぶ（負けたチームには投票画面が出ない）"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v260",
    "title": "봇 바로 채우기",
    "items": [
