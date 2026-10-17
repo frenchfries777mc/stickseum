@@ -4490,7 +4490,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-17-v260';
+const GAME_BUILD='build 2026-10-17-v261';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
@@ -8780,6 +8780,7 @@ function mvpLockExit(on){
 }
 function hideMvpBox(){ const o=document.getElementById('mvpBox'); if(o) o.style.display='none'; clearInterval(showMvpVote._t); mvpLockExit(false); }
 function showMvpVote(cands, ms){
+  if(!cands.some(c=>c.id===myId)){ hideMvpBox(); return; }            // not on the winning team: no vote window
   const o=ensureMvpBox(); o.style.display='block'; o.innerHTML=''; mvpMyPick=null; mvpLockExit(true);
   const h=document.createElement('div'); h.style.cssText='font-weight:900; font-size:26px; color:#ffd34d; margin-bottom:4px;'; h.textContent='🏅 MVP 투표'; o.appendChild(h);
   const s=document.createElement('div'); s.style.cssText='font-size:15px; color:#c9ced8; margin-bottom:16px;'; s.textContent='가장 활약한 사람을 골라 주세요 (뽑히면 +'+MVP_XP+' XP)'; o.appendChild(s);
@@ -8805,15 +8806,20 @@ function showMvpResult(id, name, paid){
   clearTimeout(showMvpResult._t); showMvpResult._t=setTimeout(hideMvpBox, 3600);
 }
 const MVP_DELAY_MS=1800;      // the victory screen comes first; the vote window opens a moment later
-function startMvpVote(){
-  const humans=Object.values(players).filter(p=>!p.isBot && !p.isBoss && !p.isMinion && !p.isDummy);
+function startMvpVote(wIds){
+  // only the team modes have an MVP, and only the members of the WINNING team take part (they are the candidates and the only voters)
+  const mode=MODES[gameMode]||{};
+  if(!mode.teams || mode.soloTeam || !Array.isArray(wIds) || !wIds.length) return;
+  const win=new Set(wIds);
+  const humans=Object.values(players).filter(p=>win.has(p.id) && !p.isBot && !p.isBoss && !p.isMinion && !p.isDummy);
+  if(!humans.length) return;                            // the winners are all bots: nobody to pay, no vote
   let cands, botVoters=[];
-  if(humans.length<2){                                  // a match against bots: the bots vote too (the human picks as usual; each bot mostly backs whoever did the most, sometimes somebody else)
-    const part=Object.values(players).filter(p=>p && !p.isBoss && !p.isMinion && !p.isDummy && !p.isSpectator && p.name);
+  if(humans.length<2){                                  // one person on the winning team with bot team-mates: the bots vote too (the human picks as usual; each bot mostly backs whoever did the most, sometimes somebody else)
+    const part=Object.values(players).filter(p=>win.has(p.id) && !p.isBoss && !p.isMinion && !p.isDummy && !p.isSpectator && p.name);
     if(part.length<2) return;
     cands=part.map(p=>({id:p.id, name:p.name})); botVoters=part.filter(p=>p.isBot).map(bot=>({id:bot.id, others:part.filter(p=>p.id!==bot.id)}));
   } else cands=humans.map(p=>({id:p.id, name:p.name}));
-  mvpLockExit(true);
+  if(cands.some(c=>c.id===myId)) mvpLockExit(true);
   const sc=p=>(p.totalDamageDealt||0)+(p.kills||0)*20;
   setTimeout(()=>{
     if(!matchEnded || mvpVote) return;
@@ -13194,7 +13200,7 @@ function announceMatchEnd(resultText, winnerIds){
   broadcastAll({t:'matchEnd', resultText, winnerIds:wIds, killcam:kc, awards:(gameMode==='raid'?raidAwards:null), summary});
   pendingMatchSummary=summary; try{ uploadMatchSummary(summary); }catch(e){}
   showMatchEndOverlay(resultText, wIds, kc);
-  try{ startMvpVote(); }catch(e){ recordDiagError('mvpVote', e); }
+  try{ startMvpVote(wIds); }catch(e){ recordDiagError('mvpVote', e); }
 }
 /* the chat remembers its last CHAT_HISTORY lines: opening the chat box (Enter) shows them again, so a line that came while you were busy or looking away is not lost;
    a line from somebody else makes a short soft blip (not for your own lines or the notes of the game) */
