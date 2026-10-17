@@ -2,6 +2,46 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v260",
+   "title": "봇 바로 채우기",
+   "items": [
+    "온라인 방에 사람이 1명뿐이면 15초를 기다리지 않고 바로 봇이 채워짐 (파티 중이거나 2명 이상이면 기존처럼 15초 대기)"
+   ],
+   "tr": {
+    "en": {
+     "title": "Bots fill in right away",
+     "items": [
+      "In an online room with only one person, bots now fill the empty seats right away instead of after 15 seconds (with a party or two or more people the 15-second wait stays)"
+     ]
+    },
+    "es": {
+     "title": "Los bots entran de inmediato",
+     "items": [
+      "En una sala en línea con una sola persona, los bots ocupan los huecos de inmediato en lugar de tras 15 segundos (con un grupo o dos o más personas se mantiene la espera de 15 segundos)"
+     ]
+    },
+    "fr": {
+     "title": "Les bots arrivent tout de suite",
+     "items": [
+      "Dans un salon en ligne avec une seule personne, les bots remplissent les places tout de suite au lieu d’attendre 15 secondes (avec un groupe ou à deux personnes ou plus, l’attente de 15 secondes reste)"
+     ]
+    },
+    "de": {
+     "title": "Bots füllen sofort auf",
+     "items": [
+      "In einem Online-Raum mit nur einer Person füllen Bots die freien Plätze sofort statt nach 15 Sekunden (bei einer Gruppe oder zwei und mehr Personen bleibt die Wartezeit von 15 Sekunden)"
+     ]
+    },
+    "ja": {
+     "title": "ボットをすぐに補充",
+     "items": [
+      "オンラインの部屋に人が1人だけのときは、15秒待たずにすぐボットが空席を埋める（パーティー中や2人以上のときは従来どおり15秒待機）"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v259",
    "title": "버튼 소리 변경",
    "items": [
