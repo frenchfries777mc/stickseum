@@ -2,6 +2,46 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v265",
+   "title": "쿠루스 어둠 탈출 범위 변경",
+   "items": [
+    "어둠 탈출의 피해와 사라지는 어둠이 들어 있는 어둠과 이어진 어둠, 그 위·아래의 어둠만 계산 (나머지 내 어둠은 남음)"
+   ],
+   "tr": {
+    "en": {
+     "title": "Kurus Dark Escape range change",
+     "items": [
+      "Dark Escape damage and the darkness it removes now count only the darkness you are in, the darkness connected to it and your darkness right above or below it (your other darkness stays)"
+     ]
+    },
+    "es": {
+     "title": "Cambio de alcance del Escape Oscuro de Kurus",
+     "items": [
+      "El daño del Escape Oscuro y la oscuridad que elimina ahora solo cuentan la oscuridad en la que estás, la conectada y tu oscuridad justo encima o debajo (el resto de tu oscuridad se queda)"
+     ]
+    },
+    "fr": {
+     "title": "Changement de portée de l’Évasion des ténèbres de Kurus",
+     "items": [
+      "Les dégâts de l’Évasion des ténèbres et les ténèbres retirées ne comptent plus que les ténèbres où vous êtes, celles qui y sont reliées et vos ténèbres juste au-dessus ou en dessous (les autres restent)"
+     ]
+    },
+    "de": {
+     "title": "Kurus: Reichweite der Dunkelflucht geändert",
+     "items": [
+      "Schaden und entfernte Dunkelheit der Dunkelflucht zählen nur noch die Dunkelheit, in der du bist, die damit verbundene und deine Dunkelheit direkt darüber oder darunter (deine übrige bleibt)"
+     ]
+    },
+    "ja": {
+     "title": "クルスの闇脱出の範囲変更",
+     "items": [
+      "闇脱出のダメージと消える闇は、今いる闇とつながる闇、真上・真下の自分の闇だけが対象に（他の自分の闇は残る）"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v264",
    "title": "방 찾기 속도와 폭탄 돌리기 소리",
    "items": [
