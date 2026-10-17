@@ -14,35 +14,40 @@
      "title": "Classic / minigame split removed",
      "items": [
       "Removed the leftover classic / minigame split code (only modes remain)",
-      "Private room mode selection no longer marks minigames separately"
+      "Private room mode selection no longer marks minigames separately",
+      "Real in-game footage (bots fighting) as the top background of the site"
      ]
     },
     "es": {
      "title": "Fin de la separación clásico / minijuego",
      "items": [
       "Se eliminó el código restante de la separación clásico / minijuego (solo quedan modos)",
-      "La selección de modo en salas privadas ya no marca los minijuegos por separado"
+      "La selección de modo en salas privadas ya no marca los minijuegos por separado",
+      "Grabación real del juego (bots peleando) como fondo superior del sitio"
      ]
     },
     "fr": {
      "title": "Fin de la séparation classique / mini-jeu",
      "items": [
       "Suppression du code restant de la séparation classique / mini-jeu (il ne reste que des modes)",
-      "La sélection du mode en salon privé ne distingue plus les mini-jeux"
+      "La sélection du mode en salon privé ne distingue plus les mini-jeux",
+      "Enregistrement réel du jeu (bots qui se battent) en fond en haut du site"
      ]
     },
     "de": {
      "title": "Trennung Klassik / Minispiel entfernt",
      "items": [
       "Restlichen Code der Trennung Klassik / Minispiel entfernt (nur noch Modi)",
-      "Die Modusauswahl in privaten Räumen kennzeichnet Minispiele nicht mehr extra"
+      "Die Modusauswahl in privaten Räumen kennzeichnet Minispiele nicht mehr extra",
+      "Echte Spielaufnahme (kämpfende Bots) als Hintergrund oben auf der Seite"
      ]
     },
     "ja": {
      "title": "クラシック／ミニゲームの区別を削除",
      "items": [
       "クラシック／ミニゲームの区別に関するコードを整理（モードのみに統一）",
-      "非公開ルームのモード選択でミニゲームを別表示しないように"
+      "非公開ルームのモード選択でミニゲームを別表示しないように",
+      "サイト上部の背景に実際のゲーム映像（ボットの戦闘）を追加"
      ]
     }
    }
