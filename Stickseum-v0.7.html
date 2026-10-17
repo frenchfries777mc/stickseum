@@ -4490,7 +4490,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-17-v265';
+const GAME_BUILD='build 2026-10-17-v266';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
@@ -11577,6 +11577,7 @@ function botBrainSurvival(p, ai, t, tSec, inp, navBusy){
 // capture the flag: the bot with the enemy flag runs it home; the nearest two bots hunt a thief who has OUR flag; the nearest returns a dropped flag
 // of ours / picks up a dropped enemy one; otherwise about 60% of the bots attack (go for the enemy flag, escorting a team-mate who carries it) and the rest
 // defend (hold around our flag, and fight anyone who comes near it). A bot still shoots whoever is in range while it goes about this.
+const BOT_CTF_THREAT_R=900;      // an enemy this close to our flag is a threat the nearest bots go and meet
 function botBrainCtf(p, ai, t, inp){
   if(!ctf || p.team===null || p.team===undefined) return null;
   const myT=p.team, own=ctf.flags[myT], en=ctf.flags[1-myT];
@@ -11592,15 +11593,27 @@ function botBrainCtf(p, ai, t, inp){
   if(!collector && own.state==='dropped'){ const c=byDist(own.x, own.y)[0]; if(c && c.id===p.id) return {goalX:own.x, goalY:own.y}; }
   if(en.state==='dropped'){ const c=byDist(en.x, en.y)[0]; if(c && c.id===p.id) return {goalX:en.x, goalY:en.y}; }
   const sorted=mates.slice().sort((a,b)=>(a.joinOrder||0)-(b.joinOrder||0)), idx=Math.max(0, sorted.findIndex(o=>o.id===p.id));
-  const attacker = collector || idx < Math.max(1, Math.ceil(sorted.length*0.6));
   const carrier = en.state==='carried' ? players[en.carrierId] : null;
+  const foes=Object.values(players).filter(o=>o.alive && o.x!==undefined && o.team!==myT && o.team!==null && o.team!==undefined);
+  if(!collector){          // enemies on their way to / at our flag are answered by as many of the bots that are NEAREST to our flag as there are enemies (an attacker far away is not called back, one close by is)
+    const threats=foes.filter(o=>Math.hypot(o.x-ownHome.x, o.y-ownHome.y)<BOT_CTF_THREAT_R).sort((a,b)=>Math.hypot(a.x-ownHome.x,a.y-ownHome.y)-Math.hypot(b.x-ownHome.x,b.y-ownHome.y));
+    if(threats.length){
+      const pool=mates.filter(o=>!(o.ai && o.ai.personality==='collector') && !(en.state==='carried' && en.carrierId===o.id)).sort((a,b)=>Math.hypot(a.x-ownHome.x,a.y-ownHome.y)-Math.hypot(b.x-ownHome.x,b.y-ownHome.y));
+      const k=pool.findIndex(o=>o.id===p.id);
+      if(k>=0 && k<Math.min(threats.length, Math.max(1, Math.ceil(pool.length*0.7)))){
+        const th=threats[Math.min(k, threats.length-1)]; ai.tgt=th.id; return {goalX:th.x, goalY:th.y};
+      }
+    }
+  }
+  const guards = sorted.length>=4 ? 1 : 0;           // one guard of a big team; everybody else goes for the flag (and falls back to defend when enemies show up, above)
+  const attacker = collector || idx >= guards;
   if(attacker){
     if(carrier && carrier.team===myT && carrier.alive && carrier.x!==undefined) return {goalX:carrier.x+(ownHome.x>carrier.x?1:-1)*110, goalY:carrier.y};   // escort
     return {goalX:enHome.x, goalY:enHome.y};
   }
-  let foe=null, fd=1e9; for(const o of Object.values(players)){ if(!o.alive || o.x===undefined || o.team===myT || o.team===null || o.team===undefined) continue; const d=Math.hypot(o.x-ownHome.x, o.y-ownHome.y); if(d<fd){ fd=d; foe=o; } }
+  let foe=null, fd=1e9; for(const o of foes){ const d=Math.hypot(o.x-ownHome.x, o.y-ownHome.y); if(d<fd){ fd=d; foe=o; } }
   if(foe && fd<650) return null;                                                   // an enemy near our flag: the ordinary fighter deals with it
-  if(ai.defOff===undefined) ai.defOff=(Math.random()<0.5?-1:1)*(40+Math.random()*150);
+  if(ai.defOff===undefined || t>=(ai.defUntil||0)){ ai.defOff=(Math.random()<0.5?-1:1)*(40+Math.random()*260); ai.defUntil=t+4000+Math.random()*5000; }   // the guard walks about near the flag instead of standing still
   return {goalX:ownHome.x+ai.defOff, goalY:ownHome.y};
 }
 function botModeBrain(p, ai, t, tSec, inp, navBusy){

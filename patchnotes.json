@@ -2,6 +2,52 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v266",
+   "title": "깃발 뺏기 봇 수비 개선",
+   "items": [
+    "깃발 뺏기에서 상대가 우리 기지에 다가오면 기지에 가장 가까운 봇들이 맞서 싸움 (상대 수만큼, 멀리 있는 봇은 부르지 않음)",
+    "깃발 뺏기에서 기지에 틀어박혀 있던 봇을 줄여 4명 이상일 때 1명만 기지 근처를 돌아다니며 지킴"
+   ],
+   "tr": {
+    "en": {
+     "title": "Capture the Flag bots defend better",
+     "items": [
+      "In Capture the Flag, when enemies come near our flag, the bots nearest to it go and meet them (as many as there are enemies; bots far away are not called back)",
+      "Fewer bots sit at the base: in teams of 4 or more only one guards, walking around near the flag"
+     ]
+    },
+    "es": {
+     "title": "Los bots de Capturar la bandera defienden mejor",
+     "items": [
+      "En Capturar la bandera, cuando hay enemigos cerca de nuestra bandera, los bots más cercanos salen a su encuentro (tantos como enemigos; los bots lejanos no son llamados)",
+      "Menos bots se quedan en la base: en equipos de 4 o más solo uno vigila, paseando cerca de la bandera"
+     ]
+    },
+    "fr": {
+     "title": "Les bots de Capture du drapeau défendent mieux",
+     "items": [
+      "En Capture du drapeau, quand des ennemis approchent de notre drapeau, les bots les plus proches vont à leur rencontre (autant que d’ennemis ; les bots éloignés ne sont pas rappelés)",
+      "Moins de bots restent à la base : dans les équipes de 4 ou plus, un seul garde et se promène près du drapeau"
+     ]
+    },
+    "de": {
+     "title": "Capture-the-Flag-Bots verteidigen besser",
+     "items": [
+      "Bei Capture the Flag stellen sich Gegnern nahe unserer Flagge die am nächsten stehenden Bots entgegen (so viele wie Gegner; weit entfernte Bots werden nicht zurückgerufen)",
+      "Weniger Bots hocken in der Basis: in Teams ab 4 bewacht nur einer die Flagge und läuft dabei in ihrer Nähe umher"
+     ]
+    },
+    "ja": {
+     "title": "旗取りのボットの守りを改善",
+     "items": [
+      "旗取りで相手が自陣の旗に近づくと、旗に一番近いボットが迎え撃つ（相手の数だけ、遠くのボットは呼び戻さない）",
+      "基地にこもるボットを減らし、4人以上のチームでは1人だけが旗の近くを歩き回って守る"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v265",
    "title": "쿠루스 어둠 탈출 범위 변경",
    "items": [
