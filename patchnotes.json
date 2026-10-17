@@ -2,6 +2,58 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v254",
+   "title": "배경음악 추가",
+   "items": [
+    "배경음악 추가: 로비 곡과 대전 곡, 대전이 시작되면 곡이 자연스럽게 바뀜 (결과 화면에서는 승리·패배 음악만)",
+    "설정에 배경음악 켜기/끄기와 배경음악 소리 조절 추가",
+    "음악은 게임 파일과 따로 불러와서 게임 파일 크기는 그대로"
+   ],
+   "tr": {
+    "en": {
+     "title": "Background music added",
+     "items": [
+      "Background music added: a lobby track and a battle track; the music changes smoothly when a match starts (the result screen keeps only the victory/defeat song)",
+      "Settings: background music on/off and music volume",
+      "The music loads separately from the game file, so the game file stays the same size"
+     ]
+    },
+    "es": {
+     "title": "Música de fondo añadida",
+     "items": [
+      "Música de fondo añadida: una pista para el lobby y otra para el combate; cambia suavemente al empezar la partida (la pantalla de resultados solo tiene la canción de victoria/derrota)",
+      "Ajustes: activar/desactivar la música de fondo y su volumen",
+      "La música se carga aparte del archivo del juego, que mantiene su tamaño"
+     ]
+    },
+    "fr": {
+     "title": "Musique de fond ajoutée",
+     "items": [
+      "Musique de fond ajoutée : un morceau pour le salon et un pour le combat ; la musique change en douceur au début du match (l’écran de résultats garde seulement le chant de victoire/défaite)",
+      "Paramètres : activer/désactiver la musique de fond et son volume",
+      "La musique est chargée à part du fichier du jeu, qui garde la même taille"
+     ]
+    },
+    "de": {
+     "title": "Hintergrundmusik hinzugefügt",
+     "items": [
+      "Hintergrundmusik hinzugefügt: ein Lobby-Stück und ein Kampf-Stück; beim Matchstart wechselt die Musik sanft (der Ergebnisbildschirm behält nur das Sieg-/Niederlagenlied)",
+      "Einstellungen: Hintergrundmusik an/aus und Musiklautstärke",
+      "Die Musik wird getrennt von der Spieldatei geladen, die Spieldatei bleibt gleich groß"
+     ]
+    },
+    "ja": {
+     "title": "BGM追加",
+     "items": [
+      "BGM追加：ロビー曲とバトル曲、試合が始まると曲がなめらかに切り替わる（結果画面では勝利・敗北の曲のみ）",
+      "設定にBGMのオン/オフとBGM音量を追加",
+      "音楽はゲームファイルとは別に読み込むため、ゲームファイルのサイズはそのまま"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v253",
    "title": "MVP 투표 개편",
    "items": [
