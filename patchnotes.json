@@ -2,6 +2,58 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v263",
+   "title": "봇 보급 상자와 빠른 무기 선택",
+   "items": [
+    "봇이 배틀로얄·듀오의 보급 상자를 찾아가서 먹음 (다쳤을 때는 체력 상자를 우선)",
+    "봇이 위험지대 밖으로 나가면 발판을 밟고 안쪽으로 돌아옴",
+    "봇이 무기를 5초 안에 고르고 확정함"
+   ],
+   "tr": {
+    "en": {
+     "title": "Bots: supply crates and quick weapon pick",
+     "items": [
+      "Bots now go for the supply crates in Battle Royale and Duo (healing crates first when hurt)",
+      "Bots that end up outside the danger zone climb back inside using the platforms",
+      "Bots pick and lock their weapon within 5 seconds"
+     ]
+    },
+    "es": {
+     "title": "Bots: cajas de suministros y elección rápida de arma",
+     "items": [
+      "Los bots ahora van a por las cajas de suministros en Battle Royale y Dúo (primero las de curación si están heridos)",
+      "Los bots que quedan fuera de la zona de peligro vuelven al interior usando las plataformas",
+      "Los bots eligen y fijan su arma en 5 segundos"
+     ]
+    },
+    "fr": {
+     "title": "Bots : caisses de ravitaillement et choix d’arme rapide",
+     "items": [
+      "Les bots vont désormais chercher les caisses de ravitaillement en Battle Royale et en Duo (les caisses de soin d’abord quand ils sont blessés)",
+      "Les bots qui se retrouvent hors de la zone de danger y reviennent en utilisant les plateformes",
+      "Les bots choisissent et verrouillent leur arme en 5 secondes"
+     ]
+    },
+    "de": {
+     "title": "Bots: Versorgungskisten und schnelle Waffenwahl",
+     "items": [
+      "Bots holen sich jetzt die Versorgungskisten in Battle Royale und Duo (bei Verletzung zuerst Heilkisten)",
+      "Bots außerhalb der Gefahrenzone kehren über die Plattformen nach innen zurück",
+      "Bots wählen und bestätigen ihre Waffe innerhalb von 5 Sekunden"
+     ]
+    },
+    "ja": {
+     "title": "ボット：補給箱と素早い武器選択",
+     "items": [
+      "ボットがバトルロイヤルとデュオの補給箱を取りに行く（ダメージを受けているときは回復箱を優先）",
+      "危険地帯の外に出たボットは足場を使って内側へ戻る",
+      "ボットは5秒以内に武器を選んで確定する"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v262",
    "title": "봇 즉시 채우기",
    "items": [
