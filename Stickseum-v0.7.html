@@ -4582,7 +4582,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-17-v271';
+const GAME_BUILD='build 2026-10-17-v272';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
@@ -11316,9 +11316,10 @@ function botBuildGraph(){
   return {n, edges, at:Date.now()};
 }
 function botGraph(){
-  const g=MAP.__botGraph;
+  const key=MAP.platforms.length+'|'+(MAP.plankSig?MAP.platforms.filter(pl=>pl.pk!==undefined).map(pl=>pl.pk).join(','):'')+'|'+(MAP.gateGp===undefined?'':MAP.gateGp);      // (the maps whose planks / gates come and go keep one graph per layout, so the bots neither rebuild it all the time nor walk to a plank that is gone)
+  const gs=MAP.__botGraphs||(MAP.__botGraphs={}), g=gs[key];
   if(g && g.n===MAP.platforms.length) return g;
-  return MAP.__botGraph=botBuildGraph();
+  return gs[key]=botBuildGraph();
 }
 function botDijkstra(from){
   const G=botGraph(), n=G.n, dist=new Array(n).fill(Infinity), prev=new Array(n).fill(-1), done=new Array(n).fill(false);
