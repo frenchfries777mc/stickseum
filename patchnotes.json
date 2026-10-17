@@ -2,6 +2,46 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v247",
+   "title": "봇전 MVP 수정",
+   "items": [
+    "봇과 할 때 MVP가 안 골라지던 문제 수정: 가장 많은 피해를 준 플레이어를 자동 선정"
+   ],
+   "tr": {
+    "en": {
+     "title": "MVP against bots",
+     "items": [
+      "Fixed no MVP being picked in matches against bots: the player with the most damage is now chosen automatically"
+     ]
+    },
+    "es": {
+     "title": "MVP contra bots",
+     "items": [
+      "Corregido que no se eligiera MVP en partidas contra bots: ahora se elige automáticamente al jugador con más daño"
+     ]
+    },
+    "fr": {
+     "title": "MVP contre les bots",
+     "items": [
+      "Correction : aucun MVP n’était désigné dans les parties contre des bots, désormais le joueur ayant infligé le plus de dégâts est choisi automatiquement"
+     ]
+    },
+    "de": {
+     "title": "MVP gegen Bots",
+     "items": [
+      "Behoben: In Matches gegen Bots wurde kein MVP bestimmt, jetzt wird automatisch der Spieler mit dem meisten Schaden gewählt"
+     ]
+    },
+    "ja": {
+     "title": "ボット戦のMVP",
+     "items": [
+      "ボット戦でMVPが選ばれない問題を修正：最もダメージを与えたプレイヤーを自動で選出"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v246",
    "title": "보스 레이드 개편",
    "items": [
