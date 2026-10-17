@@ -6,42 +6,48 @@
    "title": "닉네임 통일과 연습 모드 DPS 표시",
    "items": [
     "허브 사이트·Stickseum·클랜에서 닉네임이 서로 다르던 문제 수정 (허브에서 바꾼 닉네임이 Stickseum 프로필에 적용되고, 클랜에는 지금 닉네임이 표시됨)",
-    "연습 모드에 내가 준 피해 표시 추가 (최근 5초 DPS, 최고 DPS, 총 피해, 기록 초기화)"
+    "연습 모드에 내가 준 피해 표시 추가 (최근 5초 DPS, 최고 DPS, 총 피해, 기록 초기화)",
+    "사이트 맨 위 배경에 맵과 스틱맨 전투 장면 추가"
    ],
    "tr": {
     "en": {
      "title": "One nickname everywhere and a DPS meter in practice",
      "items": [
       "Fixed the nickname being different on the hub site, in Stickseum and in the clan (a nickname changed on the hub now applies to the Stickseum profile, and the clan shows the current nickname)",
-      "Practice mode shows the damage I deal (DPS of the last 5 s, best DPS, total damage, reset record)"
+      "Practice mode shows the damage I deal (DPS of the last 5 s, best DPS, total damage, reset record)",
+      "A map and stick-fighter battle scene behind the top of the site"
      ]
     },
     "es": {
      "title": "Un solo apodo en todas partes y medidor de DPS en práctica",
      "items": [
       "Corregido que el apodo fuera distinto en el hub, en Stickseum y en el clan (un apodo cambiado en el hub se aplica al perfil de Stickseum y el clan muestra el apodo actual)",
-      "El modo práctica muestra el daño que hago (DPS de los últimos 5 s, mejor DPS, daño total, reiniciar registro)"
+      "El modo práctica muestra el daño que hago (DPS de los últimos 5 s, mejor DPS, daño total, reiniciar registro)",
+      "Escena de mapa y combate de stickmen como fondo en la parte superior del sitio"
      ]
     },
     "fr": {
      "title": "Un seul pseudo partout et un compteur de DPS à l’entraînement",
      "items": [
       "Correction du pseudo différent entre le hub, Stickseum et le clan (un pseudo changé sur le hub s’applique au profil Stickseum et le clan affiche le pseudo actuel)",
-      "Le mode entraînement affiche les dégâts infligés (DPS des 5 dernières s, meilleur DPS, dégâts totaux, réinitialiser)"
+      "Le mode entraînement affiche les dégâts infligés (DPS des 5 dernières s, meilleur DPS, dégâts totaux, réinitialiser)",
+      "Scène de combat de stickmen sur une carte en fond du haut du site"
      ]
     },
     "de": {
      "title": "Ein Spitzname überall und DPS-Anzeige im Training",
      "items": [
       "Behoben: Der Spitzname war auf der Hub-Seite, in Stickseum und im Clan unterschiedlich (ein im Hub geänderter Spitzname gilt jetzt im Stickseum-Profil, und der Clan zeigt den aktuellen Spitznamen)",
-      "Der Trainingsmodus zeigt den verursachten Schaden (DPS der letzten 5 s, beste DPS, Gesamtschaden, Zurücksetzen)"
+      "Der Trainingsmodus zeigt den verursachten Schaden (DPS der letzten 5 s, beste DPS, Gesamtschaden, Zurücksetzen)",
+      "Karten- und Strichmännchen-Kampfszene als Hintergrund oben auf der Seite"
      ]
     },
     "ja": {
      "title": "ニックネームの統一と練習モードのDPS表示",
      "items": [
       "ハブサイト・Stickseum・クランでニックネームが違っていた問題を修正（ハブで変えたニックネームがStickseumのプロフィールに反映され、クランには現在のニックネームが表示される）",
-      "練習モードに与えたダメージの表示を追加（直近5秒のDPS、最高DPS、合計ダメージ、記録のリセット）"
+      "練習モードに与えたダメージの表示を追加（直近5秒のDPS、最高DPS、合計ダメージ、記録のリセット）",
+      "サイト最上部の背景にマップと棒人間の戦闘シーンを追加"
      ]
     }
    }
