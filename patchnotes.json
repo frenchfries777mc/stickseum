@@ -2,6 +2,52 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v257",
+   "title": "온라인 렉 줄이기",
+   "items": [
+    "온라인에서 캐릭터와 총알이 뚝뚝 끊겨 보이던 문제 수정 (위치를 부드럽게 이어서 표시)",
+    "8명 이하 방은 상태 전송을 초당 20번에서 30번으로 늘림"
+   ],
+   "tr": {
+    "en": {
+     "title": "Less online lag",
+     "items": [
+      "Fixed characters and bullets looking jerky online (positions are now shown smoothly)",
+      "Rooms of 8 or fewer now send state 30 times a second instead of 20"
+     ]
+    },
+    "es": {
+     "title": "Menos lag en línea",
+     "items": [
+      "Corregido que personajes y balas se vieran a tirones en línea (las posiciones ahora se muestran con fluidez)",
+      "Las salas de 8 o menos jugadores envían el estado 30 veces por segundo en lugar de 20"
+     ]
+    },
+    "fr": {
+     "title": "Moins de lag en ligne",
+     "items": [
+      "Correction des personnages et projectiles saccadés en ligne (les positions sont désormais affichées de façon fluide)",
+      "Les salles de 8 joueurs ou moins envoient l’état 30 fois par seconde au lieu de 20"
+     ]
+    },
+    "de": {
+     "title": "Weniger Online-Lag",
+     "items": [
+      "Ruckelnde Figuren und Geschosse online behoben (Positionen werden jetzt flüssig angezeigt)",
+      "Räume mit höchstens 8 Spielern senden den Zustand 30-mal statt 20-mal pro Sekunde"
+     ]
+    },
+    "ja": {
+     "title": "オンラインのラグ軽減",
+     "items": [
+      "オンラインでキャラクターと弾がカクつく問題を修正（位置を滑らかにつないで表示）",
+      "8人以下の部屋は状態の送信を毎秒20回から30回に増加"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v256",
    "title": "버튼 클릭 소리",
    "items": [
