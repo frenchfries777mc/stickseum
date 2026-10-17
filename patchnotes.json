@@ -1,6 +1,46 @@
 {
  "notes": [
   {
+   "date": "2026-10-17",
+   "build": "v243",
+   "title": "토너먼트 킬캠 수정",
+   "items": [
+    "토너먼트 킬캠에서 다른 경기 선수와 효과가 보이던 문제 수정"
+   ],
+   "tr": {
+    "en": {
+     "title": "Tournament killcam fix",
+     "items": [
+      "Fixed tournament killcams showing fighters and effects from other matches"
+     ]
+    },
+    "es": {
+     "title": "Corrección de la killcam de torneo",
+     "items": [
+      "Corregido que la killcam de torneo mostrara luchadores y efectos de otros combates"
+     ]
+    },
+    "fr": {
+     "title": "Correction de la killcam de tournoi",
+     "items": [
+      "Correction : la killcam de tournoi montrait des combattants et des effets d’autres matchs"
+     ]
+    },
+    "de": {
+     "title": "Turnier-Killcam korrigiert",
+     "items": [
+      "Behoben: Die Turnier-Killcam zeigte Kämpfer und Effekte aus anderen Matches"
+     ]
+    },
+    "ja": {
+     "title": "トーナメントのキルカメラ修正",
+     "items": [
+      "トーナメントのキルカメラに他の試合の選手やエフェクトが映る問題を修正"
+     ]
+    }
+   }
+  },
+  {
    "date": "2026-10-16",
    "build": "v242",
    "title": "토너먼트 리플레이 수정",
