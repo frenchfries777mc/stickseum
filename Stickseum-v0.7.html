@@ -4418,7 +4418,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-17-v245';
+const GAME_BUILD='build 2026-10-17-v246';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
@@ -4871,13 +4871,28 @@ window.addEventListener('keydown', e=>{
   if(e.code===keyBindings.emote && inMatchHud()){ e.preventDefault(); ensureEmoteWheel().style.display='block'; }
 }, true);
 /* ================= BOSS RAID + TOURNAMENT ================= */
-const RAID_DURATION=240, RAID_BOSS_BASE_HP=1980, RAID_BOSS_HP_PER=1170, RAID_SLAM_R=200, RAID_SLAM_DMG=28, RAID_SLAM_WARN=1.4, RAID_BOSS_SCALE=1.5, RAID_RESPAWN=6;
+const RAID_DURATION=180, RAID_BOSS_BASE_HP=1500, RAID_BOSS_HP_PER=880, RAID_SLAM_R=190, RAID_SLAM_DMG=22, RAID_SLAM_WARN=1.4, RAID_BOSS_SCALE=1.5, RAID_RESPAWN=6;
 const RAID_TYPES=[
-  {id:'fire',    name:'🔥 화염 거인', hp:1.0,  spd:0.6,  kinds:['slam','meteor','leap'],        body:'#3b2430', plate:'#6b3a4a', glow:'#ffb347', aura:'255,150,50'},
-  {id:'ice',     name:'❄️ 얼음 골렘', hp:1.15, spd:0.5,  kinds:['slam','meteor','leap'],        body:'#1f3a52', plate:'#5aa0c8', glow:'#9ff3ff', aura:'120,200,255', slow:true},
-  {id:'thunder', name:'⚡ 번개 마왕', hp:0.9,  spd:0.8,  kinds:['bolt','bolt','leap','slam'],   body:'#2c2540', plate:'#7a5cc8', glow:'#ffe94d', aura:'255,230,80'}
+  {id:'fire',    name:'🔥 화염 거인', hp:1.0,  spd:0.55, kinds:['slam','meteor','leap'],        body:'#3b2430', plate:'#6b3a4a', glow:'#ffb347', aura:'255,150,50'},
+  {id:'ice',     name:'❄️ 얼음 골렘', hp:1.1,  spd:0.45, kinds:['slam','meteor','leap'],        body:'#1f3a52', plate:'#5aa0c8', glow:'#9ff3ff', aura:'120,200,255', slow:true},
+  {id:'thunder', name:'⚡ 번개 마왕', hp:0.9,  spd:0.7,  kinds:['bolt','bolt','leap','slam'],   body:'#2c2540', plate:'#7a5cc8', glow:'#ffe94d', aura:'255,230,80'}
 ];
 const RAID_PHASE_HP=[0.7,0.5,0.3];
+/* every boss carries a weapon no fighter has (the boss itself is unarmed for the normal weapon code; raidTick fires these). dmg is the base: a boss is a zombie-type, so it is multiplied by ZOMBIE_DMG_MULT */
+const RAID_WEAPONS=[
+  {id:'bw_flame', name:'화염방사기', color:'#ff8a2b', n:7, spread:0.5,  dmg:2.4, speed:640, life:0.5,  hitR:11, every:2.8, rounds:1, gap:0},
+  {id:'bw_spear', name:'빙창',       color:'#8fe8ff', n:1, spread:0,    dmg:3.4, speed:760, life:1.5,  hitR:13, every:3.4, rounds:3, gap:0.28, pierce:true},
+  {id:'bw_orb',   name:'전기 구슬',  color:'#ffe94d', n:2, spread:0.32, dmg:2.4, speed:560, life:1.9,  hitR:12, every:3.0, rounds:2, gap:0.35, bounces:2}
+];
+function raidFireWeapon(b, foes, W, t){
+  let tgt=null, bd=1e9; for(const f of foes){ const d=Math.hypot(f.x-b.x,f.y-b.y); if(d<bd){ bd=d; tgt=f; } } if(!tgt) return;
+  const base=Math.atan2((tgt.y-35)-(b.y-40), tgt.x-b.x);
+  for(let i=0;i<W.n;i++){
+    const off=W.n>1?((i/(W.n-1))-0.5)*W.spread*2:0;
+    spawnBullet(b, base+off, {id:W.id, bulletSpeed:W.speed, dmg:W.dmg, life:W.life, hitR:W.hitR, pierce:!!W.pierce, bounces:W.bounces||0}, {color:W.color});
+  }
+  pushFx('explosion', b.x+Math.cos(base)*50, b.y-40+Math.sin(base)*50, t, {});
+}
 let raid=null, raidView=null, raidAwards=null;
 function raidBoss(){ return raid ? players[raid.bossId] : null; }
 function raidSpawnBoss(){
@@ -4886,11 +4901,11 @@ function raidSpawnBoss(){
   const b=addBot({force:true, quiet:true, level:'normal'}); if(!b) return;
   b.name=T.name; b.color='#a32626'; b.team=1; b.cos={};
   b.isBoss=true; b.isZombie=true; b.speedMult=T.spd; b.bt=bt;         // (a boss is a big zombie-type: harder hits, can't be knocked back)
-  b.weapon='shotgun'; b.pick='shotgun'; b.weaponChosen=true;
+  b.weapon='none'; b.pick='none'; b.weaponChosen=true;                 // (its own weapon: see RAID_WEAPONS)
   b.bossMaxHp=Math.round((RAID_BOSS_BASE_HP+RAID_BOSS_HP_PER*n)*T.hp); b.hp=b.bossMaxHp;
   if(b.ai) b.ai.personality=null;
   const lives=n*3+3, now=performance.now()/1000;
-  raid={bossId:b.id, type:bt, lives, maxLives:lives, nextSlam:now+9, hits:[], over:false, enraged:false, phase:0, minions:[]};
+  raid={bossId:b.id, type:bt, lives, maxLives:lives, nextSlam:now+9, nextShot:now+5, shotsLeft:0, nextRound:0, hits:[], over:false, enraged:false, phase:0, minions:[]};
   raidAwards=null;
 }
 function raidAllyIds(){ return Object.values(players).filter(p=>!p.isBoss && !p.isMinion).map(p=>p.id); }
@@ -4942,6 +4957,9 @@ function raidTick(t){
   const ts=t/1000, T=RAID_TYPES[raid.type];
   if(raid.cleanup && raid.cleanup.length){ raid.cleanup=raid.cleanup.filter(c=>{ if(ts<c.at) return true; delete players[c.id]; return false; }); }
   while(raid.phase<RAID_PHASE_HP.length && b.hp<b.bossMaxHp*RAID_PHASE_HP[raid.phase]) raidPhaseUp(b,t);
+  { const W=RAID_WEAPONS[raid.type], foes0=Object.values(players).filter(p=>!p.isBoss && !p.isMinion && p.alive && p.x!==undefined);
+    if(raid.shotsLeft>0){ if(ts>=raid.nextRound){ raid.shotsLeft--; raid.nextRound=ts+W.gap; raidFireWeapon(b, foes0, W, t); } }
+    else if(ts>=raid.nextShot && foes0.length){ raid.shotsLeft=W.rounds; raid.nextRound=ts; raid.nextShot=ts+W.every*(raid.enraged?0.7:1)+W.rounds*W.gap; } }
   if(ts>=raid.nextSlam){
     const foes=Object.values(players).filter(p=>!p.isBoss && !p.isMinion && p.alive && p.x!==undefined);
     const kinds=T.kinds.slice(); if(raid.phase>=2) kinds.push('laser');
@@ -4959,7 +4977,7 @@ function raidTick(t){
       for(let x=100;x<W-60;x+=170){ pushFx('slamwarn', x, b.y, t, {v:80}); }
       raid.hits.push({x:0, y:b.y, r:1e9, dmg:30, at:ts+1.7, laser:true});
     }
-    raid.nextSlam=ts+(raid.enraged?4.5:(raid.phase>=2?6.5:7.5));
+    raid.nextSlam=ts+(raid.enraged?5.5:(raid.phase>=2?7.5:8.5));
   }
   if(raid.hits.length){
     const keep=[];

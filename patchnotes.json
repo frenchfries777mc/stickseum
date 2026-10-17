@@ -2,6 +2,58 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v246",
+   "title": "보스 레이드 개편",
+   "items": [
+    "보스 레이드 제한 시간 3분으로 통일 (코드는 4분이었음)",
+    "보스 약화: 체력 감소, 이동속도 감소, 바닥 공격 약화",
+    "보스가 샷건 대신 각자 새 무기 사용: 화염 거인 화염방사기, 얼음 골렘 빙창, 번개 마왕 전기 구슬"
+   ],
+   "tr": {
+    "en": {
+     "title": "Boss raid rework",
+     "items": [
+      "Boss raid time limit set to 3 minutes (was 4 in the code)",
+      "Bosses made weaker: less HP, slower, weaker floor attacks",
+      "Bosses no longer use shotguns: each carries its own weapon — Flame Giant: flamethrower, Ice Golem: ice spear, Thunder Lord: electric orbs"
+     ]
+    },
+    "es": {
+     "title": "Rediseño de la incursión contra jefes",
+     "items": [
+      "Límite de tiempo de la incursión fijado en 3 minutos (en el código eran 4)",
+      "Jefes más débiles: menos vida, más lentos, ataques de suelo más flojos",
+      "Los jefes ya no usan escopeta: cada uno lleva su propia arma — Gigante de fuego: lanzallamas, Gólem de hielo: lanza de hielo, Señor del trueno: orbes eléctricos"
+     ]
+    },
+    "fr": {
+     "title": "Refonte du raid de boss",
+     "items": [
+      "Limite de temps du raid fixée à 3 minutes (4 dans le code)",
+      "Boss affaiblis : moins de PV, plus lents, attaques au sol plus faibles",
+      "Les boss n’utilisent plus de fusil à pompe : chacun a sa propre arme — Géant de feu : lance-flammes, Golem de glace : lance de glace, Seigneur de la foudre : orbes électriques"
+     ]
+    },
+    "de": {
+     "title": "Überarbeitung des Boss-Raids",
+     "items": [
+      "Zeitlimit des Raids auf 3 Minuten gesetzt (im Code waren es 4)",
+      "Bosse geschwächt: weniger Leben, langsamer, schwächere Bodenangriffe",
+      "Bosse nutzen keine Schrotflinte mehr: jeder hat eine eigene Waffe — Feuerriese: Flammenwerfer, Eisgolem: Eisspeer, Donnerfürst: Elektrokugeln"
+     ]
+    },
+    "ja": {
+     "title": "ボスレイドの改修",
+     "items": [
+      "ボスレイドの制限時間を3分に統一（コードでは4分だった）",
+      "ボスを弱体化：体力減少、移動が遅く、床攻撃も弱く",
+      "ボスがショットガンを使わなくなり、ボスごとに専用武器を装備：炎の巨人＝火炎放射器、氷のゴーレム＝氷の槍、雷の魔王＝電撃の玉"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v245",
    "title": "어둠의 늪 발판 수정",
    "items": [
