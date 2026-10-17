@@ -2,6 +2,46 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v262",
+   "title": "봇 즉시 채우기",
+   "items": [
+    "온라인 방에 사람이 1명뿐이면 안내 문구 없이 바로 봇이 채워짐 (봇도 빠르게 들어옴)"
+   ],
+   "tr": {
+    "en": {
+     "title": "Instant bot fill",
+     "items": [
+      "In an online room with only one person, bots now fill in right away with no notice (and they join quickly)"
+     ]
+    },
+    "es": {
+     "title": "Relleno inmediato con bots",
+     "items": [
+      "En una sala en línea con una sola persona, los bots entran de inmediato y sin aviso (y entran rápido)"
+     ]
+    },
+    "fr": {
+     "title": "Bots immédiats",
+     "items": [
+      "Dans un salon en ligne avec une seule personne, les bots arrivent tout de suite et sans message (et rejoignent rapidement)"
+     ]
+    },
+    "de": {
+     "title": "Bots sofort",
+     "items": [
+      "In einem Online-Raum mit nur einer Person füllen Bots sofort und ohne Hinweis auf (und kommen schnell herein)"
+     ]
+    },
+    "ja": {
+     "title": "ボットの即時補充",
+     "items": [
+      "オンラインの部屋に人が1人だけのときは、案内なしですぐボットが補充される（ボットの入室も速い）"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v261",
    "title": "MVP 투표 팀전 한정",
    "items": [
