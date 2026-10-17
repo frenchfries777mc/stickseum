@@ -2,6 +2,52 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v272",
+   "title": "봇 길찾기 수정과 밸런스 재측정",
+   "items": [
+    "무너지는 다리·지하 감옥에서 봇이 사라진 발판을 향해 가던 문제 수정",
+    "밸런스 페이지 재측정 (신규 맵 4종 포함 모든 맵)"
+   ],
+   "tr": {
+    "en": {
+     "title": "Bot pathfinding fix and balance re-measured",
+     "items": [
+      "Fixed bots walking toward platforms that were already gone on Collapsing Bridge and Underground Prison",
+      "Balance page re-measured on every map including the 4 new ones"
+     ]
+    },
+    "es": {
+     "title": "Corrección de la ruta de los bots y equilibrio medido de nuevo",
+     "items": [
+      "Corregido que los bots fueran hacia plataformas que ya habían desaparecido en Puente que se derrumba y Prisión subterránea",
+      "Página de equilibrio medida de nuevo en todos los mapas, incluidos los 4 nuevos"
+     ]
+    },
+    "fr": {
+     "title": "Correction du trajet des bots et équilibrage remesuré",
+     "items": [
+      "Correction des bots qui allaient vers des plateformes déjà disparues sur Pont effondré et Prison souterraine",
+      "Page d’équilibrage remesurée sur toutes les cartes, y compris les 4 nouvelles"
+     ]
+    },
+    "de": {
+     "title": "Bot-Wegfindung korrigiert und Balance neu gemessen",
+     "items": [
+      "Behoben: Bots liefen auf Einstürzende Brücke und Unterirdisches Gefängnis zu Plattformen, die schon verschwunden waren",
+      "Balance-Seite auf allen Karten neu gemessen, auch auf den 4 neuen"
+     ]
+    },
+    "ja": {
+     "title": "ボットの経路修正とバランス再測定",
+     "items": [
+      "崩れる橋と地下の牢獄で、すでに消えた足場へボットが向かう問題を修正",
+      "バランスページを新マップ4種を含むすべてのマップで再測定"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v271",
    "title": "신규 맵 4종과 최적화",
    "items": [
