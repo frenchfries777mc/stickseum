@@ -4418,7 +4418,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-17-v246';
+const GAME_BUILD='build 2026-10-17-v247';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
@@ -8703,9 +8703,13 @@ function showMvpVote(cands, ms){
   showMvpVote._t=setInterval(()=>{ const r=Math.max(0,Math.ceil((endAt-performance.now())/1000)); t.textContent=r+'초'; if(r<=0){ clearInterval(showMvpVote._t); } },250);
 }
 function startMvpVote(){
-  if(practiceMode || gameMode==='raid' && false) return;
   const humans=Object.values(players).filter(p=>!p.isBot && !p.isBoss && !p.isMinion && !p.isDummy);
-  if(humans.length<2) return;
+  if(humans.length<2){                                  // nobody to vote (a match against bots, or practice): the one who did the most damage is the MVP
+    if(gameMode==='raid') return;
+    let best=null, bs=0; for(const p of Object.values(players)){ if(!p || p.isBoss || p.isMinion || p.isDummy || p.isSpectator || !p.name) continue; const sc=(p.totalDamageDealt||0)+(p.kills||0)*20; if(sc>bs){ bs=sc; best=p; } }
+    if(best) setTimeout(()=>applyMvpResult(best.id, best.name), 900);
+    return;
+  }
   const cands=humans.map(p=>({id:p.id, name:p.name}));
   mvpVote={cands, votes:{}, timer:setTimeout(finishMvpVote, MVP_VOTE_MS)};
   broadcastAll({t:'mvpVote', cands, ms:MVP_VOTE_MS}); showMvpVote(cands, MVP_VOTE_MS);
