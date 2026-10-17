@@ -2,6 +2,46 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v270",
+   "title": "보스 레이드 음악",
+   "items": [
+    "보스 레이드 전용 배경음악 추가 (무거운 북·합창·종소리)"
+   ],
+   "tr": {
+    "en": {
+     "title": "Boss raid music",
+     "items": [
+      "Boss raid now has its own background music (heavy drums, choir and bells)"
+     ]
+    },
+    "es": {
+     "title": "Música de la incursión de jefe",
+     "items": [
+      "Música de fondo propia para la incursión de jefe (tambores pesados, coro y campanas)"
+     ]
+    },
+    "fr": {
+     "title": "Musique du raid de boss",
+     "items": [
+      "Musique de fond dédiée au raid de boss (percussions lourdes, chœur et cloches)"
+     ]
+    },
+    "de": {
+     "title": "Musik für den Boss-Raid",
+     "items": [
+      "Eigene Hintergrundmusik für den Boss-Raid (schwere Trommeln, Chor und Glocken)"
+     ]
+    },
+    "ja": {
+     "title": "ボスレイドの音楽",
+     "items": [
+      "ボスレイド専用のBGMを追加 (重い太鼓・合唱・鐘の音)"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v269",
    "title": "클래식·미니게임 구분 삭제",
    "items": [
