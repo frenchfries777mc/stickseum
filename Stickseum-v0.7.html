@@ -4490,7 +4490,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-17-v262';
+const GAME_BUILD='build 2026-10-17-v263';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
@@ -11075,15 +11075,15 @@ function botPersonalityWeapon(b){                    // for the practice mode, w
   if(PERSONALITY_WEAPONS[pr]) return PERSONALITY_WEAPONS[pr][Math.floor(Math.random()*PERSONALITY_WEAPONS[pr].length)];
   return null;
 }
-// ... and now takes its time like a person too: it picks (its team-mates see the pick) after a random 1.5-9 s and locks it 0.4-1.5 s later - always well
-// inside the 15 s of the pick phase. (botsPickWeapons below is the instant version, kept for the practice mode, tests and the fallback start.)
-const BOT_PICK_MIN_MS=1500, BOT_PICK_MAX_MS=9000, BOT_LOCK_MIN_MS=400, BOT_LOCK_MAX_MS=1500;
+// ... and now takes its time like a person too: it picks (its team-mates see the pick) after a random 0.8-3.2 s and locks it 0.3-1.2 s later - always done
+// within 5 s of the 15 s pick phase (the owner wanted the bots to be ready quickly). (botsPickWeapons below is the instant version, kept for the practice mode, tests and the fallback start.)
+const BOT_PICK_MIN_MS=800, BOT_PICK_MAX_MS=3200, BOT_LOCK_MIN_MS=300, BOT_LOCK_MAX_MS=1200;
 function botSchedulePicks(){
   const now=Date.now();
   for(const p of Object.values(players)){
     if(!p.isBot || p.weaponChosen) continue;
     p.pickAt = now + BOT_PICK_MIN_MS + Math.random()*(BOT_PICK_MAX_MS-BOT_PICK_MIN_MS);
-    if(p.ai && p.ai.personality==='rival') p.pickAt = now + 8500 + Math.random()*1500;      // (the rival waits to see what the people pick)
+    if(p.ai && p.ai.personality==='rival') p.pickAt = now + 3000 + Math.random()*700;      // (the rival waits a little longer to see what the people pick, but still locks inside 5 s)
     p.lockAt = p.pickAt + BOT_LOCK_MIN_MS + Math.random()*(BOT_LOCK_MAX_MS-BOT_LOCK_MIN_MS);
   }
 }
@@ -11778,6 +11778,7 @@ function botThink(p, t, dt){
     if(xm && !mb && !(rs && rs.mode==='hold')){ const xg=xmBotGoal(p, target, d); if(xg){ goalX=xg.x; goalY=xg.y; } }
     if(ai.personality && !mb && !(rs && rs.mode==='hold')){ const ps=botPersonalityStep(p, ai, target, d, {t, tSec, navBusy, inp, lowHp, shoot, w}); if(ps){ if(ps.goalX!==undefined){ goalX=ps.goalX; goalY=ps.goalY; } if(ps.shoot!==undefined) shoot=ps.shoot; } }
     if(rs && rs.mode==='go'){ goalX=rs.goalX; goalY=rs.goalY; }                     // on its way to the resting place
+    if(brz && !mb){ const bg=brzBotGoal(p, target, d, !!(rs && rs.mode==='hold')); if(bg){ goalX=bg.x; goalY=bg.y; } }      // battle royale / duo: the zone and the supply crates
     ai.goalX=goalX; ai.goalY=goalY; ai.urgent=!!(mb && mb.urgent);
     if(dif.dodge && p.grounded && t>=ai.jumpOkAt && !navBusy && !p.batting){        // a shot flying at me: hop over it (the best bot reads every shot)
       for(const b of bullets){
@@ -12123,6 +12124,24 @@ function brzPickSpot(){
   if(hi<lo) return null;
   return {x:Math.round(lo+Math.random()*(hi-lo)), y:pl.y};
 }
+// where a bot wants to go in battle royale / duo: back inside the zone first, then to a supply crate that is worth having (an enemy right next to it comes first)
+function brzBotGoal(p, target, d, hold){
+  if(!brz || !brzV) return null;
+  if(p.x<brzV.l+70 || p.x>brzV.r-70){
+    let best=null, bd=1e9;
+    for(const sp of brSpots()){ if(sp.x<brzV.l+160 || sp.x>brzV.r-160) continue; const dd=Math.hypot(sp.x-p.x, sp.y-p.y); if(dd<bd){ bd=dd; best=sp; } }
+    return best ? {x:best.x, y:best.y+10} : {x:(brzV.l+brzV.r)/2, y:p.y};
+  }
+  if(hold || (target && d<260)) return null;
+  const mx=maxHpFor(p); let b=null, bd=1e9;
+  for(const c of brz.crates){
+    if(c.k===0 && p.hp>mx*0.9) continue;                         // a healing crate is only worth a trip when hurt
+    if(c.x<brzV.l+40 || c.x>brzV.r-40) continue;
+    const dd=Math.hypot(c.x-p.x, c.y-p.y)+(c.k===0?-200*(1-p.hp/mx):0);
+    if(dd<bd && dd<1600){ bd=dd; b=c; }
+  }
+  return b ? {x:b.x, y:b.y} : null;
+}
 function brzTick(dt,t){
   if(!brz){ brzV=null; return; }
   if(matchEnded){ brzV=null; return; }
@@ -12159,7 +12178,6 @@ function brzTick(dt,t){
       const mult=(el>=BRZ_DELAY_S+BRZ_SHRINK_S)?1.6:1;
       p.hp-=BRZ_DPS*mult*dt;
       if(p.hp<=0){ handleDeath(p, null, t, '위험지대'); continue; }
-      if(p.isBot && p.input){ const goRight=p.x<l; p.input.left=!goRight; p.input.right=goRight; p.input.shoot=false; }
     }
   }
   for(const c of brz.crates) brzV.c.push([c.x,c.y,c.k]);
