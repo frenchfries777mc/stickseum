@@ -4490,7 +4490,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-17-v256';
+const GAME_BUILD='build 2026-10-17-v257';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
@@ -9059,7 +9059,13 @@ function onClientData(data, mode, code){
   else if(data.t==='state'){
     if(!isHost) rpRecAdd(data);
     lastStateReceivedAt=performance.now(); // feeds the staleness watchdog below - a client that stops receiving these needs to know, instead of silently sitting on stale/default data forever
-    for(const sp of data.players){ if(!players[sp.id]) players[sp.id]={}; Object.assign(players[sp.id], sp); ensurePlayerDefaults(players[sp.id]); }
+    for(const sp of data.players){
+      if(!players[sp.id]) players[sp.id]={};
+      const op=players[sp.id], had=op.x!==undefined && op.alive && sp.alive && !(op.stateAt===undefined), ox=op.x, oy=op.y;
+      Object.assign(op, sp); ensurePlayerDefaults(op);
+      op.tx=sp.x; op.ty=sp.y; op.stateAt=performance.now();         // smoothing: the shown position glides to the newest snapshot instead of jumping every 50ms (see smoothNetPlayers)
+      if(had && Math.abs(ox-sp.x)<260 && Math.abs(oy-sp.y)<260){ op.x=ox; op.y=oy; }
+    }
     if(Array.isArray(data.chat)) for(const m of data.chat.slice(0,12)){ if(m && typeof m.text==='string') onChatRelayed(m); }       // chat lines that ride along with the state (the second road: a state certainly arrives during a match)
     bullets=data.bullets;
     walls=data.walls||[];
@@ -9998,10 +10004,24 @@ function loop(t){
   // least attempting to run and show whatever it still safely can.
   safeStep('updateMovingPlatforms', ()=>updateMovingPlatforms(t));
   if(isHost) safeStep('hostTick', ()=>hostTick(dt,t));
+  if(!isHost) safeStep('smoothNetPlayers', ()=>smoothNetPlayers(dt));
   safeStep('updateAnimPhases', ()=>updateAnimPhases(dt));
   safeStep('recordReplaySamples', ()=>recordReplaySamples(t)); // runs identically on host and every client, since both always have an up-to-date players object (local physics on host, received snapshots on clients) - no extra network traffic needed just to keep this history
   safeStep('render', ()=>render(dt));
   requestAnimationFrame(loop);
+}
+// a client only receives positions SNAPSHOT_HZ times a second; drawing them raw looks like stutter even on a good connection.
+// Players glide toward the newest snapshot (moving on with their last velocity for a moment), bullets fly on between snapshots.
+function smoothNetPlayers(dt){
+  if(!started) return;
+  const now=performance.now(), k=1-Math.exp(-dt*22);
+  for(const id in players){
+    const p=players[id]; if(!p || p.tx===undefined || !p.alive) continue;
+    const age=Math.min(0.12,(now-(p.stateAt||now))/1000), ex=p.tx+(p.vx||0)*age;
+    if(Math.abs(ex-p.x)>260 || Math.abs(p.ty-p.y)>260){ p.x=ex; p.y=p.ty; continue; }
+    p.x+=(ex-p.x)*k; p.y+=(p.ty-p.y)*k;
+  }
+  if(bullets && bullets.length) for(const b of bullets){ if(b.swingAngle!==undefined && b.swingAngle!==null) continue; if(b.vx===undefined) continue; b.x+=b.vx*dt; b.y+=b.vy*dt; }
 }
 function updateAnimPhases(dt){
   for(const id in players){
@@ -12368,7 +12388,7 @@ function hostTick(dt,t){
   if(!hostTick._acc) hostTick._acc=0;
   hostTick._acc+=dt;
   if(effects.length) effects = effects.filter(e => t/1000 - e.born < 1.6);
-  if(hostTick._acc >= 1/SNAPSHOT_HZ){
+  if(hostTick._acc >= 1/(Object.keys(players).length<=8?30:SNAPSHOT_HZ)){
     hostTick._acc=0;
     const snap={t:'state',
       players:Object.values(players).map(p=>({id:p.id,name:p.name,color:p.color,x:p.x,y:p.y,vx:p.vx,angle:p.angle,grounded:p.grounded,
