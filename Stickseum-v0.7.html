@@ -4418,7 +4418,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-17-v248';
+const GAME_BUILD='build 2026-10-17-v249';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
@@ -8705,10 +8705,19 @@ function showMvpVote(cands, ms){
 }
 function startMvpVote(){
   const humans=Object.values(players).filter(p=>!p.isBot && !p.isBoss && !p.isMinion && !p.isDummy);
-  if(humans.length<2){                                  // nobody to vote (a match against bots, or practice): the one who did the most damage is the MVP
+  if(humans.length<2){                                  // a match against bots: the bots vote too (the human picks as usual; each bot mostly backs whoever did the most, sometimes somebody else)
     if(gameMode==='raid') return;
-    let best=null, bs=0; for(const p of Object.values(players)){ if(!p || p.isBoss || p.isMinion || p.isDummy || p.isSpectator || !p.name) continue; const sc=(p.totalDamageDealt||0)+(p.kills||0)*20; if(sc>bs){ bs=sc; best=p; } }
-    if(best) setTimeout(()=>applyMvpResult(best.id, best.name), 900);
+    const part=Object.values(players).filter(p=>p && !p.isBoss && !p.isMinion && !p.isDummy && !p.isSpectator && p.name);
+    if(part.length<2) return;
+    const cands=part.map(p=>({id:p.id, name:p.name}));
+    const sc=p=>(p.totalDamageDealt||0)+(p.kills||0)*20;
+    mvpVote={cands, votes:{}, timer:setTimeout(finishMvpVote, MVP_VOTE_MS)};
+    for(const bot of part.filter(p=>p.isBot)){
+      const others=part.filter(p=>p.id!==bot.id).sort((x,y)=>sc(y)-sc(x));
+      const pick=(Math.random()<0.7 || others.length<2)?others[0]:others[Math.floor(Math.random()*others.length)];
+      setTimeout(()=>{ try{ hostMvpCast(bot.id, pick.id); }catch(e){} }, 1200+Math.random()*3500);
+    }
+    broadcastAll({t:'mvpVote', cands, ms:MVP_VOTE_MS}); showMvpVote(cands, MVP_VOTE_MS);
     return;
   }
   const cands=humans.map(p=>({id:p.id, name:p.name}));
