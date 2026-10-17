@@ -2,6 +2,58 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v253",
+   "title": "MVP 투표 개편",
+   "items": [
+    "승리 화면을 먼저 보여 주고 이후 카운트다운이 있는 큰 창으로 MVP 투표 진행",
+    "나가기(메인으로) 버튼은 투표 후에 표시, 선정된 MVP에게 알림과 XP 지급",
+    "보스 레이드 결과 화면에서 MVP를 먼저 정하지 않고 투표로 결정"
+   ],
+   "tr": {
+    "en": {
+     "title": "MVP vote rework",
+     "items": [
+      "Victory now shows first; the MVP vote opens afterwards in a big window with a countdown",
+      "The back-to-main button appears after the vote, and the chosen MVP gets a notice and the XP",
+      "Boss raids no longer pick an MVP on the result screen: the vote decides"
+     ]
+    },
+    "es": {
+     "title": "Rediseño de la votación de MVP",
+     "items": [
+      "Primero se muestra la victoria y después se abre la votación de MVP en una ventana grande con cuenta atrás",
+      "El botón de volver al menú aparece tras la votación, y el MVP elegido recibe un aviso y la XP",
+      "Las incursiones ya no eligen MVP en la pantalla de resultados: decide la votación"
+     ]
+    },
+    "fr": {
+     "title": "Refonte du vote MVP",
+     "items": [
+      "La victoire s’affiche d’abord, puis le vote MVP s’ouvre dans une grande fenêtre avec compte à rebours",
+      "Le bouton de retour apparaît après le vote, et le MVP choisi reçoit une notification et l’XP",
+      "Les raids ne désignent plus de MVP sur l’écran de résultat : c’est le vote qui décide"
+     ]
+    },
+    "de": {
+     "title": "Überarbeitung der MVP-Abstimmung",
+     "items": [
+      "Zuerst erscheint der Sieg, danach öffnet sich die MVP-Abstimmung in einem großen Fenster mit Countdown",
+      "Die Zurück-Taste erscheint nach der Abstimmung, und der gewählte MVP erhält eine Meldung und die XP",
+      "Boss-Raids bestimmen auf dem Ergebnisbildschirm keinen MVP mehr: die Abstimmung entscheidet"
+     ]
+    },
+    "ja": {
+     "title": "MVP投票の改修",
+     "items": [
+      "先に勝利画面を表示し、その後にカウントダウン付きの大きな窓でMVP投票を開始",
+      "メインへ戻るボタンは投票後に表示され、選ばれたMVPには通知とXPが付与される",
+      "ボスレイドでは結果画面でMVPを先に決めず、投票で決定"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v252",
    "title": "인트로 건너뛰기 제거",
    "items": [
