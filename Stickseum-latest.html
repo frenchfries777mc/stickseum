@@ -4490,7 +4490,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-17-v259';
+const GAME_BUILD='build 2026-10-17-v260';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
@@ -10937,6 +10937,7 @@ function tryFire(p, angle, tMs){
    the host's simulation reads their `input` exactly like it reads a remote player's, so physics, damage, kills,
    weapons, snapshots and every client's rendering work unchanged. A human who joins later takes a bot's seat. */
 const BOT_FILL_MS=15000;     // a human waits this long (since the last human joined) before bots fill the room
+const BOT_FILL_SOLO_MS=1500; // a room with ONE person in it (and no party on its way) does not wait the full time: the bots come right away
 const BOT_JOIN_GAP_MS=450;   // bots then walk in one at a time instead of all at once
 const BOT_FILL_MAX=10;       // a very big room (parkour holds 20) is only filled up to this many; the match then starts on its own
 const BOT_FILL_FULL_UP_TO=16; // a room that holds up to this many is filled COMPLETELY (the flag mode holds 12; with the old limit of 10 it stayed two short)
@@ -11024,7 +11025,7 @@ function botFillTick(){
   }
   const now=Date.now();
   if(!botFilling){
-    if(botFillAt===null){ botFillAt=(lastHumanJoinAt||now)+BOT_FILL_MS; broadcastLobby(); }   // tell every screen when the bots are coming
+    if(botFillAt===null){ botFillAt=(lastHumanJoinAt||now)+((humanPlayers().length<=1 && !partyActive())?BOT_FILL_SOLO_MS:BOT_FILL_MS); broadcastLobby(); }   // tell every screen when the bots are coming
     if(now<botFillAt) return;
     botFilling=true; botFillAt=null; botNextAt=now; broadcastLobby();                          // time is up: stop the on-screen countdown, bots start walking in
   }
