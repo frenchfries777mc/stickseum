@@ -2,6 +2,46 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v252",
+   "title": "인트로 건너뛰기 제거",
+   "items": [
+    "인트로를 건너뛸 수 없게 변경: 터치·클릭·키 입력으로 넘어가지 않고 끝까지 재생"
+   ],
+   "tr": {
+    "en": {
+     "title": "Intro can’t be skipped",
+     "items": [
+      "The intro now plays to the end: tapping, clicking or pressing keys no longer skips it"
+     ]
+    },
+    "es": {
+     "title": "La intro no se puede saltar",
+     "items": [
+      "La intro ahora se reproduce completa: tocar, hacer clic o pulsar teclas ya no la salta"
+     ]
+    },
+    "fr": {
+     "title": "Intro non passable",
+     "items": [
+      "L’intro se joue désormais jusqu’au bout : toucher, cliquer ou appuyer sur une touche ne la passe plus"
+     ]
+    },
+    "de": {
+     "title": "Intro nicht überspringbar",
+     "items": [
+      "Das Intro läuft jetzt bis zum Ende: Tippen, Klicken oder Tastendrücke überspringen es nicht mehr"
+     ]
+    },
+    "ja": {
+     "title": "イントロのスキップ禁止",
+     "items": [
+      "イントロは最後まで再生されるように変更：タップ・クリック・キー入力ではスキップできない"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v251",
    "title": "레이드 MVP 투표 수정",
    "items": [
