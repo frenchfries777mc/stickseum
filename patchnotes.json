@@ -2,6 +2,92 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v256",
+   "title": "버튼 클릭 소리",
+   "items": [
+    "게임 안 버튼을 누르면 짧은 클릭 소리가 남 (설정의 효과음 끄기와 함께 꺼짐)",
+    "사이트의 빌드 표기도 \"build 256\" 형태로 통일"
+   ],
+   "tr": {
+    "en": {
+     "title": "Button click sound",
+     "items": [
+      "Buttons in the game now make a short click sound (turned off together with the sound-effects switch in settings)",
+      "The build label on the site is unified to the “build 256” form"
+     ]
+    },
+    "es": {
+     "title": "Sonido al pulsar botones",
+     "items": [
+      "Los botones del juego ahora emiten un clic breve (se apaga con el interruptor de efectos de sonido de los ajustes)",
+      "La etiqueta de compilación del sitio se unifica con el formato «build 256»"
+     ]
+    },
+    "fr": {
+     "title": "Son de clic des boutons",
+     "items": [
+      "Les boutons du jeu émettent désormais un court clic (désactivé avec l’interrupteur des effets sonores des paramètres)",
+      "L’étiquette de build du site est unifiée au format « build 256 »"
+     ]
+    },
+    "de": {
+     "title": "Klickgeräusch bei Tasten",
+     "items": [
+      "Tasten im Spiel machen jetzt ein kurzes Klickgeräusch (wird mit dem Soundeffekt-Schalter in den Einstellungen ausgeschaltet)",
+      "Die Build-Anzeige auf der Seite ist auf die Form „build 256“ vereinheitlicht"
+     ]
+    },
+    "ja": {
+     "title": "ボタンのクリック音",
+     "items": [
+      "ゲーム内のボタンを押すと短いクリック音が鳴る（設定の効果音オフと連動）",
+      "サイトのビルド表記も「build 256」形式に統一"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
+   "build": "v255",
+   "title": "빌드 표기 변경",
+   "items": [
+    "빌드 번호를 \"v255\"가 아니라 \"build 255\"로 표시 (게임 안과 사이트)"
+   ],
+   "tr": {
+    "en": {
+     "title": "Build shown as “build N”",
+     "items": [
+      "Build numbers now show as “build 254” instead of “v254” (in the game and on the site)"
+     ]
+    },
+    "es": {
+     "title": "Compilación mostrada como «build N»",
+     "items": [
+      "El número de compilación ahora se muestra como «build 254» en lugar de «v254» (en el juego y en el sitio)"
+     ]
+    },
+    "fr": {
+     "title": "Build affiché « build N »",
+     "items": [
+      "Le numéro de build s’affiche désormais « build 254 » au lieu de « v254 » (dans le jeu et sur le site)"
+     ]
+    },
+    "de": {
+     "title": "Build als „build N“ angezeigt",
+     "items": [
+      "Die Build-Nummer wird jetzt als „build 254“ statt „v254“ angezeigt (im Spiel und auf der Seite)"
+     ]
+    },
+    "ja": {
+     "title": "ビルド表記を「build N」に変更",
+     "items": [
+      "ビルド番号を「v254」ではなく「build 254」と表示（ゲーム内とサイト）"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v254",
    "title": "배경음악 추가",
    "items": [
