@@ -7,7 +7,7 @@
    "items": [
     "클래식·미니게임 구분 코드 정리 (모드만 남김)",
     "비공개 방 모드 선택에서 미니게임 따로 표시 제거",
-    "사이트 맨 위 배경을 실제 인게임 화면처럼 변경 (맵 색, 빛나는 스틱맨, 무기, 이름표, 체력바)"
+    "사이트 맨 위 배경을 실제 게임 화면 영상으로 교체 (봇끼리 싸우는 장면)"
    ],
    "tr": {
     "en": {
@@ -15,7 +15,7 @@
      "items": [
       "Removed the leftover classic / minigame split code (only modes remain)",
       "Private room mode selection no longer marks minigames separately",
-      "Site top background now looks like the real in-game screen (game map colors, glowing stickmen, weapons, name tags, hp bars)"
+      "Site top background is now a recording of the real game (bots fighting)"
      ]
     },
     "es": {
@@ -23,7 +23,7 @@
      "items": [
       "Se eliminó el código restante de la separación clásico / minijuego (solo quedan modos)",
       "La selección de modo en salas privadas ya no marca los minijuegos por separado",
-      "El fondo superior del sitio ahora se parece a la pantalla real del juego (colores del mapa, stickmen brillantes, armas, nombres, barras de vida)"
+      "El fondo superior del sitio ahora es una grabación del juego real (bots peleando)"
      ]
     },
     "fr": {
@@ -31,7 +31,7 @@
      "items": [
       "Suppression du code restant de la séparation classique / mini-jeu (il ne reste que des modes)",
       "La sélection du mode en salon privé ne distingue plus les mini-jeux",
-      "Le fond en haut du site ressemble maintenant à l’écran réel du jeu (couleurs de la carte, stickmen lumineux, armes, pseudos, barres de vie)"
+      "Le fond en haut du site est maintenant un enregistrement du vrai jeu (bots qui se battent)"
      ]
     },
     "de": {
@@ -39,7 +39,7 @@
      "items": [
       "Restlichen Code der Trennung Klassik / Minispiel entfernt (nur noch Modi)",
       "Die Modusauswahl in privaten Räumen kennzeichnet Minispiele nicht mehr extra",
-      "Der Hintergrund oben auf der Seite sieht jetzt wie das echte Spielbild aus (Kartenfarben, leuchtende Strichmännchen, Waffen, Namen, Lebensbalken)"
+      "Der Hintergrund oben auf der Seite ist jetzt eine Aufnahme des echten Spiels (kämpfende Bots)"
      ]
     },
     "ja": {
@@ -47,7 +47,7 @@
      "items": [
       "クラシック／ミニゲームの区別に関するコードを整理（モードのみに統一）",
       "非公開ルームのモード選択でミニゲームを別表示しないように",
-      "サイト上部の背景を実際のゲーム画面に近づけた（マップの色、光る棒人間、武器、名前、HPバー）"
+      "サイト上部の背景を実際のゲーム画面の録画に変更（ボットの戦闘）"
      ]
     }
    }
