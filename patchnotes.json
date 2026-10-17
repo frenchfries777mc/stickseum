@@ -2,6 +2,70 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v244",
+   "title": "어둠의 늪 개편",
+   "items": [
+    "어둠의 늪 맵 개편: 양옆 계단형 발판 · 중앙 대형 늪 · 늪 위 징검다리 발판",
+    "중앙 늪에서 모두 이동속도 33% 감소 + 주변 시야 제한",
+    "쿠루스 어둠 위에서 쿠루스 이동속도 30% 증가",
+    "쿠루스 어둠 위에 선 상대 이동속도 30% 감소 + 주변 시야 제한",
+    "밸런스 측정: 모든 맵 23개에서 쌍마다 맵당 4판 (모두 27,600판)"
+   ],
+   "tr": {
+    "en": {
+     "title": "Swamp of Darkness rework",
+     "items": [
+      "Swamp of Darkness map reworked: stairs of platforms on both sides, a big bog in the middle, stepping-stone platforms above it",
+      "In the central bog everyone moves 33% slower and sees only around themselves",
+      "Kurus moves 30% faster on his own darkness",
+      "Opponents standing on Kurus’s darkness move 30% slower and see only around themselves",
+      "Balance measurement: every pair 4 times on each of all 23 maps (27,600 matches)"
+     ]
+    },
+    "es": {
+     "title": "Renovación de El pantano de la oscuridad",
+     "items": [
+      "Mapa El pantano de la oscuridad renovado: escaleras de plataformas a ambos lados, una gran ciénaga en el centro y plataformas a modo de piedras sobre ella",
+      "En la ciénaga central todos se mueven un 33 % más lento y solo ven a su alrededor",
+      "Kurus se mueve un 30 % más rápido sobre su propia oscuridad",
+      "Los rivales sobre la oscuridad de Kurus se mueven un 30 % más lento y solo ven a su alrededor",
+      "Medición del equilibrio: cada pareja 4 veces en cada uno de los 23 mapas (27.600 partidas)"
+     ]
+    },
+    "fr": {
+     "title": "Refonte du Marais des ténèbres",
+     "items": [
+      "Carte Le marais des ténèbres refaite : escaliers de plateformes des deux côtés, un grand marais au centre, des plateformes en pas japonais au-dessus",
+      "Dans le marais central, tout le monde va 33 % moins vite et ne voit qu’autour de soi",
+      "Kurus va 30 % plus vite sur ses propres ténèbres",
+      "Les adversaires sur les ténèbres de Kurus vont 30 % moins vite et ne voient qu’autour d’eux",
+      "Mesure de l’équilibrage : chaque paire 4 fois sur chacune des 23 cartes (27 600 parties)"
+     ]
+    },
+    "de": {
+     "title": "Überarbeitung Sumpf der Dunkelheit",
+     "items": [
+      "Karte „Der Sumpf der Dunkelheit“ überarbeitet: Plattform-Treppen auf beiden Seiten, ein großer Sumpf in der Mitte, Trittstein-Plattformen darüber",
+      "Im Sumpf in der Mitte sind alle 33 % langsamer und sehen nur um sich herum",
+      "Kurus bewegt sich auf seiner eigenen Dunkelheit 30 % schneller",
+      "Gegner auf Kurus’ Dunkelheit sind 30 % langsamer und sehen nur um sich herum",
+      "Balance-Messung: jedes Paar 4-mal auf jeder der 23 Karten (27.600 Matches)"
+     ]
+    },
+    "ja": {
+     "title": "闇の沼の改修",
+     "items": [
+      "闇の沼マップを改修：両側に階段状の足場、中央に大きな沼、沼の上に飛び石の足場",
+      "中央の沼ではみんな移動速度33%減少＋周囲の視界が制限",
+      "クルスは自分の闇の上で移動速度30%上昇",
+      "クルスの闇の上に立つ相手は移動速度30%減少＋周囲の視界が制限",
+      "バランス測定：全23マップで各ペアをマップごとに4戦（計27,600戦）"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v243",
    "title": "토너먼트 킬캠 수정",
    "items": [
