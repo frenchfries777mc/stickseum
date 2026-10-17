@@ -4391,7 +4391,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-16-v242';
+const GAME_BUILD='build 2026-10-17-v243';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
@@ -13165,6 +13165,7 @@ function packKillScene(ref){
     for(const item of ref.fx){
       let lo=0, hi=fr.length-1; while(lo<hi){ const mid=(lo+hi+1)>>1; if(fr[mid].t<=item.t) lo=mid; else hi=mid-1; }
       const f=fr[lo]; if(!f) continue; const e=item.e;
+      if(gameMode==='tournament' && e.ta!==undefined && !idSet.has(e.ta)) continue;      // tournament: nothing of the other fights (they share the same ground)
       if(e.x!==undefined && e.y!==undefined && !near(e,f) && !near(e,fr[lo+1]) && !near(e,fr[lo-1])) continue;
       const o={}; for(const k in e){ if(k==='id' || k==='born') continue; const v=e[k]; if(typeof v==='number') o[k]=Math.round(v*100)/100; else if(typeof v==='string' || typeof v==='boolean' || v===null) o[k]=v; }
       fx.push({t:Math.round((item.t-t0)*10)/10, e:o});
@@ -13173,7 +13174,7 @@ function packKillScene(ref){
   while(JSON.stringify({frames,defs:defsOut,fx}).length>REPLAY_SCENE_MAX_BYTES*0.7 && keep<4){ keep++; frames=pack(keep); }   // too big for one message: every 2nd, 3rd, 4th frame (30% of the budget is kept for the other players)
   // everybody else who was around is part of the picture too: where they were and what they looked like, and (as long as it fits) what they shot and put up
   let others=[], pl={}, defsO={};
-  for(const variant of [{stuff:true,max:32},{stuff:false,max:32},{stuff:false,max:10},{stuff:false,max:4},{stuff:false,max:0}]){
+  for(const variant of (gameMode==='tournament' ? [] : [{stuff:true,max:32},{stuff:false,max:32},{stuff:false,max:10},{stuff:false,max:4},{stuff:false,max:0}])){      // (a tournament fight is only the two of them)
     const r=packOthers(ref, idSet, variant.stuff, variant.max);
     others=r.frames; pl=r.pl; defsO=r.defs;
     if(!others.length || JSON.stringify({frames,defs:Object.assign({},defsOut,defsO),fx,others,pl}).length<=REPLAY_SCENE_MAX_BYTES) break;
