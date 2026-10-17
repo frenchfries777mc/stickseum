@@ -2,6 +2,46 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v249",
+   "title": "봇 MVP 투표",
+   "items": [
+    "봇전에서 봇도 MVP 투표에 참여 (투표 결과로 선정)"
+   ],
+   "tr": {
+    "en": {
+     "title": "Bots vote for MVP",
+     "items": [
+      "In matches against bots, the bots now vote for MVP too (the winner is decided by the votes)"
+     ]
+    },
+    "es": {
+     "title": "Los bots votan al MVP",
+     "items": [
+      "En partidas contra bots, los bots también votan al MVP (el ganador se decide por los votos)"
+     ]
+    },
+    "fr": {
+     "title": "Les bots votent pour le MVP",
+     "items": [
+      "Dans les parties contre des bots, les bots votent aussi pour le MVP (le gagnant est décidé par les votes)"
+     ]
+    },
+    "de": {
+     "title": "Bots stimmen für den MVP",
+     "items": [
+      "In Matches gegen Bots stimmen die Bots jetzt ebenfalls für den MVP (die Stimmen entscheiden)"
+     ]
+    },
+    "ja": {
+     "title": "ボットもMVP投票",
+     "items": [
+      "ボット戦ではボットもMVPに投票するように変更（投票結果で決定）"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v248",
    "title": "레이드 졸개 변경",
    "items": [
