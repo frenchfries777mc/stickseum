@@ -2,6 +2,58 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v258",
+   "title": "배틀로얄 개편",
+   "items": [
+    "배틀로얄·배틀로얄 듀오에 위험지대 추가 (30초 뒤 양쪽 끝에서부터 좁아지고 붉은 곳에 있으면 피해)",
+    "보급 상자 추가 (발판 위에 떨어지며 체력 회복·궁극기 충전·스킬 충전, 높은 발판에 더 자주 나옴)",
+    "배틀로얄·듀오 시작 위치를 맵의 모든 발판으로 넓힘 (듀오 팀이 높은 곳과 낮은 곳에 흩어져 시작)"
+   ],
+   "tr": {
+    "en": {
+     "title": "Battle royale overhaul",
+     "items": [
+      "Danger zone added to Battle Royale and Duo (closes in from both ends after 30 seconds; standing in the red hurts)",
+      "Supply crates added (they land on platforms and give healing, ultimate charge or skill charge; higher platforms get them more often)",
+      "Battle Royale and Duo now start from every platform of the map (duo teams begin scattered high and low)"
+     ]
+    },
+    "es": {
+     "title": "Renovación del battle royale",
+     "items": [
+      "Zona de peligro añadida a Battle Royale y Dúo (se cierra desde ambos extremos tras 30 segundos; estar en el rojo hace daño)",
+      "Cajas de suministros añadidas (caen en plataformas y dan curación, carga de definitiva o de habilidad; las plataformas altas las reciben más a menudo)",
+      "Battle Royale y Dúo ahora empiezan desde todas las plataformas del mapa (los equipos dúo empiezan repartidos arriba y abajo)"
+     ]
+    },
+    "fr": {
+     "title": "Refonte du battle royale",
+     "items": [
+      "Zone de danger ajoutée au Battle Royale et au Duo (elle se referme des deux côtés après 30 secondes ; rester dans le rouge fait mal)",
+      "Caisses de ravitaillement ajoutées (elles tombent sur les plateformes et donnent soin, charge d’ultime ou de compétence ; les plateformes hautes en reçoivent plus souvent)",
+      "Battle Royale et Duo démarrent désormais depuis toutes les plateformes de la carte (les équipes duo commencent dispersées en haut et en bas)"
+     ]
+    },
+    "de": {
+     "title": "Battle-Royale-Überarbeitung",
+     "items": [
+      "Gefahrenzone zu Battle Royale und Duo hinzugefügt (schließt sich nach 30 Sekunden von beiden Seiten; im Roten nimmt man Schaden)",
+      "Versorgungskisten hinzugefügt (sie landen auf Plattformen und geben Heilung, Ultimate- oder Fähigkeitsladung; höhere Plattformen bekommen sie öfter)",
+      "Battle Royale und Duo starten jetzt von allen Plattformen der Karte (Duo-Teams beginnen verteilt oben und unten)"
+     ]
+    },
+    "ja": {
+     "title": "バトルロイヤル刷新",
+     "items": [
+      "バトルロイヤルとデュオに危険地帯を追加（30秒後に両端から狭まり、赤い場所にいるとダメージ）",
+      "補給箱を追加（足場の上に落ち、回復・必殺技充填・スキル充填が得られる。高い足場ほど出やすい）",
+      "バトルロイヤルとデュオの開始位置をマップの全足場に拡大（デュオのチームは高い所と低い所に散らばって開始）"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v257",
    "title": "온라인 렉 줄이기",
    "items": [
