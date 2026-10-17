@@ -2,6 +2,58 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v250",
+   "title": "모바일 조작 개선",
+   "items": [
+    "조준 개선: 조준 방향 근처의 적에게 자동으로 맞춰지고, 조준 쪽을 짧게 탭하면 가장 가까운 적을 공격",
+    "버튼 정리: 대쉬와 순간이동을 💨 버튼 하나로 통합 (탭 대쉬, 길게 눌러 순간이동), 이모트는 오른쪽 위로 이동 (6개 → 4개)",
+    "화면 가림 감소: 조이스틱은 엄지를 올린 자리에 나타나고, 버튼은 더 작고 투명하게 스킬 바 위로 이동"
+   ],
+   "tr": {
+    "en": {
+     "title": "Mobile controls overhaul",
+     "items": [
+      "Aiming: aim snaps onto an enemy near your aim direction, and a quick tap on the aim side fires at the nearest enemy",
+      "Fewer buttons: dash and teleport merged into one 💨 button (tap = dash, hold = teleport), emote moved to the top corner (6 buttons → 4)",
+      "Less covering the screen: the sticks now appear where your thumb lands, the buttons are smaller, more transparent and moved above the skill bar"
+     ]
+    },
+    "es": {
+     "title": "Renovación de los controles móviles",
+     "items": [
+      "Puntería: la puntería se ajusta a un enemigo cercano a tu dirección, y un toque rápido en el lado de apuntar dispara al enemigo más cercano",
+      "Menos botones: dash y teletransporte unidos en un botón 💨 (toque = dash, mantener = teletransporte) y el emote pasa a la esquina superior (de 6 a 4 botones)",
+      "Menos cosas tapando la pantalla: los joysticks aparecen donde pones el pulgar y los botones son más pequeños, más transparentes y están sobre la barra de habilidades"
+     ]
+    },
+    "fr": {
+     "title": "Refonte des commandes mobiles",
+     "items": [
+      "Visée : la visée s’accroche à un ennemi proche de votre direction, et un tap rapide du côté visée tire sur l’ennemi le plus proche",
+      "Moins de boutons : dash et téléportation fusionnés en un bouton 💨 (tap = dash, maintien = téléportation), l’emote passe dans le coin supérieur (de 6 à 4 boutons)",
+      "Moins de gêne à l’écran : les sticks apparaissent là où se pose le pouce, les boutons sont plus petits, plus transparents et placés au-dessus de la barre de compétences"
+     ]
+    },
+    "de": {
+     "title": "Überarbeitung der Mobilsteuerung",
+     "items": [
+      "Zielen: Das Ziel rastet auf einen Gegner nahe deiner Zielrichtung ein, und ein kurzes Tippen auf der Zielseite schießt auf den nächsten Gegner",
+      "Weniger Tasten: Dash und Teleport sind eine 💨-Taste (Tippen = Dash, Halten = Teleport), das Emote wanderte in die obere Ecke (von 6 auf 4 Tasten)",
+      "Weniger Verdeckung: Die Sticks erscheinen dort, wo der Daumen aufsetzt, die Tasten sind kleiner, durchsichtiger und liegen über der Fähigkeitsleiste"
+     ]
+    },
+    "ja": {
+     "title": "モバイル操作の改善",
+     "items": [
+      "照準：狙った方向の近くにいる敵に照準が吸着し、照準側を素早くタップすると一番近い敵を撃つ",
+      "ボタン削減：ダッシュとテレポートを💨ボタン1つに統合（タップ＝ダッシュ、長押し＝テレポート）、エモートは右上へ（6個→4個）",
+      "画面の遮りを軽減：スティックは親指を置いた場所に表示され、ボタンは小さく半透明にしてスキルバーの上へ移動"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v249",
    "title": "봇 MVP 투표",
    "items": [
