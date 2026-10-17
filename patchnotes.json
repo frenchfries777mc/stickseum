@@ -2,6 +2,58 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v273",
+   "title": "다리 맵 렉 수정과 비공개 최소 인원",
+   "items": [
+    "무너지는 다리 맵 심한 렉 수정 (판자가 바뀔 때마다 봇 길찾기를 다시 계산하던 문제)",
+    "비공개 플레이 최소 2명부터 시작 가능",
+    "밸런스 페이지 build 273 기준으로 재측정"
+   ],
+   "tr": {
+    "en": {
+     "title": "Collapsing Bridge lag fix and private play minimum",
+     "items": [
+      "Fixed heavy lag on Collapsing Bridge (the bots no longer recalculate their routes every time the planks change)",
+      "Private play now needs at least 2 players to start",
+      "Balance page re-measured on build 273"
+     ]
+    },
+    "es": {
+     "title": "Corrección del lag en Puente que se derrumba y mínimo en juego privado",
+     "items": [
+      "Corregido el lag fuerte en Puente que se derrumba (los bots ya no recalculan sus rutas cada vez que cambian los tablones)",
+      "El juego privado ahora necesita al menos 2 jugadores para empezar",
+      "Página de equilibrio medida de nuevo en la build 273"
+     ]
+    },
+    "fr": {
+     "title": "Correction du lag sur Pont effondré et minimum en jeu privé",
+     "items": [
+      "Correction du gros lag sur Pont effondré (les bots ne recalculent plus leurs trajets à chaque changement des planches)",
+      "Le jeu privé nécessite désormais au moins 2 joueurs pour commencer",
+      "Page d’équilibrage remesurée sur la build 273"
+     ]
+    },
+    "de": {
+     "title": "Lag auf Einstürzende Brücke behoben und Mindestzahl im privaten Spiel",
+     "items": [
+      "Starkes Ruckeln auf Einstürzende Brücke behoben (die Bots berechnen ihre Wege nicht mehr bei jeder Änderung der Planken neu)",
+      "Private Spiele brauchen jetzt mindestens 2 Spieler zum Start",
+      "Balance-Seite auf Build 273 neu gemessen"
+     ]
+    },
+    "ja": {
+     "title": "崩れる橋のラグ修正と非公開プレイの最低人数",
+     "items": [
+      "崩れる橋で起きていた強いラグを修正（板が変わるたびにボットが経路を計算し直さなくなりました）",
+      "非公開プレイは2人以上いないと開始できないように変更",
+      "バランスページをビルド273で再測定"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v272",
    "title": "봇 길찾기 수정과 밸런스 재측정",
    "items": [
