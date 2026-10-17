@@ -2,6 +2,70 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v271",
+   "title": "신규 맵 4종과 최적화",
+   "items": [
+    "신규 맵 4종 추가 (무너지는 다리·화산 지대·폐허 도시·거울 미로)",
+    "배경 그림 캐시와 배터리 절약 모드로 프레임 향상 (설정에서 끌 수 있음)",
+    "효과음·음악을 나눠서 불러오도록 개선 (첫 화면 로딩 단축)",
+    "색약 모드 추가 (팀 색·체력바 색과 모양 구분)",
+    "게임패드 지원 추가 (블루투스 컨트롤러)"
+   ],
+   "tr": {
+    "en": {
+     "title": "4 new maps, optimization, colour-blind mode and gamepad",
+     "items": [
+      "4 new maps: Collapsing Bridge, Volcanic Land, Ruined City and Mirror Maze",
+      "Smoother frames with a cached background and a battery saver mode (can be turned off in settings)",
+      "Sounds and music now load piece by piece, so the first screen appears faster",
+      "Colour-blind mode (different team and health bar colours plus shapes)",
+      "Gamepad support (Bluetooth controllers)"
+     ]
+    },
+    "es": {
+     "title": "4 mapas nuevos, optimización, modo daltónico y mando",
+     "items": [
+      "4 mapas nuevos: Puente que se derrumba, Tierra volcánica, Ciudad en ruinas y Laberinto de espejos",
+      "Más fluidez con el fondo en caché y un modo de ahorro de batería (se puede desactivar en ajustes)",
+      "Los sonidos y la música se cargan por partes, así la primera pantalla aparece antes",
+      "Modo daltónico (otros colores de equipo y barra de vida, más formas)",
+      "Compatibilidad con mandos (Bluetooth)"
+     ]
+    },
+    "fr": {
+     "title": "4 nouvelles cartes, optimisation, mode daltonien et manette",
+     "items": [
+      "4 nouvelles cartes : Pont effondré, Terres volcaniques, Ville en ruines et Labyrinthe de miroirs",
+      "Plus de fluidité grâce au fond mis en cache et à un mode d’économie de batterie (désactivable dans les réglages)",
+      "Les sons et la musique se chargent par morceaux, l’écran d’accueil s’affiche donc plus vite",
+      "Mode daltonien (autres couleurs d’équipe et de barre de vie, avec des formes)",
+      "Prise en charge des manettes (Bluetooth)"
+     ]
+    },
+    "de": {
+     "title": "4 neue Karten, Optimierung, Farbsehschwäche-Modus und Gamepad",
+     "items": [
+      "4 neue Karten: Einstürzende Brücke, Vulkanland, Ruinenstadt und Spiegellabyrinth",
+      "Flüssigere Bilder durch zwischengespeicherten Hintergrund und einen Akkusparmodus (in den Einstellungen abschaltbar)",
+      "Sounds und Musik laden jetzt stückweise, der erste Bildschirm erscheint schneller",
+      "Farbsehschwäche-Modus (andere Team- und Lebensbalkenfarben plus Formen)",
+      "Gamepad-Unterstützung (Bluetooth-Controller)"
+     ]
+    },
+    "ja": {
+     "title": "新マップ4種・最適化・色覚サポートモード・ゲームパッド",
+     "items": [
+      "新マップ4種を追加（崩れる橋・火山地帯・廃墟の都市・鏡の迷路）",
+      "背景のキャッシュとバッテリー節約モードで動作を滑らかに（設定でオフにできます）",
+      "効果音と音楽を少しずつ読み込むようにして、最初の画面が早く表示されるように改善",
+      "色覚サポートモードを追加（チーム色・体力バーの色を変更し、形でも区別）",
+      "ゲームパッドに対応（Bluetoothコントローラー）"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v270",
    "title": "보스 레이드 음악",
    "items": [
