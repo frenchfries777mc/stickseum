@@ -2,6 +2,58 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v245",
+   "title": "어둠의 늪 발판 수정",
+   "items": [
+    "어둠의 늪 발판이 밟히지 않던 문제 수정",
+    "발판 개수 감소: 한쪽 8개 → 3단, 중앙 1개",
+    "밸런스 측정: 모든 맵 23개에서 쌍마다 맵당 4판"
+   ],
+   "tr": {
+    "en": {
+     "title": "Swamp of Darkness platforms fixed",
+     "items": [
+      "Fixed the Swamp of Darkness platforms not being steppable (they had no thickness)",
+      "Fewer platforms: 3 steps per bank (down from 8) plus one in the middle",
+      "Balance measurement: every pair 4 times on each of all 23 maps"
+     ]
+    },
+    "es": {
+     "title": "Plataformas de El pantano de la oscuridad corregidas",
+     "items": [
+      "Corregido que no se pudiera pisar las plataformas de El pantano de la oscuridad (no tenían grosor)",
+      "Menos plataformas: 3 escalones por orilla (antes 8) y una en el centro",
+      "Medición del equilibrio: cada pareja 4 veces en cada uno de los 23 mapas"
+     ]
+    },
+    "fr": {
+     "title": "Plateformes du Marais des ténèbres corrigées",
+     "items": [
+      "Correction : les plateformes du Marais des ténèbres ne pouvaient pas être foulées (sans épaisseur)",
+      "Moins de plateformes : 3 marches par rive (au lieu de 8) et une au centre",
+      "Mesure de l’équilibrage : chaque paire 4 fois sur chacune des 23 cartes"
+     ]
+    },
+    "de": {
+     "title": "Plattformen im Sumpf der Dunkelheit korrigiert",
+     "items": [
+      "Behoben: Die Plattformen im Sumpf der Dunkelheit waren nicht betretbar (ohne Dicke)",
+      "Weniger Plattformen: 3 Stufen pro Ufer (vorher 8) plus eine in der Mitte",
+      "Balance-Messung: jedes Paar 4-mal auf jeder der 23 Karten"
+     ]
+    },
+    "ja": {
+     "title": "闇の沼の足場を修正",
+     "items": [
+      "闇の沼の足場に乗れない問題を修正（厚みがなかった）",
+      "足場を削減：片側8個→3段、中央に1個",
+      "バランス測定：全23マップで各ペアをマップごとに4戦"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v244",
    "title": "어둠의 늪 개편",
    "items": [
