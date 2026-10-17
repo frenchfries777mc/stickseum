@@ -2,6 +2,46 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v251",
+   "title": "레이드 MVP 투표 수정",
+   "items": [
+    "봇이 있는 보스 레이드에서 MVP 투표가 안 되던 문제 수정: 아군이 투표 대상이 되고 봇도 투표"
+   ],
+   "tr": {
+    "en": {
+     "title": "MVP vote in boss raids",
+     "items": [
+      "Fixed no MVP vote in boss raids with bots: allies now take part in the vote and the bots vote too"
+     ]
+    },
+    "es": {
+     "title": "Votación de MVP en incursiones",
+     "items": [
+      "Corregido que no hubiera votación de MVP en incursiones con bots: los aliados participan y los bots también votan"
+     ]
+    },
+    "fr": {
+     "title": "Vote MVP dans les raids",
+     "items": [
+      "Correction : pas de vote MVP dans les raids avec des bots, les alliés participent désormais et les bots votent aussi"
+     ]
+    },
+    "de": {
+     "title": "MVP-Abstimmung im Boss-Raid",
+     "items": [
+      "Behoben: Im Boss-Raid mit Bots gab es keine MVP-Abstimmung, jetzt nehmen die Verbündeten teil und die Bots stimmen mit ab"
+     ]
+    },
+    "ja": {
+     "title": "ボスレイドのMVP投票",
+     "items": [
+      "ボット入りのボスレイドでMVP投票が行われない問題を修正：味方も投票対象になり、ボットも投票する"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v250",
    "title": "모바일 조작 개선",
    "items": [
