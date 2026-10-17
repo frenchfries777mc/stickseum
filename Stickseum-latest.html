@@ -1431,9 +1431,9 @@ function playUiClick(){
   const now=sfxCtx.currentTime; if(now-uiClickLast<0.04) return; uiClickLast=now;
   try{
     const o=sfxCtx.createOscillator(), g=sfxCtx.createGain();
-    o.type='triangle'; o.frequency.setValueAtTime(880,now+0.01); o.frequency.exponentialRampToValueAtTime(1320,now+0.07);
-    g.gain.setValueAtTime(0.0001,now+0.01); g.gain.exponentialRampToValueAtTime(0.28,now+0.02); g.gain.exponentialRampToValueAtTime(0.0001,now+0.11);
-    o.connect(g); g.connect(sfxMaster); o.start(now+0.01); o.stop(now+0.13);
+    o.type='sine'; o.frequency.setValueAtTime(520,now+0.005); o.frequency.exponentialRampToValueAtTime(190,now+0.06);      // a soft, short "tok": a low sine that drops quickly
+    g.gain.setValueAtTime(0.0001,now+0.005); g.gain.exponentialRampToValueAtTime(0.42,now+0.012); g.gain.exponentialRampToValueAtTime(0.0001,now+0.075);
+    o.connect(g); g.connect(sfxMaster); o.start(now+0.005); o.stop(now+0.09);
   }catch(e){}
 }
 window.addEventListener('pointerdown', e=>{
@@ -4490,7 +4490,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-17-v258';
+const GAME_BUILD='build 2026-10-17-v259';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},

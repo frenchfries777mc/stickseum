@@ -2,6 +2,46 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v259",
+   "title": "버튼 소리 변경",
+   "items": [
+    "버튼 클릭 소리를 더 짧고 부드러운 \"톡\" 소리로 변경"
+   ],
+   "tr": {
+    "en": {
+     "title": "Button sound changed",
+     "items": [
+      "Button click sound changed to a shorter, softer \"tok\""
+     ]
+    },
+    "es": {
+     "title": "Sonido de botones cambiado",
+     "items": [
+      "El sonido al pulsar botones cambia a un «toc» más corto y suave"
+     ]
+    },
+    "fr": {
+     "title": "Son des boutons modifié",
+     "items": [
+      "Le son de clic des boutons devient un « toc » plus court et plus doux"
+     ]
+    },
+    "de": {
+     "title": "Tastenklang geändert",
+     "items": [
+      "Das Klickgeräusch der Tasten ist jetzt ein kürzeres, weicheres „Tok“"
+     ]
+    },
+    "ja": {
+     "title": "ボタン音の変更",
+     "items": [
+      "ボタンのクリック音をより短くやわらかい「トン」という音に変更"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v258",
    "title": "배틀로얄 개편",
    "items": [
