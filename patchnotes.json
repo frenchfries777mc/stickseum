@@ -2,6 +2,52 @@
  "notes": [
   {
    "date": "2026-10-17",
+   "build": "v248",
+   "title": "레이드 졸개 변경",
+   "items": [
+    "레이드 졸개를 보스 특성에 맞춰 이름 변경: 화염의 검사, 얼음의 검사, 번개의 검사",
+    "졸개 색을 좀비 초록 대신 보스 색으로 변경"
+   ],
+   "tr": {
+    "en": {
+     "title": "Raid minion rename",
+     "items": [
+      "Raid minions renamed to fit their boss: Flame Swordsman, Ice Swordsman, Thunder Swordsman",
+      "Minions now use their boss’s color instead of zombie green"
+     ]
+    },
+    "es": {
+     "title": "Nuevos nombres de los esbirros",
+     "items": [
+      "Los esbirros de la incursión ahora van con su jefe: Espadachín de fuego, de hielo y del trueno",
+      "Los esbirros usan el color de su jefe en vez del verde zombi"
+     ]
+    },
+    "fr": {
+     "title": "Nouveaux noms des sbires",
+     "items": [
+      "Les sbires du raid portent le thème de leur boss : Épéiste de feu, de glace, de foudre",
+      "Les sbires prennent la couleur de leur boss au lieu du vert zombie"
+     ]
+    },
+    "de": {
+     "title": "Neue Namen der Raid-Diener",
+     "items": [
+      "Raid-Diener passen jetzt zu ihrem Boss: Feuer-, Eis- und Donnerschwertkämpfer",
+      "Diener haben die Farbe ihres Bosses statt Zombie-Grün"
+     ]
+    },
+    "ja": {
+     "title": "レイドの手下の名前変更",
+     "items": [
+      "レイドの手下をボスに合わせた名前に変更：炎の剣士、氷の剣士、雷の剣士",
+      "手下の色をゾンビの緑からボスの色に変更"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
    "build": "v247",
    "title": "봇전 MVP 수정",
    "items": [
