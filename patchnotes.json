@@ -7,7 +7,7 @@
    "items": [
     "클래식·미니게임 구분 코드 정리 (모드만 남김)",
     "비공개 방 모드 선택에서 미니게임 따로 표시 제거",
-    "사이트 맨 위 배경을 실제 게임 화면 영상으로 교체 (봇끼리 싸우는 장면)"
+    "사이트 맨 위 배경을 실제 게임 화면 영상으로 교체 (봇끼리 싸우는 장면), 영상 아래는 흙 바닥으로 이어지게 꾸밈"
    ],
    "tr": {
     "en": {
@@ -15,7 +15,7 @@
      "items": [
       "Removed the leftover classic / minigame split code (only modes remain)",
       "Private room mode selection no longer marks minigames separately",
-      "Site top background is now a recording of the real game (bots fighting)"
+      "Site top background is now a recording of the real game (bots fighting), continuing into a soil ground below"
      ]
     },
     "es": {
@@ -23,7 +23,7 @@
      "items": [
       "Se eliminó el código restante de la separación clásico / minijuego (solo quedan modos)",
       "La selección de modo en salas privadas ya no marca los minijuegos por separado",
-      "El fondo superior del sitio ahora es una grabación del juego real (bots peleando)"
+      "El fondo superior del sitio ahora es una grabación del juego real (bots peleando) y sigue como suelo de tierra debajo"
      ]
     },
     "fr": {
@@ -31,7 +31,7 @@
      "items": [
       "Suppression du code restant de la séparation classique / mini-jeu (il ne reste que des modes)",
       "La sélection du mode en salon privé ne distingue plus les mini-jeux",
-      "Le fond en haut du site est maintenant un enregistrement du vrai jeu (bots qui se battent)"
+      "Le fond en haut du site est maintenant un enregistrement du vrai jeu (bots qui se battent), prolongé par un sol de terre en dessous"
      ]
     },
     "de": {
@@ -39,7 +39,7 @@
      "items": [
       "Restlichen Code der Trennung Klassik / Minispiel entfernt (nur noch Modi)",
       "Die Modusauswahl in privaten Räumen kennzeichnet Minispiele nicht mehr extra",
-      "Der Hintergrund oben auf der Seite ist jetzt eine Aufnahme des echten Spiels (kämpfende Bots)"
+      "Der Hintergrund oben auf der Seite ist jetzt eine Aufnahme des echten Spiels (kämpfende Bots) und geht unten in einen Erdboden über"
      ]
     },
     "ja": {
@@ -47,7 +47,7 @@
      "items": [
       "クラシック／ミニゲームの区別に関するコードを整理（モードのみに統一）",
       "非公開ルームのモード選択でミニゲームを別表示しないように",
-      "サイト上部の背景を実際のゲーム画面の録画に変更（ボットの戦闘）"
+      "サイト上部の背景を実際のゲーム画面の録画に変更（ボットの戦闘）、その下は土の地面へと続く"
      ]
     }
    }
