@@ -4643,7 +4643,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-18-v297';
+const GAME_BUILD='build 2026-10-18-v298';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
@@ -9998,13 +9998,18 @@ function applyWeaponState(st){
   document.querySelectorAll('#weaponGrid .wpnCard').forEach(el=>{ const w=el.dataset.wid, b=bn.includes(w), o=ob.includes(w); el.style.opacity=(b||o)?'0.3':''; el.style.pointerEvents=(b||o)?'none':''; el.title=o?'상대가 금지한 캐릭터예요':(b?'이미 사용한 무기예요':''); });
 }
 function drawWeaponPortrait(wid){
+  clearTimeout(drawWeaponPortrait._t);
   const canvas=document.getElementById('weaponPortraitCanvas');
   const c=canvas.getContext('2d');
   c.clearRect(0,0,canvas.width,canvas.height);
   if(!wid || !WEAPONS[wid]) return;
-  const col=(players[myId] && players[myId].color) || '#3fe0c5';
+  let col=(players[myId] && players[myId].color) || '#3fe0c5';
+  const _ec=getEquippedCos(), _shn=(_ec.col&&COSMETICS[_ec.col]&&COSMETICS[_ec.col].shine)?_ec.col:null;
+  clearTimeout(drawWeaponPortrait._t);
+  if(_shn){ col=bodyShineColor(_shn, performance.now(), 0); drawWeaponPortrait._t=setTimeout(()=>{ const cv=document.getElementById('weaponPortraitCanvas'); if(cv && cv.getClientRects().length) drawWeaponPortrait(wid); }, 50); }   // (a shiny color keeps moving in the pick window)
   c.save();
   c.translate(canvas.width/2, canvas.height*0.7);
+  if(_shn) c.shadowColor=col, c.shadowBlur=12;
   c.scale(1.8,1.8);
   const HIP=-22, SH=-42, HEADCY=-52, HEADR=9;
   const _sk=(getEquippedCos().skin||{})[wid], _tint=(_sk&&COSMETICS[_sk])?COSMETICS[_sk].tint:undefined;
@@ -10018,6 +10023,7 @@ function drawWeaponPortrait(wid){
   const ax=0.9, ay=0.28;
   c.beginPath(); c.moveTo(0,SH+6); c.lineTo(ax*24, SH+6+ay*24); c.stroke();
   drawHeldWeapon(c, wid, ax, ay, ax*24, SH+6+ay*24, 0);
+  if(_shn){ c.shadowBlur=0; c.save(); c.translate(0,0); drawShineGlints(c, performance.now(), 0); c.restore(); }
   c.restore();
 }
 function setWeaponIcon(el, wid){

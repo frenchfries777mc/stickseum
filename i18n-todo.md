@@ -15,3 +15,5 @@ patchnotes.json | v297 title | MVP 카드 확대, 클랜 검색 정렬, 무지�
 patchnotes.json | v297 items[0] | MVP 투표 카드의 세로 길이와 캐릭터 모습을 더 크게 표시 | build 297 | 2026-10-18
 patchnotes.json | v297 items[1] | 클랜 찾기 목록에서 개발자가 있는 클랜을 위쪽에 표시 | build 297 | 2026-10-18
 patchnotes.json | v297 items[2] | 대기실 플레이어 목록의 색 표시가 무지개·반짝이는 색이면 효과가 나타남 | build 297 | 2026-10-18
+patchnotes.json | v298 title | 캐릭터 선택 창의 무지개 색 | build 298 | 2026-10-18
+patchnotes.json | v298 items[0] | 캐릭터 선택 창의 내 캐릭터가 무지개·반짝이는 색이면 색이 계속 바뀌며 빛나는 효과 표시 | build 298 | 2026-10-18
