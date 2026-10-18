@@ -11,3 +11,7 @@ patchnotes.json | v295 items[1] | 카드 맨 위에 캐릭터 모습(색, 스킨
 patchnotes.json | v296 title | 서바이벌 탈락 후 나가기와 무기 표시 정리 | build 296 | 2026-10-18
 patchnotes.json | v296 items[0] | 서바이벌에서 죽으면 탈락 화면이 뜨고 바로 나가거나 관전을 고를 수 있음 | build 296 | 2026-10-18
 patchnotes.json | v296 items[1] | 서바이벌·파쿠르·숨바꼭질에서 체력 옆의 무기 표시 제거 | build 296 | 2026-10-18
+patchnotes.json | v297 title | MVP 카드 확대, 클랜 검색 정렬, 무지개 색 표시 | build 297 | 2026-10-18
+patchnotes.json | v297 items[0] | MVP 투표 카드의 세로 길이와 캐릭터 모습을 더 크게 표시 | build 297 | 2026-10-18
+patchnotes.json | v297 items[1] | 클랜 찾기 목록에서 개발자가 있는 클랜을 위쪽에 표시 | build 297 | 2026-10-18
+patchnotes.json | v297 items[2] | 대기실 플레이어 목록의 색 표시가 무지개·반짝이는 색이면 효과가 나타남 | build 297 | 2026-10-18
