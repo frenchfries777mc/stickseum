@@ -2,6 +2,58 @@
  "notes": [
   {
    "date": "2026-10-18",
+   "build": "v275",
+   "title": "선택 XP",
+   "items": [
+    "경기를 마치면 선택 XP 획득 (완주 10, 승리 시 10 추가, 연습·비공개 제외)",
+    "프로필에서 선택 XP를 쓰면 캐릭터 선택창이 열리고, 고른 캐릭터에게 숙련도 XP로 지급",
+    "경기 종료 화면에 얻은 선택 XP 표시"
+   ],
+   "tr": {
+    "en": {
+     "title": "Pick XP",
+     "items": [
+      "Finishing a match gives Pick XP (10 for finishing, 10 more for a win; not in practice or private rooms)",
+      "Using Pick XP in your profile opens a character picker, and the XP goes to the chosen character as mastery XP",
+      "The match end screen shows the Pick XP you got"
+     ]
+    },
+    "es": {
+     "title": "XP a elegir",
+     "items": [
+      "Terminar una partida da XP a elegir (10 por terminar, 10 más por ganar; no en práctica ni salas privadas)",
+      "Al usar el XP a elegir en tu perfil se abre un selector de personaje y el XP va al elegido como XP de maestría",
+      "La pantalla final muestra el XP a elegir obtenido"
+     ]
+    },
+    "fr": {
+     "title": "XP au choix",
+     "items": [
+      "Terminer une partie donne de l’XP au choix (10 pour finir, 10 de plus pour une victoire ; pas en entraînement ni en salle privée)",
+      "Utiliser l’XP au choix dans ton profil ouvre un sélecteur de personnage et l’XP va au personnage choisi comme XP de maîtrise",
+      "L’écran de fin affiche l’XP au choix gagné"
+     ]
+    },
+    "de": {
+     "title": "Wahl-XP",
+     "items": [
+      "Wer ein Match beendet, erhält Wahl-XP (10 fürs Beenden, 10 mehr für einen Sieg; nicht im Training oder in privaten Räumen)",
+      "Wahl-XP im Profil einzulösen öffnet eine Charakterauswahl, und die XP gehen als Meisterschafts-XP an den gewählten Charakter",
+      "Der Endbildschirm zeigt die erhaltenen Wahl-XP"
+     ]
+    },
+    "ja": {
+     "title": "選択XP",
+     "items": [
+      "試合を終えると選択XPを獲得（完走10、勝利でさらに10。練習・非公開は対象外）",
+      "プロフィールで選択XPを使うとキャラ選択画面が開き、選んだキャラに熟練度XPとして付与",
+      "試合終了画面に獲得した選択XPを表示"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-18",
    "build": "v274",
    "title": "캐릭터 금지와 선택 후 화면 정리",
    "items": [
