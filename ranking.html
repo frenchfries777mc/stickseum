@@ -135,14 +135,16 @@ async function load(){
   } catch (e) { if (my === seq) fail(); }
 }
 const medal = i => ['🥇', '🥈', '🥉'][i] || '';
+const ranksBy = (rows, key) => rows.map((x, i) => { let r = i; while (r > 0 && (+rows[r - 1][key] || 0) === (+x[key] || 0)) r--; return r + 1; });      // same score = same place (1, 1, 3 ...)
 function ranked(rows){
   if (!rows.length){ out('<div class="panel empty">이 시즌에는 아직 랭크전 기록이 없어요.</div>'); return; }
+  const rk = ranksBy(rows, 'rating');
   let h = '<div class="podium">';
-  rows.slice(0, 3).forEach((x, i) => { const t = tierOf(x.rating); h += '<div class="panel pod' + (i === 0 ? ' p1' : '') + '"><div class="md">' + medal(i) + '</div><div class="n">' + (x.name ? '<span data-notr>' + esc(x.name) + '</span>' : esc(SI18N.T('이름 없음'))) + '</div><div class="r">' + x.rating + '</div><div class="t" style="color:' + safeColor(t.color) + '">' + esc(t.name) + '</div></div>'; });
+  rows.slice(0, 3).forEach((x, i) => { const t = tierOf(x.rating); h += '<div class="panel pod' + (rk[i] === 1 ? ' p1' : '') + '"><div class="md">' + medal(rk[i] - 1) + '</div><div class="n">' + (x.name ? '<span data-notr>' + esc(x.name) + '</span>' : esc(SI18N.T('이름 없음'))) + '</div><div class="r">' + x.rating + '</div><div class="t" style="color:' + safeColor(t.color) + '">' + esc(t.name) + '</div></div>'; });
   h += '</div><div class="panel list"><div class="row hd"><span class="rk">#</span><span>플레이어</span><span>티어</span><span class="num">점수</span><span class="dim c4">전적</span></div>';
   rows.forEach((x, i) => {
     const t = tierOf(x.rating), w = +x.wins || 0, l = +x.losses || 0, pct = (w + l) ? Math.round(w * 100 / (w + l)) : 0;
-    h += '<div class="row' + (myId && x.user_id === myId ? ' me' : '') + '"><span class="rk">' + (i + 1) + '</span><span class="nm">' + (x.name ? '<span data-notr>' + esc(x.name) + '</span>' : esc(SI18N.T('이름 없음'))) + (myId && x.user_id === myId ? '<small>나</small>' : '') + '</span>'
+    h += '<div class="row' + (myId && x.user_id === myId ? ' me' : '') + '"><span class="rk">' + rk[i] + '</span><span class="nm">' + (x.name ? '<span data-notr>' + esc(x.name) + '</span>' : esc(SI18N.T('이름 없음'))) + (myId && x.user_id === myId ? '<small>나</small>' : '') + '</span>'
       + '<span class="tier" style="color:' + safeColor(t.color) + '">' + esc(t.name) + '</span><span class="num">' + x.rating + '</span><span class="dim c4">' + SI18N.F('{0}승 {1}패 · {2}%', w, l, pct) + '</span></div>';
   });
   out(h + '</div>');
@@ -150,9 +152,10 @@ function ranked(rows){
 function clans(rows){
   if (!rows.length){ out('<div class="panel empty">아직 클랜이 없어요.</div>'); return; }
   let h = '<div class="panel list"><div class="row hd"><span class="rk">#</span><span>클랜</span><span class="dim">인원</span><span class="num">점수</span><span class="dim c4">승리</span></div>';
+  const rk = ranksBy(rows, 'score');
   rows.forEach((x, i) => {
     const n = (x.clan_members && x.clan_members[0] && x.clan_members[0].count) || 0, col = safeColor(x.color);
-    h += '<div class="row"><span class="rk">' + (medal(i) || (i + 1)) + '</span><span class="nm"><span class="tag" style="background:' + col + '">' + esc(x.tag) + '</span><span data-notr>' + esc((x.emblem || '') + ' ' + (x.name || '')) + '</span></span>'
+    h += '<div class="row"><span class="rk">' + (medal(rk[i] - 1) || rk[i]) + '</span><span class="nm"><span class="tag" style="background:' + col + '">' + esc(x.tag) + '</span><span data-notr>' + esc((x.emblem || '') + ' ' + (x.name || '')) + '</span></span>'
       + '<span class="dim">' + SI18N.F('{0}명', n) + '</span><span class="num">' + (+x.score || 0) + '</span><span class="dim c4">' + SI18N.F('{0}승', +x.wins || 0) + '</span></div>';
   });
   out(h + '</div>');
