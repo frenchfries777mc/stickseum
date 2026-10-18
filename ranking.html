@@ -130,7 +130,7 @@ async function load(){
     } else {
       const r = await sb.from('clans').select('id,name,tag,wins,score,emblem,color,clan_members(count)').order('score', {ascending: false}).limit(50);
       if (my !== seq) return; if (r.error) throw r.error;
-      clans(r.data || []);
+      clans(await devFirst(r.data || []));
     }
   } catch (e) { if (my === seq) fail(); }
 }
@@ -148,6 +148,15 @@ function ranked(rows){
       + '<span class="tier" style="color:' + safeColor(t.color) + '">' + esc(t.name) + '</span><span class="num">' + x.rating + '</span><span class="dim c4">' + SI18N.F('{0}승 {1}패 · {2}%', w, l, pct) + '</span></div>';
   });
   out(h + '</div>');
+}
+// clans with a developer (ff_devs) go above the others with the same score
+async function devFirst(rows){
+  try {
+    const d = await sb.from('ff_devs').select('user_id'); const ids = ((d && d.data) || []).map(x => x.user_id); if (!ids.length) return rows;
+    const m = await sb.from('clan_members').select('clan_id').in('user_id', ids); const has = new Set(((m && m.data) || []).map(x => x.clan_id));
+    if (!has.size) return rows;
+    return rows.map((x, i) => [x, i]).sort((a, b) => ((+b[0].score || 0) - (+a[0].score || 0)) || ((has.has(b[0].id) ? 1 : 0) - (has.has(a[0].id) ? 1 : 0)) || (a[1] - b[1])).map(p => p[0]);
+  } catch (e) { return rows; }
 }
 function clans(rows){
   if (!rows.length){ out('<div class="panel empty">아직 클랜이 없어요.</div>'); return; }
