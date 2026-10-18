@@ -2,6 +2,46 @@
  "notes": [
   {
    "date": "2026-10-18",
+   "build": "v279",
+   "title": "시작 카드 아군·적군 색",
+   "items": [
+    "시작 연출의 캐릭터 카드를 아군은 파랑, 적군은 빨강 배경으로 표시"
+   ],
+   "tr": {
+    "en": {
+     "title": "Ally and enemy colours on the start card",
+     "items": [
+      "The start card now shows allies on a blue background and enemies on a red one"
+     ]
+    },
+    "es": {
+     "title": "Colores de aliados y enemigos en la tarjeta de inicio",
+     "items": [
+      "La tarjeta de inicio muestra a los aliados con fondo azul y a los enemigos con fondo rojo"
+     ]
+    },
+    "fr": {
+     "title": "Couleurs alliés et ennemis sur la carte de départ",
+     "items": [
+      "La carte de départ affiche les alliés sur fond bleu et les ennemis sur fond rouge"
+     ]
+    },
+    "de": {
+     "title": "Verbündete und Gegner auf der Startkarte farblich getrennt",
+     "items": [
+      "Die Startkarte zeigt Verbündete auf blauem und Gegner auf rotem Hintergrund"
+     ]
+    },
+    "ja": {
+     "title": "開始カードの味方・敵の色分け",
+     "items": [
+      "開始演出のキャラカードを、味方は青、敵は赤の背景で表示"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-18",
    "build": "v278",
    "title": "위험지대 알림 잔류 수정",
    "items": [
