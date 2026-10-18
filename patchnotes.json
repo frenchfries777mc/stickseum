@@ -2,6 +2,52 @@
  "notes": [
   {
    "date": "2026-10-18",
+   "build": "v280",
+   "title": "봇 캐릭터 금지 표시",
+   "items": [
+    "봇만 있는 쪽도 금지 단계에서 잠시 뒤 직접 캐릭터를 금지하도록 변경 (사람이 정한 뒤에도 봇이 정할 때까지 대기)",
+    "금지 단계에 상대 쪽이 금지를 정했는지 표시"
+   ],
+   "tr": {
+    "en": {
+     "title": "Bot bans made visible",
+     "items": [
+      "Sides made only of bots now ban a character after a short moment during the ban stage (the stage waits for them even after the people have chosen)",
+      "The ban stage shows whether the other side has chosen its ban"
+     ]
+    },
+    "es": {
+     "title": "Prohibiciones de bots visibles",
+     "items": [
+      "Los bandos formados solo por bots ahora prohíben un personaje tras un momento en la fase de prohibición (la fase los espera aunque las personas ya hayan elegido)",
+      "La fase de prohibición muestra si el otro bando ya eligió su prohibición"
+     ]
+    },
+    "fr": {
+     "title": "Bannissements des bots visibles",
+     "items": [
+      "Les camps composés uniquement de bots bannissent désormais un personnage après un court instant pendant la phase de bannissement (la phase les attend même quand les joueurs ont déjà choisi)",
+      "La phase de bannissement indique si l’autre camp a choisi son interdiction"
+     ]
+    },
+    "de": {
+     "title": "Bot-Sperren sichtbar gemacht",
+     "items": [
+      "Seiten nur aus Bots sperren in der Sperrphase nun nach kurzer Zeit einen Charakter (die Phase wartet auf sie, auch wenn die Spieler schon gewählt haben)",
+      "Die Sperrphase zeigt, ob die andere Seite ihre Sperre schon gewählt hat"
+     ]
+    },
+    "ja": {
+     "title": "ボットの禁止を表示",
+     "items": [
+      "ボットだけの側も禁止段階で少し待ってから自分でキャラを禁止するよう変更（人が決めた後もボットが決めるまで待機）",
+      "禁止段階で相手側が禁止を決めたかどうかを表示"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-18",
    "build": "v279",
    "title": "시작 카드 아군·적군 색",
    "items": [
