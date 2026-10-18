@@ -4633,7 +4633,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-18-v289';
+const GAME_BUILD='build 2026-10-18-v290';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
@@ -12021,6 +12021,31 @@ function botMoveStep(p, ai, inp, t){
   if(cmd.jump && t>=ai.jumpOkAt){ inp.jump=true; ai.jumpOkAt=t+450; if(cmd.plan) ai.plan={pl:cmd.plan, until:Date.now()+2200, dir:cmd.dir}; if(cmd.dashDelay!==undefined) ai.dashAt=t+cmd.dashDelay*1000; }
   else if(cmd.plan && cmd.planned && !cmd.jump) ai.plan={pl:cmd.plan, until:Date.now()+2200, dir:cmd.dir};   // walking off an edge toward a lower platform: keep going the same way while falling
   else if(ai.hopAt!==undefined && ai.hopAt!==null){ if(p.grounded && botHeadroomClear(p) && t>=ai.jumpOkAt){ inp.jump=true; ai.jumpOkAt=t+450; } ai.hopAt=null; }
+  botLavaGuard(p, inp, t);
+}
+// 화산 지대: the floor pools glow from 5 s into every cycle and burn from 7 s. A bot stays out of a pool from 4 s on and leaves one it is standing in.
+function botLavaGuard(p, inp, t){
+  if(!MAP || MAP.hazard!=='lavaland' || !p.alive) return;
+  const c=(t/1000)%LAVA_CYCLE; if(c<LAVA_WARN_FROM-1) return;     // (the floor is safe for the first 5 s and burns from 7 s: a bot clears the pool from 4 s on, crossing takes about 1.2 s)
+  const gy=MAP.platforms[0].y, m=34;                              // (the rim zone: a bot keeps this far from the lava, a step in burns it at once)
+  const poolAt=x=>LAVA_POOLS.find(z=>x>z.x && x<z.x+z.w);
+  if(p.y<gy-6){                                                     // above the floor
+    if(p.grounded){                                                 // on a platform: do not walk off an edge that drops into a pool
+      for(const dir of [-1,1]){ if(!(dir<0?inp.left:inp.right)) continue; const x2=p.x+dir*(PLAYER_W/2+14), under=botGroundBelow(x2, p.y); if(under!==null && under>=gy-1 && poolAt(x2)){ inp.left=inp.right=false; inp.dash=false; } }
+    } else { const z=poolAt(p.x); if(z && p.vy>-200){ const dir=(p.x>=z.x+z.w/2)?1:-1; inp.left=dir<0; inp.right=dir>0; inp.dash=false; } }   // falling toward a pool: steer out over the nearer rim
+    return;
+  }
+  for(const z of LAVA_POOLS){
+    if(p.x>z.x-m && p.x<z.x+z.w+m){
+      if(p.x>z.x && p.x<z.x+z.w){                                  // already inside: run to the nearer edge and jump
+        const dir=(p.x>=z.x+z.w/2)?1:-1; inp.left=dir<0; inp.right=dir>0; if(p.grounded) inp.jump=true; p.ai.dashAt=0;
+      } else {                                                      // at the rim: do not step in
+        if(p.x<=z.x && inp.right){ inp.right=false; inp.left=true; inp.dash=false; }
+        if(p.x>=z.x+z.w && inp.left){ inp.left=false; inp.right=true; inp.dash=false; }
+      }
+      return;
+    }
+  }
 }
 // A practice dummy: a player-shaped target that never attacks. 'still' stands where it was put; 'moving' walks back and forth along its platform and hops now and then.
 function botDummyThink(p, t, dt){
