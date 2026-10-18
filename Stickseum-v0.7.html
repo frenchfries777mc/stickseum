@@ -4633,7 +4633,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-18-v292';
+const GAME_BUILD='build 2026-10-18-v293';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
@@ -8897,12 +8897,13 @@ function showMvpVote(cands, ms){
   const s=document.createElement('div'); s.style.cssText='font-size:15px; color:#c9ced8; margin-bottom:16px;'; s.textContent='가장 활약한 사람을 골라 주세요 (뽑히면 +'+MVP_XP+' XP)'; o.appendChild(s);
   const row=document.createElement('div'); row.style.cssText='display:flex; gap:12px; flex-wrap:wrap; justify-content:center; align-items:stretch;'; o.appendChild(row);
   let any=false;
-  for(const c of cands){ if(c.id===myId) continue; any=true;
+  for(const c of cands){ const me=(c.id===myId); if(!me) any=true;
     const w=WEAPONS[c.w], wn=w?(w.emoji+' '+w.name):'-';
     const b=document.createElement('button'); b.className='btn-secondary'; b.style.cssText='display:flex; flex-direction:column; align-items:center; gap:8px; padding:16px 14px; width:132px; min-height:230px; border-radius:14px; text-align:center;';
     const st=(l,v,col)=>'<div style="display:flex; justify-content:space-between; width:100%; font-size:14px; font-weight:600;"><span style="color:#9aa3b5;">'+l+'</span><b style="color:'+col+';">'+v+'</b></div>';
     b.innerHTML='<div style="font-size:18px; font-weight:800; word-break:break-all;"></div><div style="font-size:15px; color:#c9ced8; padding-bottom:8px; border-bottom:1px solid #2a3350; width:100%;"></div><div style="display:flex; flex-direction:column; gap:6px; width:100%; margin-top:2px;">'+st('처치',c.k||0,'#ffd34d')+st('어시스트',c.a||0,'#3fe0c5')+st('사망',c.d||0,'#ff7a7a')+st('피해량',c.dm||0,'#fff')+'</div>';
     b.children[0].textContent=c.name; b.children[1].textContent=wn;
+    if(me){ b.disabled=true; b.style.opacity='.45'; b.style.filter='grayscale(1)'; b.style.cursor='not-allowed'; b.title='자기 자신에게는 투표할 수 없어요'; row.appendChild(b); continue; }       // (your own card is shown for the numbers, but grey and not clickable)
     b.onclick=()=>{ mvpMyPick=c.id; [...row.children].forEach(x=>{ x.style.outline='none'; x.style.background=''; }); b.style.outline='3px solid var(--accent)'; b.style.background='rgba(63,224,197,.18)'; if(isHost) hostMvpCast(myId,c.id); else if(hostConn) safeSend(hostConn,{t:'mvpCast', id:c.id}); };
     row.appendChild(b); }
   if(!any){ o.style.display='none'; mvpLockExit(false); return; }
