@@ -4633,7 +4633,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-18-v282';
+const GAME_BUILD='build 2026-10-18-v283';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
@@ -8869,10 +8869,14 @@ function showMvpVote(cands, ms){
   const o=ensureMvpBox(); o.style.display='block'; o.innerHTML=''; mvpMyPick=null; mvpLockExit(true);
   const h=document.createElement('div'); h.style.cssText='font-weight:900; font-size:26px; color:#ffd34d; margin-bottom:4px;'; h.textContent='🏅 MVP 투표'; o.appendChild(h);
   const s=document.createElement('div'); s.style.cssText='font-size:15px; color:#c9ced8; margin-bottom:16px;'; s.textContent='가장 활약한 사람을 골라 주세요 (뽑히면 +'+MVP_XP+' XP)'; o.appendChild(s);
-  const row=document.createElement('div'); row.style.cssText='display:flex; gap:10px; flex-wrap:wrap; justify-content:center;'; o.appendChild(row);
+  const row=document.createElement('div'); row.style.cssText='display:flex; gap:12px; flex-wrap:wrap; justify-content:center; align-items:stretch;'; o.appendChild(row);
   let any=false;
   for(const c of cands){ if(c.id===myId) continue; any=true;
-    const b=document.createElement('button'); b.className='btn-secondary'; b.style.cssText='padding:14px 18px; font-size:17px; font-weight:700; min-width:130px; border-radius:12px;'; b.textContent=c.name;
+    const w=WEAPONS[c.w], wn=w?(w.emoji+' '+w.name):'-';
+    const b=document.createElement('button'); b.className='btn-secondary'; b.style.cssText='display:flex; flex-direction:column; align-items:center; gap:8px; padding:16px 14px; width:132px; min-height:230px; border-radius:14px; text-align:center;';
+    const st=(l,v,col)=>'<div style="display:flex; justify-content:space-between; width:100%; font-size:14px; font-weight:600;"><span style="color:#9aa3b5;">'+l+'</span><b style="color:'+col+';">'+v+'</b></div>';
+    b.innerHTML='<div style="font-size:18px; font-weight:800; word-break:break-all;"></div><div style="font-size:15px; color:#c9ced8; padding-bottom:8px; border-bottom:1px solid #2a3350; width:100%;"></div><div style="display:flex; flex-direction:column; gap:6px; width:100%; margin-top:2px;">'+st('처치',c.k||0,'#ffd34d')+st('어시스트',c.a||0,'#3fe0c5')+st('사망',c.d||0,'#ff7a7a')+st('피해량',c.dm||0,'#fff')+'</div>';
+    b.children[0].textContent=c.name; b.children[1].textContent=wn;
     b.onclick=()=>{ mvpMyPick=c.id; [...row.children].forEach(x=>{ x.style.outline='none'; x.style.background=''; }); b.style.outline='3px solid var(--accent)'; b.style.background='rgba(63,224,197,.18)'; if(isHost) hostMvpCast(myId,c.id); else if(hostConn) safeSend(hostConn,{t:'mvpCast', id:c.id}); };
     row.appendChild(b); }
   if(!any){ o.style.display='none'; mvpLockExit(false); return; }
@@ -8891,6 +8895,7 @@ function showMvpResult(id, name, paid){
   clearTimeout(showMvpResult._t); showMvpResult._t=setTimeout(hideMvpBox, 3600);
 }
 const MVP_DELAY_MS=1800;      // the victory screen comes first; the vote window opens a moment later
+function mvpCand(p){ return {id:p.id, name:p.name, w:p.weapon||null, k:p.kills||0, d:p.deaths||0, a:p.assistN||0, dm:Math.round(p.totalDamageDealt||0)}; }
 function startMvpVote(wIds){
   // only the team modes have an MVP, and only the members of the WINNING team take part (they are the candidates and the only voters)
   const mode=MODES[gameMode]||{};
@@ -8902,8 +8907,8 @@ function startMvpVote(wIds){
   if(humans.length<2){                                  // one person on the winning team with bot team-mates: the bots vote too (the human picks as usual; each bot mostly backs whoever did the most, sometimes somebody else)
     const part=Object.values(players).filter(p=>win.has(p.id) && !p.isBoss && !p.isMinion && !p.isDummy && !p.isSpectator && p.name);
     if(part.length<2) return;
-    cands=part.map(p=>({id:p.id, name:p.name})); botVoters=part.filter(p=>p.isBot).map(bot=>({id:bot.id, others:part.filter(p=>p.id!==bot.id)}));
-  } else cands=humans.map(p=>({id:p.id, name:p.name}));
+    cands=part.map(mvpCand); botVoters=part.filter(p=>p.isBot).map(bot=>({id:bot.id, others:part.filter(p=>p.id!==bot.id)}));
+  } else cands=humans.map(mvpCand);
   if(cands.some(c=>c.id===myId)) mvpLockExit(true);
   const sc=p=>(p.totalDamageDealt||0)+(p.kills||0)*20;
   setTimeout(()=>{

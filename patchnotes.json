@@ -2,6 +2,46 @@
  "notes": [
   {
    "date": "2026-10-18",
+   "build": "v283",
+   "title": "MVP 투표 카드",
+   "items": [
+    "MVP 투표 버튼을 세로 카드로 바꾸고 닉네임, 캐릭터, 처치·어시스트·사망·피해량 표시"
+   ],
+   "tr": {
+    "en": {
+     "title": "MVP vote cards",
+     "items": [
+      "MVP vote now shows tall cards per player with nickname, character, and kills, assists, deaths, and damage dealt in the match"
+     ]
+    },
+    "es": {
+     "title": "Tarjetas de votación MVP",
+     "items": [
+      "La votación MVP ahora muestra tarjetas verticales por jugador con apodo, personaje, y eliminaciones, asistencias, muertes y daño infligido en la partida"
+     ]
+    },
+    "fr": {
+     "title": "Cartes du vote MVP",
+     "items": [
+      "Le vote MVP affiche désormais des cartes verticales par joueur avec pseudo, personnage, et éliminations, assistances, morts et dégâts infligés dans le match"
+     ]
+    },
+    "de": {
+     "title": "MVP-Abstimmungskarten",
+     "items": [
+      "Die MVP-Abstimmung zeigt jetzt hohe Karten pro Spieler mit Name, Charakter sowie Kills, Assists, Toden und verursachtem Schaden im Match"
+     ]
+    },
+    "ja": {
+     "title": "MVP投票カード",
+     "items": [
+      "MVP投票を縦長のカードにし、ニックネーム・キャラクター・その試合のキル数・アシスト数・死亡数・与えたダメージを表示"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-18",
    "build": "v282",
    "title": "점령전 봇 이동과 금지 표시",
    "items": [
