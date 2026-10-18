@@ -4633,7 +4633,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-18-v293';
+const GAME_BUILD='build 2026-10-18-v294';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
@@ -11312,11 +11312,11 @@ const BOT_THINK_MIN_MS=110, BOT_THINK_JITTER_MS=70;
 //   skill: range a bot's own skill is drawn from (also drives dodging and hesitation)   think: multiplier on the time between decisions
 //   aim: multiplier on aiming error   fire: chance to pull the trigger when it has a shot   ult: chance per decision to use a ready ultimate   lead: how much it aims ahead of a moving target
 const BOT_LEVELS={
-  easy:  {name:'쉬움',   skill:[0.10,0.40], think:2.3, aim:3.6, fire:0.45, ult:0.05, lead:0.10, useSkill:0.12, dodge:0, rest:0.4},
-  normal:{name:'보통',   skill:[0.35,0.75], think:1.6, aim:2.3, fire:0.66, ult:0.12, lead:0.30, useSkill:0.30, dodge:0, rest:0.8},
-  hard:  {name:'어려움', skill:[0.55,0.95], think:1.0, aim:1.0, fire:0.90, ult:0.30, lead:0.70, useSkill:0.50, dodge:0, rest:1},
+  easy:  {name:'쉬움',   skill:[0.10,0.40], think:2.3, aim:3.6, fire:0.45, ult:0.05, lead:0.10, useSkill:0.12, tele:0.10, dodge:0, rest:0.4},
+  normal:{name:'보통',   skill:[0.35,0.75], think:1.6, aim:2.3, fire:0.66, ult:0.12, lead:0.30, useSkill:0.30, tele:0.30, dodge:0, rest:0.8},
+  hard:  {name:'어려움', skill:[0.55,0.95], think:1.0, aim:1.0, fire:0.90, ult:0.30, lead:0.70, useSkill:0.50, tele:0.50, dodge:0, rest:1},
   // the one below is not for choosing (hidden: true): it belongs to the special bot 제현 (brilliant)
-  best:  {name:'최강',   skill:[1.00,1.00], think:0.25, aim:0.05, fire:1.00, ult:0.85, lead:1.00, useSkill:0.90, dodge:0.95, rest:1, hidden:true}
+  best:  {name:'최강',   skill:[1.00,1.00], think:0.25, aim:0.05, fire:1.00, ult:0.85, lead:1.00, useSkill:0.90, tele:0.90, dodge:0.95, rest:1, hidden:true}
 };
 const BOT_CHOOSABLE_LEVELS=()=>Object.keys(BOT_LEVELS).filter(k=>!BOT_LEVELS[k].hidden);
 const BOT_DEFAULT_LEVEL='normal';
@@ -11931,6 +11931,29 @@ function botPersonalityStep(p, ai, target, d, cx){
   }
   return null;
 }
+/* ---- bots use the teleport too (E, 1 s channel, 10 s cooldown): to get away when hurt, to reach a conquest point far off (also on the maps where the way up is hard), and (melee) to land next to a far-away target ---- */
+function botTeleportStep(p, ai, target, d, lowHp, tSec, t, dif, goalX, goalY, cqGoal, w){
+  const chance=dif.tele||0; if(!chance || !MAP || p.teleportChannel || p.darkSub || p.ctfCarrying || tSec<(ai.teleAt||0)) return;
+  if((MODES[gameMode]||{}).noTeleport || (MODES[gameMode]||{}).noWeapon || isStunned(p, tSec)) return;
+  if(tSec-(p.lastTeleport===undefined?-9999:p.lastTeleport)<TELEPORT_CD) return;
+  let nearE=1e9; for(const o of Object.values(players)){ if(!o.alive || o.id===p.id || o.x===undefined || isAlly(p,o)) continue; nearE=Math.min(nearE, Math.hypot(o.x-p.x,o.y-p.y)); }
+  const platOk=pl=>pl && !pl.move && pl.w>=60;
+  let dest=null, ch=chance;
+  if(lowHp && target && d<320){                                                  // hurt with an enemy close: pop out on a platform far from it
+    const c=MAP.platforms.filter(pl=>platOk(pl) && Math.hypot(pl.x+pl.w/2-target.x, pl.y-target.y)>520);
+    if(c.length){ const pl=c[Math.floor(Math.random()*c.length)]; dest={x:pl.x+pl.w/2, y:pl.y}; ch=Math.min(1,chance*2); }
+  } else if(cqGoal && nearE>420 && Math.hypot(goalX-p.x, goalY-p.y)>700){        // a conquest point far away
+    const gi=botGoalPlat(goalX, goalY), pl=gi>=0?MAP.platforms[gi]:null;
+    if(platOk(pl)) dest={x:clamp(goalX, pl.x+20, pl.x+pl.w-20), y:pl.y};
+  } else if(target && w && w.kind==='melee' && d>650 && nearE>450){              // a melee bot far from its target: land beside it
+    const tp=botStandingPlat(target);
+    if(platOk(tp)) dest={x:clamp(target.x+(Math.random()<0.5?-1:1)*150, tp.x+20, tp.x+tp.w-20), y:tp.y};
+    ch=chance*0.5;
+  }
+  if(!dest || Math.random()>ch) return;
+  if(MAP.hazard==='lavaland' && dest.y>=MAP.platforms[0].y-1 && LAVA_POOLS.some(z=>dest.x>z.x-30 && dest.x<z.x+z.w+30)) return;      // never into a lava pool
+  tryTeleportChannel(p, dest.x, dest.y, t); ai.teleAt=tSec+2;
+}
 function botThink(p, t, dt){
   const ai=p.ai, inp=p.input;
   ai.dt=dt; ai.nowMs=t;
@@ -12004,6 +12027,7 @@ function botThink(p, t, dt){
     if(ai.personality && !mb && !(rs && rs.mode==='hold')){ const ps=botPersonalityStep(p, ai, target, d, {t, tSec, navBusy, inp, lowHp, shoot, w}); if(ps){ if(ps.goalX!==undefined && !cqGoal){ goalX=ps.goalX; goalY=ps.goalY; } if(ps.shoot!==undefined) shoot=ps.shoot; } }      // (in conquest a personality never talks a bot out of going to the point: the snipers used to stand on the ground shooting up at whoever held it)
     if(rs && rs.mode==='go'){ goalX=rs.goalX; goalY=rs.goalY; }                     // on its way to the resting place
     if(brz && !mb){ const bg=brzBotGoal(p, target, d, !!(rs && rs.mode==='hold')); if(bg){ goalX=bg.x; goalY=bg.y; } }      // battle royale / duo: the zone and the supply crates
+    if(!mb) botTeleportStep(p, ai, target, d, lowHp, tSec, t, dif, goalX, goalY, cqGoal, w);
     ai.goalX=goalX; ai.goalY=goalY; ai.urgent=!!(mb && mb.urgent);
     if(dif.dodge && p.grounded && t>=ai.jumpOkAt && !navBusy && !p.batting){        // a shot flying at me: hop over it (the best bot reads every shot)
       for(const b of bullets){
