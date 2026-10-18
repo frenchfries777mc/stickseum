@@ -2,6 +2,70 @@
  "notes": [
   {
    "date": "2026-10-18",
+   "build": "v282",
+   "title": "점령전 봇 이동과 금지 표시",
+   "items": [
+    "점령전에서 성격 봇이 거점으로 가지 않고 바닥에서 위만 보던 문제 수정",
+    "저격수 성격 봇이 다른 층의 적을 바닥에서 쳐다보며 서 있지 않고 발판을 타고 올라가도록 수정",
+    "시작 카드 테두리를 아군 진한 파랑, 적군 진한 빨강으로 변경",
+    "캐릭터 금지 화면에 상대 쪽이 고른 금지 캐릭터 표시 (우리 쪽이 정한 뒤 공개)",
+    "클랜 랭킹에서 개발자가 있는 클랜을 같은 점수 안에서 위로 표시"
+   ],
+   "tr": {
+    "en": {
+     "title": "Conquest bot movement and ban display",
+     "items": [
+      "Fixed personality bots in conquest standing on the ground looking up instead of going to the point",
+      "Sniper-personality bots no longer stand on the ground staring at an enemy on another level; they climb the platforms",
+      "Start card borders are now deep blue for allies and deep red for enemies",
+      "The ban screen shows the character the other side banned (revealed once our side has chosen)",
+      "In the clan ranking, clans with a developer are listed above others with the same score"
+     ]
+    },
+    "es": {
+     "title": "Movimiento de bots en conquista y vista de prohibiciones",
+     "items": [
+      "Corregido que los bots con personalidad en conquista se quedaran en el suelo mirando hacia arriba en lugar de ir al punto",
+      "Los bots francotiradores ya no se quedan en el suelo mirando a un enemigo en otro nivel; suben por las plataformas",
+      "Los bordes de la tarjeta de inicio son azul intenso para aliados y rojo intenso para enemigos",
+      "La pantalla de prohibición muestra el personaje que prohibió el otro bando (se revela cuando nuestro bando ha elegido)",
+      "En la clasificación de clanes, los clanes con un desarrollador aparecen por encima de los de igual puntuación"
+     ]
+    },
+    "fr": {
+     "title": "Déplacement des bots en conquête et affichage des bannissements",
+     "items": [
+      "Correction des bots à personnalité en conquête qui restaient au sol à regarder en l’air au lieu d’aller au point",
+      "Les bots snipers ne restent plus au sol à fixer un ennemi situé à un autre niveau ; ils grimpent les plateformes",
+      "Les bordures de la carte de départ sont bleu foncé pour les alliés et rouge foncé pour les ennemis",
+      "L’écran de bannissement montre le personnage banni par l’autre camp (révélé une fois que notre camp a choisi)",
+      "Dans le classement des clans, les clans avec un développeur passent au-dessus des autres à score égal"
+     ]
+    },
+    "de": {
+     "title": "Bot-Bewegung im Eroberungsmodus und Sperranzeige",
+     "items": [
+      "Behoben: Bots mit Persönlichkeit blieben im Eroberungsmodus am Boden und sahen nach oben, statt zum Punkt zu gehen",
+      "Scharfschützen-Bots stehen nicht mehr am Boden und starren auf einen Gegner auf einer anderen Ebene; sie klettern über die Plattformen",
+      "Die Ränder der Startkarte sind jetzt dunkelblau für Verbündete und dunkelrot für Gegner",
+      "Der Sperrbildschirm zeigt den von der anderen Seite gesperrten Charakter (sichtbar, sobald unsere Seite gewählt hat)",
+      "In der Clan-Rangliste stehen Clans mit Entwickler bei gleicher Punktzahl weiter oben"
+     ]
+    },
+    "ja": {
+     "title": "占領戦のボット移動と禁止表示",
+     "items": [
+      "占領戦で性格付きボットが拠点へ行かず、地面から上を見上げていた問題を修正",
+      "狙撃型の性格のボットが、別の階の敵を地面から見上げて立ち止まらず、足場を登るよう修正",
+      "開始カードの枠を、味方は濃い青、敵は濃い赤に変更",
+      "禁止画面に相手側が禁止したキャラを表示（こちら側が決めた後に公開）",
+      "クランランキングで、同じ点数なら開発者のいるクランを上に表示"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-18",
    "build": "v281",
    "title": "랭킹 동점 공동 순위",
    "items": [
