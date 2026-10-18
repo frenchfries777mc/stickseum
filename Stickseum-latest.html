@@ -4633,7 +4633,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-18-v291';
+const GAME_BUILD='build 2026-10-18-v292';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
@@ -9191,7 +9191,7 @@ function onClientData(data, mode, code){
   else if(data.t==='mvpVote'){ if(Array.isArray(data.cands)) showMvpVote(data.cands, data.ms||20000); }
   else if(data.t==='mvpEnd'){ applyMvpResult(data.id, data.name||'?'); }
   else if(data.t==='weaponPhase'){ if(started) return; started=true; weaponMode=data.mode||'normal'; enterWeaponPhase(data.deadline, data.mode, data.offer, data.banEnds); }
-  else if(data.t==='duelPick'){ weaponMode=data.mode||'normal'; openDuelPickScreen(data.deadline, data.mode, data.offer); }
+  else if(data.t==='duelPick'){ weaponMode=data.mode||'normal'; openDuelPickScreen(data.deadline, data.mode, data.offer, data.banEnds); }
   else if(data.t==='duelPickEnd'){ closeDuelPickScreen(data.weapons||{}); }
   else if(data.t==='weaponState'){ applyWeaponState(data); }
   else if(data.t==='weaponReveal'){ showWeaponReveal(data.list, data.endsAt); }
@@ -9702,7 +9702,7 @@ function hostWeaponBan(pid, wid){
   if(b.banner[k]!==pid || b.picks[k]!==undefined) return;
   b.picks[k]=wid; broadcastWeaponState(); banStageCheck();
 }
-let matchBans=null;      // {side: banned character} once the ban stage is over; it holds for the whole match (all rounds of a duel)
+let matchBans=null;      // {side: banned character} once the ban stage is over; it holds for one pick (a duel has a new ban stage before every round)
 function oppBansFor(p){
   if(!matchBans) return [];
   const k=banSideKey(p); return Object.keys(matchBans).filter(x=>x!==k).map(x=>matchBans[x]).filter(Boolean);
@@ -13439,15 +13439,18 @@ function startDuelRepick(){
     weaponPhase={deadline:Date.now()+WEAPON_PICK_MS, revealing:false, revealEnd:0};
     if(weaponMode==='random') makeWeaponOffers();
     botSchedulePicks();
-    for(const pid in players){ if(pid!==myId && conns[pid]) safeSend(conns[pid], {t:'duelPick', deadline:weaponPhase.deadline, mode:weaponMode, offer:players[pid].offer||null}); }
-    openDuelPickScreen(weaponPhase.deadline, weaponMode, players[myId]?players[myId].offer:null);
+    matchBans=null;                                                    // every round has its own ban stage: each side bans one character of the other before the pick
+    if(banEligible()) initBanStage();
+    const banEnds=banActive()?weaponPhase.ban.ends:0;
+    for(const pid in players){ if(pid!==myId && conns[pid]) safeSend(conns[pid], {t:'duelPick', deadline:weaponPhase.deadline, mode:weaponMode, offer:players[pid].offer||null, banEnds}); }
+    openDuelPickScreen(weaponPhase.deadline, weaponMode, players[myId]?players[myId].offer:null, banEnds);
     broadcastWeaponState();
   }catch(e){ recordDiagError('duel-repick', e); console.error('[duel] weapon re-pick failed - continuing with the same weapons:', e); duelPick=false; weaponPhase=null; startNewDuelRound(); }
 }
-function openDuelPickScreen(deadline, wmode, offer){
+function openDuelPickScreen(deadline, wmode, offer, banEnds){
   document.getElementById('hud').style.display='none';
   document.getElementById('lobby').style.display='flex';
-  enterWeaponPhase(deadline, wmode, offer);
+  enterWeaponPhase(deadline, wmode, offer, banEnds);
 }
 function applyDuelWeapons(map){
   for(const id in map){ if(players[id]) players[id].weapon=map[id]; }
