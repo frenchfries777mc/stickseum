@@ -2,6 +2,58 @@
  "notes": [
   {
    "date": "2026-10-18",
+   "build": "v290",
+   "title": "봇의 용암 회피",
+   "items": [
+    "화산 지대에서 봇이 용암이 달아오르는 동안 웅덩이에 들어가지 않고, 이미 들어가 있으면 빠져나오도록 수정",
+    "봇이 발판 끝에서 용암 웅덩이로 걸어 내려가거나 떨어지지 않도록 수정",
+    "화산 지대 밸런스 재측정"
+   ],
+   "tr": {
+    "en": {
+     "title": "Bots avoid lava",
+     "items": [
+      "Bots on the volcano map now keep out of the lava pools while they glow and burn, and run out of one they are standing in",
+      "Bots no longer walk or drop off a platform edge into a lava pool",
+      "Balance re-measured on the volcano map"
+     ]
+    },
+    "es": {
+     "title": "Los bots evitan la lava",
+     "items": [
+      "Los bots del mapa del volcán ahora se mantienen fuera de los charcos de lava mientras brillan y queman, y salen corriendo de uno en el que estén",
+      "Los bots ya no caminan ni caen desde el borde de una plataforma a un charco de lava",
+      "Equilibrio vuelto a medir en el mapa del volcán"
+     ]
+    },
+    "fr": {
+     "title": "Les bots évitent la lave",
+     "items": [
+      "Les bots de la carte du volcan restent maintenant hors des mares de lave tant qu’elles rougeoient et brûlent, et sortent en courant de celle où ils se trouvent",
+      "Les bots ne marchent ni ne tombent plus du bord d’une plateforme dans une mare de lave",
+      "Équilibrage mesuré à nouveau sur la carte du volcan"
+     ]
+    },
+    "de": {
+     "title": "Bots meiden Lava",
+     "items": [
+      "Bots auf der Vulkan-Karte halten sich jetzt von den Lavabecken fern, solange sie glühen und brennen, und laufen aus einem heraus, in dem sie stehen",
+      "Bots laufen oder fallen nicht mehr vom Plattformrand in ein Lavabecken",
+      "Balance auf der Vulkan-Karte neu gemessen"
+     ]
+    },
+    "ja": {
+     "title": "ボットが溶岩を避けるように",
+     "items": [
+      "火山マップで、ボットが溶岩だまりが光って燃えている間は近づかず、中にいる場合は走って出るように変更",
+      "ボットが足場の端から溶岩だまりへ歩いて落ちないよう変更",
+      "火山マップでバランスを再測定"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-18",
    "build": "v289",
    "title": "야구선수 궁극기 지속시간",
    "items": [
