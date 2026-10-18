@@ -2,6 +2,52 @@
  "notes": [
   {
    "date": "2026-10-18",
+   "build": "v286",
+   "title": "자다이 데미지 하향",
+   "items": [
+    "자다이 데미지 34 → 26",
+    "밸런스 재측정"
+   ],
+   "tr": {
+    "en": {
+     "title": "Jedi damage lowered",
+     "items": [
+      "Jedi damage 34 → 26",
+      "Balance re-measured"
+     ]
+    },
+    "es": {
+     "title": "Daño del Jedi reducido",
+     "items": [
+      "Daño del Jedi 34 → 26",
+      "Equilibrio vuelto a medir"
+     ]
+    },
+    "fr": {
+     "title": "Dégâts du Jedi réduits",
+     "items": [
+      "Dégâts du Jedi 34 → 26",
+      "Équilibrage mesuré à nouveau"
+     ]
+    },
+    "de": {
+     "title": "Jedi-Schaden gesenkt",
+     "items": [
+      "Jedi-Schaden 34 → 26",
+      "Balance neu gemessen"
+     ]
+    },
+    "ja": {
+     "title": "ジェダイのダメージ調整",
+     "items": [
+      "ジェダイのダメージ 34 → 26",
+      "バランスを再測定"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-18",
    "build": "v285",
    "title": "자다이 받아치기 변경",
    "items": [

@@ -1135,8 +1135,8 @@ const WEAPONS = {
             desc:'데미지 6 · 클릭 한 번에 10발 연사 · 쿨타임 2.2초 · 탄이 약간씩 퍼지는 일제사격'},
   bow:     {id:'bow',     name:'활',       emoji:'🏹', kind:'gun',      dmg:30, cd:1.5,  bulletSpeed:1100, shape:'arrow', arcs:true,
             desc:'데미지 30 · 재장전 1.5초 · 중력의 영향을 받아 포물선을 그리는 강력한 원거리 무기'},
-  lightsaber:{id:'lightsaber', name:'광선검', emoji:'⚡', kind:'melee', dmg:34, cd:1.1, range:100, shape:'saber', kbMult:2.2, deflectSec:0.25,
-            desc:'데미지 34 · 쿨타임 1.1초 · 사거리 100 · 광선검을 휘둘러 맞은 상대를 크게 날려보냄 · 휘두른 순간부터 0.25초 동안 날아오는 투사체를 쏜 사람에게 튕겨내고, 단거리 공격도 막아내고, 막아내면 쿨타임 없이 한 번 더 휘두를 수 있음 (공격받기 0.25초 전에 눌러야 함)'},
+  lightsaber:{id:'lightsaber', name:'광선검', emoji:'⚡', kind:'melee', dmg:26, cd:1.1, range:100, shape:'saber', kbMult:2.2, deflectSec:0.25,
+            desc:'데미지 26 · 쿨타임 1.1초 · 사거리 100 · 광선검을 휘둘러 맞은 상대를 크게 날려보냄 · 휘두른 순간부터 0.25초 동안 날아오는 투사체를 쏜 사람에게 튕겨내고, 단거리 공격도 막아내고, 막아내면 쿨타임 없이 한 번 더 휘두를 수 있음 (공격받기 0.25초 전에 눌러야 함)'},
   horemheb:{id:'horemheb', name:'쇠스랑', emoji:'🔱', kind:'melee', dmg:34, cd:0.55, range:105, shape:'pitchfork',
             desc:'데미지 34 · 쿨타임 0.55초 · 사거리 105 · 쇠스랑을 휘둘러 근접 공격'},
   sword:   {id:'sword',   name:'칼',       emoji:'🗡️', kind:'melee',    dmg:30, cd:0.5,  range:100, shape:'blade',
@@ -4633,7 +4633,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-18-v285';
+const GAME_BUILD='build 2026-10-18-v286';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
