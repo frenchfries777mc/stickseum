@@ -2,6 +2,58 @@
  "notes": [
   {
    "date": "2026-10-18",
+   "build": "v285",
+   "title": "자다이 받아치기 변경",
+   "items": [
+    "자다이가 단거리 공격의 피해를 돌려주지 않고 막아내도록 변경",
+    "받아치기에 성공하면 쿨타임 없이 한 번 더 휘두를 수 있도록 변경",
+    "밸런스 재측정"
+   ],
+   "tr": {
+    "en": {
+     "title": "Jedi deflect rework",
+     "items": [
+      "Jedi no longer sends close-range damage back; it blocks the hit instead",
+      "A successful deflect (shot or close-range hit) lets the Jedi swing again with no cooldown",
+      "Balance re-measured"
+     ]
+    },
+    "es": {
+     "title": "Rediseño del desvío del Jedi",
+     "items": [
+      "El Jedi ya no devuelve el daño cuerpo a cuerpo; ahora bloquea el golpe",
+      "Un desvío exitoso (disparo o golpe cuerpo a cuerpo) permite al Jedi atacar de nuevo sin enfriamiento",
+      "Equilibrio vuelto a medir"
+     ]
+    },
+    "fr": {
+     "title": "Refonte de la déviation du Jedi",
+     "items": [
+      "Le Jedi ne renvoie plus les dégâts au corps à corps ; il bloque le coup",
+      "Une déviation réussie (tir ou coup au corps à corps) permet au Jedi de frapper de nouveau sans délai de recharge",
+      "Équilibrage mesuré à nouveau"
+     ]
+    },
+    "de": {
+     "title": "Überarbeitung der Jedi-Abwehr",
+     "items": [
+      "Der Jedi gibt Nahkampfschaden nicht mehr zurück, sondern blockt den Treffer",
+      "Nach einer erfolgreichen Abwehr (Schuss oder Nahkampftreffer) kann der Jedi ohne Abklingzeit erneut zuschlagen",
+      "Balance neu gemessen"
+     ]
+    },
+    "ja": {
+     "title": "ジェダイの弾き返しの変更",
+     "items": [
+      "ジェダイは近距離ダメージを返さず、攻撃を防ぐように変更",
+      "弾き返し（弾または近距離攻撃）に成功すると、クールタイムなしでもう一度振れるように変更",
+      "バランスを再測定"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-18",
    "build": "v284",
    "title": "암살자·차원 여행자·기사·자다이 조정",
    "items": [
