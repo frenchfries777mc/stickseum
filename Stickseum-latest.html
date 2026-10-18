@@ -4633,7 +4633,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-18-v290';
+const GAME_BUILD='build 2026-10-18-v291';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
@@ -6646,6 +6646,7 @@ async function sbSignIn(username, password, remember){
         (2) a login never writes an empty nickname or empty statistics over the account; a nickname that the account already has is taken over instead. */
 function saveIsFresh(){ return !( (saveData.xp||0)>0 || (saveData.totalMatches||0)>0 || (saveData.totalKills||0)>0 || (gold||0)>0 || Object.keys(saveData.owned||{}).length>0 || Object.keys(saveData.achievements||{}).length>0 || (saveData.boxes||0)>0 || (saveData.souls||0)>0 ); }
 async function sbAfterLogin(id, username, userMeta){
+  switchLocalAccount(username);
   const sameAccountAsLast=(localStorage.getItem(LAST_USER_KEY)||'')===username;
   sbUser={id, username}; sbUserMeta=(userMeta && typeof userMeta==='object') ? userMeta : {};
   startPresence();
@@ -6665,6 +6666,30 @@ async function sbAfterLogin(id, username, userMeta){
   clearInterval(clanInviteTimer); clanInviteTimer=setInterval(()=>{ if(sbUser && !myClan) clanLoadInvites(); }, 60000);
 }
 const LAST_USER_KEY='arenaClashLastUser';
+/* ---- two accounts in one browser must not see each other's data ----
+   The progress (gold, skins, level...), the highlights and the recent players are kept in this browser, so they used to be shared by every account that logged in here (and a new account without a cloud save even got the previous one's progress).
+   Now each account has its own stash (stickseumAcct_<name>; "" = nobody logged in). Logging in as another account or logging out puts the current data into the stash of its owner and takes the stash of the new one.
+   Data that nobody owned yet (made before this change or without login) is simply taken over by the first account that logs in. Settings, key bindings and the language belong to the device and are not touched. */
+const ACCT_STASH='stickseumAcct_';
+function acctLsKeys(){ return [SAVE_KEY, HL_KEY, RP_KEY]; }
+function switchLocalAccount(to){
+  to=to||'';
+  try{
+    const last=localStorage.getItem(LAST_USER_KEY)||'';
+    if(last===to) return false;
+    let incoming=null; try{ incoming=JSON.parse(localStorage.getItem(ACCT_STASH+to)||'null'); }catch(e){}
+    if(!last && to && !incoming) return false;                                                    // data without an owner goes to the first account that logs in
+    const out={}; for(const k of acctLsKeys()){ const v=localStorage.getItem(k); if(v!=null) out[k]=v; }
+    localStorage.setItem(ACCT_STASH+last, JSON.stringify(out));
+    for(const k of acctLsKeys()){ localStorage.removeItem(k); if(incoming && typeof incoming[k]==='string') localStorage.setItem(k, incoming[k]); }
+    localStorage.setItem(LAST_USER_KEY, to);
+    gold=0; Object.assign(saveData, {owned:{}, equipped:{name:null, skin:{}}, xp:0, totalKills:0, totalMatches:0, totalWins:0, totalDamage:0, totalAssists:0, modeMatches:{}, charKills:{}, playerName:null, nameDirty:false,
+      avatar:{bg:'#274d3a', color:'#3fe0c5', accessory:null}, achievements:{}, weaponXp:{}, boxes:0, boxesOpened:0, dailyLast:'', dailyCount:0, souls:0, pxEarned:0, pxSpent:0, missions:null, season:null});
+    loadSave(); if(saveData.playerName){ myName=saveData.playerName; myNameSet=true; }
+    try{ updateGoldUI(); }catch(e){}
+    return true;
+  }catch(e){ return false; }
+}
 async function sbSyncAccountData(id, username, sameAccountAsLast){
   await cloudSaveSync(username, sameAccountAsLast);                              // 1) progress AND nickname: the account's save comes into this browser (and the other way round)
   await nickSyncWithProfile(id);                                                  // 2) the nickname of the account (profiles.display_name, shared with the hub and the other games) and this game say the same
@@ -6868,6 +6893,7 @@ async function sbSignOut(){
   try{ await sb.auth.signOut(); }catch(e){}
   try{ clearTimeout(cloudSaveTimer); }catch(e){} cloudSaveReady=false; cloudSaveState='off'; cloudSaveNote=''; sbUserMeta={};
   sbForgetPassword();
+  switchLocalAccount('');
   sbUser=null; myClan=null; friendsCache=[]; presenceLastSeen={}; presenceBusySent=false; pendingNoticeDone=false; pendingNoticeClose();
   renderSocialBox(); updateInviteFriendBox();
 }

@@ -2,6 +2,58 @@
  "notes": [
   {
    "date": "2026-10-18",
+   "build": "v291",
+   "title": "계정별 데이터 분리",
+   "items": [
+    "같은 브라우저에서 서로 다른 두 계정이 로그인해도 진행 상황(골드·스킨·레벨), 하이라이트, 최근 함께한 플레이어가 겹치지 않도록 수정 (계정마다 이 브라우저에 따로 보관)",
+    "새 계정이 이전 계정의 진행 상황을 이어받던 문제 수정",
+    "기존 진행 상황은 그대로 유지되며 처음 로그인하는 계정에 귀속"
+   ],
+   "tr": {
+    "en": {
+     "title": "Separate data per account",
+     "items": [
+      "Two accounts logging in on the same browser no longer share progress (gold, skins, level), highlights or recent players; each account keeps its own on this browser",
+      "A new account no longer starts with the previous account’s progress",
+      "Existing progress stays: it goes to the first account that logs in"
+     ]
+    },
+    "es": {
+     "title": "Datos separados por cuenta",
+     "items": [
+      "Dos cuentas que inician sesión en el mismo navegador ya no comparten progreso (oro, aspectos, nivel), momentos destacados ni jugadores recientes; cada cuenta guarda los suyos en este navegador",
+      "Una cuenta nueva ya no empieza con el progreso de la cuenta anterior",
+      "El progreso existente se conserva: pasa a la primera cuenta que inicie sesión"
+     ]
+    },
+    "fr": {
+     "title": "Données séparées par compte",
+     "items": [
+      "Deux comptes connectés sur le même navigateur ne partagent plus la progression (or, apparences, niveau), les temps forts ni les joueurs récents ; chaque compte garde les siens sur ce navigateur",
+      "Un nouveau compte ne démarre plus avec la progression du compte précédent",
+      "La progression existante est conservée : elle revient au premier compte qui se connecte"
+     ]
+    },
+    "de": {
+     "title": "Daten pro Konto getrennt",
+     "items": [
+      "Zwei Konten im selben Browser teilen Fortschritt (Gold, Skins, Level), Highlights und letzte Mitspieler nicht mehr; jedes Konto behält seine eigenen in diesem Browser",
+      "Ein neues Konto startet nicht mehr mit dem Fortschritt des vorherigen Kontos",
+      "Vorhandener Fortschritt bleibt erhalten: Er geht an das erste Konto, das sich anmeldet"
+     ]
+    },
+    "ja": {
+     "title": "アカウントごとにデータを分離",
+     "items": [
+      "同じブラウザで2つのアカウントがログインしても、進行状況（ゴールド・スキン・レベル）、ハイライト、最近の対戦相手が共有されないよう変更。アカウントごとにこのブラウザへ別々に保存",
+      "新しいアカウントが前のアカウントの進行状況から始まらないよう変更",
+      "既存の進行状況は維持され、最初にログインしたアカウントに引き継がれる"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-18",
    "build": "v290",
    "title": "봇의 용암 회피",
    "items": [
