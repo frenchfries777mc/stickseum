@@ -2,6 +2,46 @@
  "notes": [
   {
    "date": "2026-10-18",
+   "build": "v293",
+   "title": "MVP 투표에 내 카드 표시",
+   "items": [
+    "MVP 투표 목록에 내 카드도 캐릭터와 경기 기록과 함께 표시 (회색으로 선택 불가)"
+   ],
+   "tr": {
+    "en": {
+     "title": "Own card in the MVP vote",
+     "items": [
+      "Your own card now also shows in the MVP vote with your character and numbers, greyed out and not clickable"
+     ]
+    },
+    "es": {
+     "title": "Tu tarjeta en la votación MVP",
+     "items": [
+      "Tu propia tarjeta ahora también aparece en la votación MVP con tu personaje y tus cifras, en gris y sin poder pulsarse"
+     ]
+    },
+    "fr": {
+     "title": "Votre carte dans le vote MVP",
+     "items": [
+      "Votre propre carte apparaît désormais aussi dans le vote MVP avec votre personnage et vos chiffres, en grisé et non cliquable"
+     ]
+    },
+    "de": {
+     "title": "Eigene Karte bei der MVP-Wahl",
+     "items": [
+      "Deine eigene Karte erscheint jetzt auch bei der MVP-Wahl mit Charakter und Werten, ausgegraut und nicht anklickbar"
+     ]
+    },
+    "ja": {
+     "title": "MVP投票に自分のカード",
+     "items": [
+      "MVP投票に自分のカードも、キャラクターと成績つきで表示されるように変更。グレーで選択はできない"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-18",
    "build": "v292",
    "title": "듀얼 라운드마다 캐릭터 금지",
    "items": [
