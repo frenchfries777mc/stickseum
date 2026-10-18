@@ -1,6 +1,58 @@
 {
  "notes": [
   {
+   "date": "2026-10-18",
+   "build": "v274",
+   "title": "캐릭터 금지와 선택 후 화면 정리",
+   "items": [
+    "듀얼·팀전·랭크전에서 캐릭터 선택 전 상대가 못 고르는 캐릭터를 하나씩 금지하는 단계 추가 (10초, 팀전은 팀장이 결정)",
+    "캐릭터 선택이 끝난 뒤 나오던 확인 창 삭제",
+    "시작 연출에서 팀전·점령전·깃발 뺏기는 팀과 팀으로 나눠, 배틀로얄은 내 캐릭터를 왼쪽에 두고 적 캐릭터를 오른쪽에 표시"
+   ],
+   "tr": {
+    "en": {
+     "title": "Character bans and a cleaner start after picking",
+     "items": [
+      "Duel, team and ranked matches now have a ban stage before picking: each side bans one character the opponent cannot choose (10 s; the team leader decides in team matches)",
+      "Removed the confirmation window that appeared after everyone had picked",
+      "The start card now splits team, capture and flag matches into team versus team, and in battle royale shows your character on the left and the enemy characters on the right"
+     ]
+    },
+    "es": {
+     "title": "Prohibición de personajes y un inicio más limpio tras elegir",
+     "items": [
+      "Los duelos, partidas por equipos y clasificatorias tienen una fase de prohibición antes de elegir: cada bando prohíbe un personaje que el rival no puede elegir (10 s; en equipos decide el líder)",
+      "Eliminada la ventana de confirmación que aparecía cuando todos habían elegido",
+      "La tarjeta de inicio separa equipos, captura y bandera en equipo contra equipo, y en battle royale muestra tu personaje a la izquierda y los enemigos a la derecha"
+     ]
+    },
+    "fr": {
+     "title": "Bannissement de personnages et un départ plus propre après le choix",
+     "items": [
+      "Les duels, parties par équipes et classées ont une phase de bannissement avant le choix : chaque camp bannit un personnage que l’adversaire ne peut pas prendre (10 s ; le chef d’équipe décide en équipe)",
+      "Suppression de la fenêtre de confirmation qui apparaissait une fois que tout le monde avait choisi",
+      "La carte de départ sépare équipes, capture et drapeau en équipe contre équipe, et en battle royale montre votre personnage à gauche et les ennemis à droite"
+     ]
+    },
+    "de": {
+     "title": "Charakter-Sperren und ein saubererer Start nach der Wahl",
+     "items": [
+      "Duell, Team und Ranglisten-Matches haben vor der Wahl eine Sperrphase: Jede Seite sperrt einen Charakter, den der Gegner nicht wählen kann (10 s; im Team entscheidet der Teamleiter)",
+      "Das Bestätigungsfenster nach der Wahl aller Spieler wurde entfernt",
+      "Die Startkarte zeigt Team-, Eroberungs- und Flaggenmodus als Team gegen Team, im Battle Royale links deinen Charakter und rechts die Gegner"
+     ]
+    },
+    "ja": {
+     "title": "キャラ禁止と選択後の画面整理",
+     "items": [
+      "デュエル・チーム戦・ランク戦で、キャラ選択の前に相手が選べないキャラを1体ずつ禁止する段階を追加（10秒、チーム戦はリーダーが決定）",
+      "全員の選択後に出ていた確認ウィンドウを削除",
+      "開始演出で、チーム戦・占領戦・旗取りはチーム対チーム、バトルロイヤルは自分のキャラを左に敵キャラを右に表示"
+     ]
+    }
+   }
+  },
+  {
    "date": "2026-10-17",
    "build": "v273",
    "title": "다리 맵 렉 수정과 비공개 최소 인원",
