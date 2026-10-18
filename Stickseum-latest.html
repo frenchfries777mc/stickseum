@@ -1139,8 +1139,8 @@ const WEAPONS = {
             desc:'데미지 26 · 쿨타임 1.1초 · 사거리 100 · 광선검을 휘둘러 맞은 상대를 크게 날려보냄 · 휘두른 순간부터 0.25초 동안 날아오는 투사체를 쏜 사람에게 튕겨내고, 단거리 공격도 막아내고, 막아내면 쿨타임 없이 한 번 더 휘두를 수 있음 (공격받기 0.25초 전에 눌러야 함)'},
   horemheb:{id:'horemheb', name:'쇠스랑', emoji:'🔱', kind:'melee', dmg:34, cd:0.55, range:105, shape:'pitchfork',
             desc:'데미지 34 · 쿨타임 0.55초 · 사거리 105 · 쇠스랑을 휘둘러 근접 공격'},
-  sword:   {id:'sword',   name:'칼',       emoji:'🗡️', kind:'melee',    dmg:30, cd:0.5,  range:100, shape:'blade',
-            desc:'데미지 30 · 쿨타임 0.5초 · 사거리 100 · 빠르고 날카로운 근접 베기'},
+  sword:   {id:'sword',   name:'칼',       emoji:'🗡️', kind:'melee',    dmg:32, cd:0.5,  range:100, shape:'blade',
+            desc:'데미지 32 · 쿨타임 0.5초 · 사거리 100 · 빠르고 날카로운 근접 베기'},
   bat:     {id:'bat',     name:'방망이',   emoji:'🏏', kind:'melee',    dmg:43, cd:0,  range:105, shape:'club',
             desc:'데미지 43 · 쿨타임 없음 · 사거리 105 · 클릭한 채 마우스를 아래로 내렸다가 다시 올리면(스윙) 그때 맞은 상대에게 타격'},
   boomerang:{id:'boomerang',name:'부메랑', emoji:'🪃', kind:'boomerang',dmg:20, cd:0,  bulletSpeed:700, shape:'boomerang',
@@ -1193,7 +1193,7 @@ const REST_SEC=3, REST_INTERVAL=0.5, REST_AMOUNT=5, REST_MOVE_PX=6;
 const CARD_SLOW_MULT=0.75, CARD_SLOW_SEC=1.2, CARD_STUN_SEC=0.5;
 // Knight (기사) skill: the lunge now whirls the sword around the knight for SWORD_SPIN_SEC, whatever the cursor does. Everything the blade touches takes
 // SWORD_SPIN_DMG once per lunge. The blade is SWORD_SPIN_RADIUS long, turning SWORD_SPIN_RATE radians a second (about 4 turns a second).
-const SWORD_SPIN_SEC=0.6, SWORD_SPIN_DMG=30, SWORD_SPIN_RADIUS=92, SWORD_SPIN_RATE=26;   // (0 would make the skill a pure charge: no damage, enemies it brushes past are only shoved aside)
+const SWORD_SPIN_SEC=0.6, SWORD_SPIN_DMG=32, SWORD_SPIN_RADIUS=92, SWORD_SPIN_RATE=26;   // (0 would make the skill a pure charge: no damage, enemies it brushes past are only shoved aside)
 // The knight's charge lasts 5x as long as the old 0.6s dash (3 seconds) and does not fade out: the knight runs at SWORD_CHARGE_SPEED (about twice
 // running speed, ignores knockback) until the spinning blade TOUCHES an enemy - then it stops right there (the blade keeps whirling for
 // SWORD_STOP_SPIN_SEC, so the one it touched and anyone beside it are still cut) - or it hits a wall, or the time is up, or the player presses the
@@ -4633,7 +4633,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-18-v286';
+const GAME_BUILD='build 2026-10-18-v287';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
@@ -10480,7 +10480,7 @@ const SKILLS={
   pistol:   {name:'속사',        kind:'buff', desc:'1.8초 동안 연사 속도 2배'},
   smg:      {name:'연막탄',      kind:'hit',  desc:'주변 적을 2.5초 동안 둔화'},
   bow:      {name:'백스텝',      kind:'move', desc:'뒤로 도약하며 활 재장전이 즉시 끝남'},
-  sword:    {name:'돌진 베기',   kind:'move', desc:'앞으로 최대 3초 동안 돌진하며(돌진하는 동안 피해를 받지 않음) 칼을 빙글빙글 휘둘러, 닿는 적에게 30 피해를 주고 그 자리에서 멈춤 (스킬키를 다시 누르면 취소)'},
+  sword:    {name:'돌진 베기',   kind:'move', desc:'앞으로 최대 3초 동안 돌진하며(돌진하는 동안 피해를 받지 않음) 칼을 빙글빙글 휘둘러, 닿는 적에게 32 피해를 주고 그 자리에서 멈춤 (스킬키를 다시 누르면 취소)'},
   bat:      {name:'반사 스윙',   kind:'buff', desc:'0.7초 동안 주변 투사체를 되받아침'},
   boomerang:{name:'질주',        kind:'buff', desc:'2초 동안 이동 속도 +50%'},
   shuriken: {name:'그림자 이동', kind:'move', desc:'조준 방향으로 짧게 순간이동하고 1초 은신'},
@@ -11005,7 +11005,8 @@ function explodeAt(x,y,b,tMs){
     if(dist(x,y,target.x,cy) <= b.splash){
       const owner=players[b.owner];
       const boosted = ((owner && owner.wizBuff) ? WIZ_DMG_MULT : 1) * ((owner && owner.isZombie) ? ZOMBIE_DMG_MULT : 1);
-      const blastDmg0 = ((id===b.owner) ? b.dmg*0.5 : b.dmg) * boosted; // self-inflicted blast damage is halved
+      const selfMult = (owner && (owner.weapon==='grenade' || owner.weapon==='bazooka')) ? 0.25 : 0.5;   // self-inflicted blast damage: halved, only a quarter for the grenadier and the heavy gunner
+      const blastDmg0 = ((id===b.owner) ? b.dmg*selfMult : b.dmg) * boosted;
       let blastDmg = absorbIntoShield(target, blastDmg0);
       target.hp -= blastDmg; markHit(target, b.owner, tMs, blastDmg);
       pushFx('dmg', target.x, cy-16, tMs, {v:blastDmg, color:'#ffb347'});

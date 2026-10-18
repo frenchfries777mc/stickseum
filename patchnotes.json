@@ -2,6 +2,64 @@
  "notes": [
   {
    "date": "2026-10-18",
+   "build": "v287",
+   "title": "자폭 피해와 기사 데미지 조정",
+   "items": [
+    "폭발광·중화기병이 자기 폭발에 맞을 때 받는 피해 50% → 25%",
+    "기사 일반 공격 데미지 30 → 32",
+    "기사 스킬 데미지 30 → 32",
+    "밸런스 재측정"
+   ],
+   "tr": {
+    "en": {
+     "title": "Self-blast damage and Knight damage",
+     "items": [
+      "Self-inflicted blast damage for the Grenadier and Heavy Gunner 50% → 25%",
+      "Knight attack damage 30 → 32",
+      "Knight skill damage 30 → 32",
+      "Balance re-measured"
+     ]
+    },
+    "es": {
+     "title": "Daño de autoexplosión y daño del Caballero",
+     "items": [
+      "Daño de explosión propia del Granadero y el Artillero pesado 50% → 25%",
+      "Daño de ataque del Caballero 30 → 32",
+      "Daño de la habilidad del Caballero 30 → 32",
+      "Equilibrio vuelto a medir"
+     ]
+    },
+    "fr": {
+     "title": "Dégâts de ses propres explosions et dégâts du Chevalier",
+     "items": [
+      "Dégâts de ses propres explosions pour le Grenadier et le Soldat lourd 50 % → 25 %",
+      "Dégâts d’attaque du Chevalier 30 → 32",
+      "Dégâts de la compétence du Chevalier 30 → 32",
+      "Équilibrage mesuré à nouveau"
+     ]
+    },
+    "de": {
+     "title": "Selbstschaden durch Explosionen und Ritter-Schaden",
+     "items": [
+      "Selbstschaden durch eigene Explosionen für Granatier und Schwerschützen 50 % → 25 %",
+      "Angriffsschaden des Ritters 30 → 32",
+      "Schaden der Ritter-Fähigkeit 30 → 32",
+      "Balance neu gemessen"
+     ]
+    },
+    "ja": {
+     "title": "自爆ダメージと騎士のダメージ調整",
+     "items": [
+      "爆発狂と重火器兵が自分の爆発で受けるダメージ 50% → 25%",
+      "騎士の通常攻撃ダメージ 30 → 32",
+      "騎士のスキルダメージ 30 → 32",
+      "バランスを再測定"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-18",
    "build": "v286",
    "title": "자다이 데미지 하향",
    "items": [
