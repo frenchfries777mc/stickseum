@@ -2,6 +2,64 @@
  "notes": [
   {
    "date": "2026-10-18",
+   "build": "v288",
+   "title": "야구선수·암살자·해적 조정",
+   "items": [
+    "야구선수 궁극기 이동속도 증가 50% → 100%",
+    "암살자 대쉬 쿨타임 0.7초 → 0.5초",
+    "해적 데미지 27 → 30",
+    "밸런스 재측정"
+   ],
+   "tr": {
+    "en": {
+     "title": "Baseball Player, Assassin and Pirate tuning",
+     "items": [
+      "Baseball Player ultimate move speed bonus 50% → 100%",
+      "Assassin dash cooldown 0.7s → 0.5s",
+      "Pirate damage 27 → 30",
+      "Balance re-measured"
+     ]
+    },
+    "es": {
+     "title": "Ajustes del Beisbolista, el Asesino y el Pirata",
+     "items": [
+      "Bonificación de velocidad del definitivo del Beisbolista 50% → 100%",
+      "Enfriamiento del dash del Asesino 0,7 s → 0,5 s",
+      "Daño del Pirata 27 → 30",
+      "Equilibrio vuelto a medir"
+     ]
+    },
+    "fr": {
+     "title": "Ajustements du Joueur de baseball, de l’Assassin et du Pirate",
+     "items": [
+      "Bonus de vitesse de l’ultime du Joueur de baseball 50 % → 100 %",
+      "Délai de recharge du dash de l’Assassin 0,7 s → 0,5 s",
+      "Dégâts du Pirate 27 → 30",
+      "Équilibrage mesuré à nouveau"
+     ]
+    },
+    "de": {
+     "title": "Anpassungen Baseballspieler, Assassine und Pirat",
+     "items": [
+      "Tempo-Bonus der Ultimate des Baseballspielers 50 % → 100 %",
+      "Dash-Abklingzeit des Assassinen 0,7 s → 0,5 s",
+      "Schaden des Piraten 27 → 30",
+      "Balance neu gemessen"
+     ]
+    },
+    "ja": {
+     "title": "野球選手・暗殺者・海賊の調整",
+     "items": [
+      "野球選手の必殺技の移動速度上昇 50% → 100%",
+      "暗殺者のダッシュクールタイム 0.7秒 → 0.5秒",
+      "海賊のダメージ 27 → 30",
+      "バランスを再測定"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-18",
    "build": "v287",
    "title": "자폭 피해와 기사 데미지 조정",
    "items": [
