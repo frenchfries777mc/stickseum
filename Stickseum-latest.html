@@ -622,6 +622,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   .sbDots{display:inline-flex; gap:4px; vertical-align:middle;}
   #entranceBox{ position:fixed; left:0; right:0; top:22%; z-index:18; display:flex; align-items:center; justify-content:center; gap:18px; pointer-events:none; padding:0 16px; }
   #entranceBox .entCard{ display:flex; align-items:center; gap:14px; background:rgba(12,15,22,.88); border:2px solid #3fe0c5; border-radius:14px; padding:14px 20px; min-width:min(300px,40vw); box-shadow:0 10px 40px rgba(0,0,0,.5); transition:transform .45s cubic-bezier(.2,1.4,.4,1), opacity .4s; opacity:0; }
+  #entranceBox .entCard.ally{ background:rgba(20,52,112,.9); }
+  #entranceBox .entCard.foe{ background:rgba(120,24,32,.9); }
   #entranceBox .entCard.left{ transform:translateX(-60vw) skewX(-8deg); }
   #entranceBox .entCard.right{ transform:translateX(60vw) skewX(8deg); flex-direction:row-reverse; text-align:right; }
   #entranceBox.in .entCard{ transform:none; opacity:1; }
@@ -4630,7 +4632,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-18-v278';
+const GAME_BUILD='build 2026-10-18-v279';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
@@ -15465,14 +15467,14 @@ function staggerAngle(p){
 /* ===== the entrance: who is playing what =====
    When a match begins every player gets a short card with their character (and, in a one-on-one, the opponent's next to it: VS),
    and a burst of light comes up under every fighter. */
-function entranceCard(p, side){
+function entranceCard(p, side, ally){
   const w=WEAPONS[p.weapon]; if(!w) return '';
   const sk=SKILLS[p.weapon], ul=ULTS[p.weapon];
-  return '<div class="entCard '+side+'" style="border-color:'+p.color+'"><div class="entEmoji">'+w.emoji+'</div><div class="entTxt"><div class="entName" style="color:'+p.color+'">'+escapeHtmlText(WEAPON_PERSONA_NAME[p.weapon]||w.name)+'</div><div class="entPlayer" data-notr>'+escapeHtmlText(p.name||'')+'</div><div class="entMeta">'+escapeHtmlText(w.name)+(sk?' · F '+escapeHtmlText(sk.name):'')+(ul?' · R '+escapeHtmlText(ul.name):'')+'</div></div></div>';
+  return '<div class="entCard '+side+(ally?' ally':' foe')+'" style="border-color:'+p.color+'"><div class="entEmoji">'+w.emoji+'</div><div class="entTxt"><div class="entName" style="color:'+p.color+'">'+escapeHtmlText(WEAPON_PERSONA_NAME[p.weapon]||w.name)+'</div><div class="entPlayer" data-notr>'+escapeHtmlText(p.name||'')+'</div><div class="entMeta">'+escapeHtmlText(w.name)+(sk?' · F '+escapeHtmlText(sk.name):'')+(ul?' · R '+escapeHtmlText(ul.name):'')+'</div></div></div>';
 }
-function entranceMini(p){
+function entranceMini(p, ally){
   const w=WEAPONS[p.weapon]; if(!w) return '';
-  return '<div class="entCard mini" style="border-color:'+p.color+'"><div class="entEmoji">'+w.emoji+'</div><div class="entTxt"><div class="entName" style="color:'+p.color+'">'+escapeHtmlText(WEAPON_PERSONA_NAME[p.weapon]||w.name)+'</div><div class="entPlayer" data-notr>'+escapeHtmlText(p.name||'')+'</div></div></div>';
+  return '<div class="entCard mini '+(ally?'ally':'foe')+'" style="border-color:'+p.color+'"><div class="entEmoji">'+w.emoji+'</div><div class="entTxt"><div class="entName" style="color:'+p.color+'">'+escapeHtmlText(WEAPON_PERSONA_NAME[p.weapon]||w.name)+'</div><div class="entPlayer" data-notr>'+escapeHtmlText(p.name||'')+'</div></div></div>';
 }
 function entranceShow(){
   if(!started || matchEnded || practiceMode || spectatorMode || rpView || highlightViewing) return;
@@ -15481,14 +15483,14 @@ function entranceShow(){
   const fighters=Object.values(players).filter(p=>!p.isMinion && !p.isBoss && !p.isSpectator && WEAPONS[p.weapon]);
   const teamed=fighters.length>2 && fighters.every(p=>p.team!==null && p.team!==undefined) && new Set(fighters.map(p=>p.team)).size>=2 && me.team!==null && me.team!==undefined;
   let html, cls='';
-  if(fighters.length===2){ const opp=fighters.find(p=>p.id!==myId); html=entranceCard(me,'left')+(opp?'<div class="entVs">VS</div>'+entranceCard(opp,'right'):''); }
+  if(fighters.length===2){ const opp=fighters.find(p=>p.id!==myId); html=entranceCard(me,'left',true)+(opp?'<div class="entVs">VS</div>'+entranceCard(opp,'right',false):''); }
   else if(teamed){        // team, capture, flag: my team on the left, the other team(s) on the right, like the one-on-one
     const mine=fighters.filter(p=>p.team===me.team), others=fighters.filter(p=>p.team!==me.team);
     cls=' multi';
-    html='<div class="entSide left">'+mine.map(entranceMini).join('')+'</div><div class="entVs">VS</div><div class="entSide right">'+others.map(entranceMini).join('')+'</div>';
+    html='<div class="entSide left">'+mine.map(q=>entranceMini(q,true)).join('')+'</div><div class="entVs">VS</div><div class="entSide right">'+others.map(q=>entranceMini(q,false)).join('')+'</div>';
   } else {                // free-for-all: my character on the left, the others to its right
     cls=' multi';
-    html=entranceCard(me,'left')+'<div class="entSide right ffa">'+fighters.filter(p=>p.id!==myId).map(entranceMini).join('')+'</div>';
+    html=entranceCard(me,'left',true)+'<div class="entSide right ffa">'+fighters.filter(p=>p.id!==myId).map(q=>entranceMini(q,false)).join('')+'</div>';
   }
   let el=document.getElementById('entranceBox'); if(el) el.remove();
   el=document.createElement('div'); el.id='entranceBox'; el.className=cls.trim();
