@@ -2,6 +2,52 @@
  "notes": [
   {
    "date": "2026-10-18",
+   "build": "v276",
+   "title": "선택 XP 획득 방식 변경과 금지 표시",
+   "items": [
+    "선택 XP를 경기 보상 대신 랜덤 상자·일일 보상에서 25·50·100 단위로 획득",
+    "캐릭터 금지 중 팀원 칸에 우리 팀이 금지한 캐릭터 표시"
+   ],
+   "tr": {
+    "en": {
+     "title": "Pick XP sources and ban display",
+     "items": [
+      "Pick XP now comes from random boxes and the daily reward in amounts of 25, 50 and 100 instead of match rewards",
+      "During the ban stage the teammate slots show the character our team banned"
+     ]
+    },
+    "es": {
+     "title": "Origen del XP a elegir y vista de prohibiciones",
+     "items": [
+      "El XP a elegir ahora sale de las cajas aleatorias y de la recompensa diaria en cantidades de 25, 50 y 100, en lugar de las recompensas de partida",
+      "Durante la fase de prohibición, los espacios de compañeros muestran el personaje que prohibió nuestro equipo"
+     ]
+    },
+    "fr": {
+     "title": "Origine de l’XP au choix et affichage des bannissements",
+     "items": [
+      "L’XP au choix vient maintenant des caisses aléatoires et de la récompense quotidienne par paliers de 25, 50 et 100, au lieu des récompenses de partie",
+      "Pendant la phase de bannissement, les cases des coéquipiers affichent le personnage banni par notre équipe"
+     ]
+    },
+    "de": {
+     "title": "Wahl-XP-Quellen und Sperranzeige",
+     "items": [
+      "Wahl-XP gibt es jetzt aus Zufallskisten und der täglichen Belohnung in Stufen von 25, 50 und 100 statt als Match-Belohnung",
+      "In der Sperrphase zeigen die Teamkollegen-Felder den Charakter, den unser Team gesperrt hat"
+     ]
+    },
+    "ja": {
+     "title": "選択XPの入手方法と禁止表示の変更",
+     "items": [
+      "選択XPを試合報酬ではなく、ランダムボックスと毎日報酬から25・50・100単位で入手",
+      "キャラ禁止中、チームメイト欄にチームが禁止したキャラを表示"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-18",
    "build": "v275",
    "title": "선택 XP",
    "items": [
