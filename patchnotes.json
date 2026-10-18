@@ -2,6 +2,46 @@
  "notes": [
   {
    "date": "2026-10-18",
+   "build": "v278",
+   "title": "위험지대 알림 잔류 수정",
+   "items": [
+    "경기 도중 메뉴로 나가면 위험지대 시작 알림이 화면에 계속 남던 문제 수정"
+   ],
+   "tr": {
+    "en": {
+     "title": "Danger zone notice fix",
+     "items": [
+      "Fixed the danger zone countdown staying on screen after leaving a match for a menu"
+     ]
+    },
+    "es": {
+     "title": "Corrección del aviso de zona de peligro",
+     "items": [
+      "Corregido que la cuenta atrás de la zona de peligro siguiera en pantalla al salir de una partida a un menú"
+     ]
+    },
+    "fr": {
+     "title": "Correction de l’alerte de zone dangereuse",
+     "items": [
+      "Correction du compte à rebours de la zone dangereuse qui restait à l’écran après avoir quitté une partie pour un menu"
+     ]
+    },
+    "de": {
+     "title": "Gefahrenzonen-Hinweis behoben",
+     "items": [
+      "Behoben: Der Gefahrenzonen-Countdown blieb nach dem Verlassen eines Matches im Menü sichtbar"
+     ]
+    },
+    "ja": {
+     "title": "危険地帯の通知が残る問題を修正",
+     "items": [
+      "試合の途中でメニューに戻ると危険地帯の開始通知が画面に残り続ける問題を修正"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-18",
    "build": "v277",
    "title": "업적 비공개 제외 보강",
    "items": [
