@@ -750,7 +750,7 @@ setTimeout(go,14000);})();</script>
   <div id="topBar"><span id="hudMapName">맵</span><span id="hudConnWrap"> · 접속 <b id="hudCount">1</b>/<b id="hudMax">?</b></span> <span id="buildTag" style="opacity:0.65; font-size:11px;">build 2026-10-14-v210</span></div>
 
   <div id="bottomBar">
-  <div id="healthWrap"><div id="healthLabel">체력 · <span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
+  <div id="healthWrap"><div id="healthLabel">체력<span id="weaponSep"> · </span><span id="weaponLabel"></span></div><div id="healthBar"><div id="healthFill"></div></div></div>
   <div id="vacuumStackWrap" style="display:none;"><div id="vacuumStackLabel">스택 <span id="vacuumStackCount">0</span>/8</div><div id="vacuumStackDots"></div></div>
   <div id="dashWrap"><div id="dashLabel">대쉬 (Q)</div><div id="dashBar"><div id="dashFill"></div></div></div>
   <div id="teleportWrap"><div id="teleportLabel">순간이동 (E+클릭)</div><div id="teleportBar"><div id="teleportFill"></div></div></div>
@@ -1846,6 +1846,12 @@ function showAchievementToast(a, heading){
   el.innerHTML='<div class="achToastIcon">'+a.icon+'</div><div><div class="achToastTitle">'+(heading||'도전과제 달성!')+'</div><div class="achToastName">'+a.name+'</div>'+((a.reward>0)?'<div class="achToastReward">+'+a.reward+' 골드</div>':(a.sub?'<div class="achToastReward">'+a.sub+'</div>':''))+'</div>';
   host.appendChild(el);
   setTimeout(()=>{ el.classList.add('out'); setTimeout(()=>el.remove(),400); }, 3400);
+}
+function setWeaponLabel(wid){        // the character next to "체력" in the HUD (survival, parkour and hide and seek have no characters, so nothing is shown there)
+  const el=document.getElementById('weaponLabel'), sep=document.getElementById('weaponSep'), w=WEAPONS[wid]; if(!el) return;
+  if(gameMode==='survival' || gameMode==='parkour' || gameMode==='hideseek'){ el.textContent=''; if(sep) sep.style.display='none'; return; }
+  if(sep) sep.style.display='';
+  if(w) el.innerHTML=escapeHtmlText(w.emoji+' '+w.name)+charTierTagHtml(wid);
 }
 function updateGoldUI(){ const el=document.getElementById('goldAmt'); if(el) el.textContent=gold; updateSoulUI(); }
 function updateSoulUI(){ const el=document.getElementById('soulAmt'); if(el) el.textContent=saveData.souls||0; }
@@ -4633,7 +4639,7 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 /* ===== the version of this file =====
    Players with different versions CAN meet and play together: the automatic matchmaking uses the same room names for every version (online-<mode>-<map>-<slot>), and nobody is refused because of a different build.
    The build is only sent along with the join message and the lobby (for information); the corner of the screen shows it. */
-const GAME_BUILD='build 2026-10-18-v295';
+const GAME_BUILD='build 2026-10-18-v296';
 const GAME_VERSION='0.7', GAME_VERSION_NAME='어둠의 늪';   // 게임 버전 이름: versions.json의 title과 같게 (빌드마다 바꾸지 않음)
 const WEEKLY_EVENTS=[
   {id:'lowg',    name:'저중력 난투', desc:'몸이 둥실둥실, 중력이 약해진 난투', rules:{grav:0.6}},
@@ -8268,7 +8274,7 @@ startBtn.onclick=()=>{ if(isHost) doStart(); };
 
 /* ===== the elimination screen =====
    Out of a battle royale (duo: once the whole team is down) or knocked out of the tournament: a defeat screen shows right away,
-   with 나가기 (leave the room) and, below it, 관전 (close the screen and keep watching; a small 나가기 stays at the top right). */
+   with 나가기 (leave the room; survival too) and, below it, 관전 (close the screen and keep watching; a small 나가기 stays at the top right). */
 let elimState=null;                  // null, or {key, spec} once the screen was shown for this match
 function tnMyOut(){                  // knocked out of the tournament: the round label it happened in, or null
   if(gameMode!=='tournament' || !tnBk || !tnBk.ord || !tnBk.rounds) return null;
@@ -8279,14 +8285,14 @@ function tnMyOut(){                  // knocked out of the tournament: the round
 function elimInfo(me){
   if(!me || spectatorMode || !started || matchEnded || highlightViewing || rpView) return null;
   if(gameMode==='tournament'){ const lbl=tnMyOut(); return lbl ? {key:'tn', sub:lbl+' 탈락'} : null; }
-  if(gameMode!=='br' && gameMode!=='duo') return null;
+  if(gameMode!=='br' && gameMode!=='duo' && gameMode!=='survival') return null;       // (survival too: out of the disasters for good, so 나가기 / 관전 shows at once)
   if(me.alive || !(isHost ? me.respawnAt===Infinity : me.respawnIn===-1)) return null;
   const all=Object.values(players).filter(p=>p && !p.isMinion && !p.isBoss && !p.isSpectator);
   if(gameMode==='duo'){
     if(all.some(p=>p.id!==myId && p.alive && p.team===me.team)) return null;           // my teammate is still in
     const teams=new Set(all.filter(p=>p.alive).map(p=>p.team)); return {key:'duo', sub:'순위: '+(teams.size+1)+'위 · 우리 팀 탈락'};
   }
-  return {key:'br', sub:'순위: '+(all.filter(p=>p.alive).length+1)+'위 · 탈락'};
+  return {key:gameMode==='survival'?'sv':'br', sub:'순위: '+(all.filter(p=>p.alive).length+1)+'위 · 탈락'};
 }
 function elimTick(me){
   const ov=document.getElementById('elimOverlay'), ex=document.getElementById('elimExitBtn');
@@ -10142,7 +10148,7 @@ function finalizeGameplayStart(mte){
     // HUD bar used to stay visible and "ready" regardless, even though pressing E+click would do nothing.
     document.getElementById('teleportWrap').style.display = (MODES[gameMode]||{}).noTeleport ? 'none' : '';
     const myWeapon = players[myId] ? WEAPONS[players[myId].weapon] : null;
-    if(myWeapon) document.getElementById('weaponLabel').innerHTML=escapeHtmlText(myWeapon.emoji+' '+myWeapon.name)+charTierTagHtml(players[myId].weapon);
+    if(myWeapon) setWeaponLabel(players[myId].weapon);
     if(gameMode==='duel'){
       duelScores={};
       for(const id in players) duelScores[id]=0;
@@ -13487,7 +13493,7 @@ function openDuelPickScreen(deadline, wmode, offer, banEnds){
 function applyDuelWeapons(map){
   for(const id in map){ if(players[id]) players[id].weapon=map[id]; }
   const mw=players[myId]?WEAPONS[players[myId].weapon]:null;
-  if(mw) document.getElementById('weaponLabel').innerHTML=escapeHtmlText(mw.emoji+' '+mw.name)+charTierTagHtml(players[myId].weapon);
+  if(mw) setWeaponLabel(players[myId].weapon);
 }
 function closeDuelPickScreen(map){
   if(weaponCountdownTimer){ clearInterval(weaponCountdownTimer); weaponCountdownTimer=null; }
@@ -15795,7 +15801,7 @@ function render(fxDt){
     document.getElementById('hudCount').textContent=Object.values(players).filter(p=>!p.isBoss && !p.isMinion).length;
     { const sm=document.getElementById('stunMsg'); if(sm) sm.style.display=(me.alive && me.stunned)?'block':'none'; }
     const curWeapon=WEAPONS[me.weapon];
-    if(curWeapon) document.getElementById('weaponLabel').innerHTML=escapeHtmlText(curWeapon.emoji+' '+curWeapon.name)+charTierTagHtml(me.weapon); // kept live (not just set once at match start) since some modes change a player's weapon mid-match (e.g. hide and seek's seeker goes bare-handed -> pistol)
+    if(curWeapon) setWeaponLabel(me.weapon); // kept live (not just set once at match start) since some modes change a player's weapon mid-match (e.g. hide and seek's seeker goes bare-handed -> pistol)
     const vsWrap=document.getElementById('vacuumStackWrap');
     if(me.weapon==='vacuum'){
       vsWrap.style.display='block';
