@@ -2,6 +2,46 @@
  "notes": [
   {
    "date": "2026-10-18",
+   "build": "v281",
+   "title": "랭킹 동점 공동 순위",
+   "items": [
+    "점수가 같으면 같은 순위로 표시 (클랜·랭크전 랭킹, 메달 포함)"
+   ],
+   "tr": {
+    "en": {
+     "title": "Tied ranks shared",
+     "items": [
+      "Equal scores now share the same place (clan and ranked rankings, medals included)"
+     ]
+    },
+    "es": {
+     "title": "Puestos compartidos en empates",
+     "items": [
+      "Las puntuaciones iguales ahora comparten el mismo puesto (clasificaciones de clanes y ranked, medallas incluidas)"
+     ]
+    },
+    "fr": {
+     "title": "Places partagées en cas d’égalité",
+     "items": [
+      "Les scores égaux partagent désormais la même place (classements des clans et classé, médailles comprises)"
+     ]
+    },
+    "de": {
+     "title": "Gleiche Plätze bei Punktgleichheit",
+     "items": [
+      "Gleiche Punktzahlen teilen sich jetzt denselben Platz (Clan- und Ranglisten, inklusive Medaillen)"
+     ]
+    },
+    "ja": {
+     "title": "同点は同順位に",
+     "items": [
+      "同じ点数は同じ順位で表示（クラン・ランク戦ランキング、メダルを含む）"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-18",
    "build": "v280",
    "title": "봇 캐릭터 금지 표시",
    "items": [
