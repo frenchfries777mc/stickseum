@@ -2,6 +2,46 @@
  "notes": [
   {
    "date": "2026-10-18",
+   "build": "v277",
+   "title": "업적 비공개 제외 보강",
+   "items": [
+    "비공개·연습 게임에서는 어떤 경우에도 업적이 달성되지 않도록 확인 추가"
+   ],
+   "tr": {
+    "en": {
+     "title": "Achievements locked out of private games",
+     "items": [
+      "Added a check so that achievements can never unlock in private or practice games"
+     ]
+    },
+    "es": {
+     "title": "Logros bloqueados en partidas privadas",
+     "items": [
+      "Añadida una comprobación para que los logros nunca se desbloqueen en partidas privadas o de práctica"
+     ]
+    },
+    "fr": {
+     "title": "Succès bloqués dans les parties privées",
+     "items": [
+      "Ajout d’une vérification pour que les succès ne se débloquent jamais en partie privée ou d’entraînement"
+     ]
+    },
+    "de": {
+     "title": "Erfolge in privaten Spielen gesperrt",
+     "items": [
+      "Eine Prüfung stellt sicher, dass Erfolge in privaten oder Übungsspielen nie freigeschaltet werden"
+     ]
+    },
+    "ja": {
+     "title": "非公開ゲームでの実績を除外",
+     "items": [
+      "非公開・練習ゲームでは実績が達成されないよう確認を追加"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-18",
    "build": "v276",
    "title": "선택 XP 획득 방식 변경과 금지 표시",
    "items": [
