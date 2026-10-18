@@ -8,3 +8,6 @@ patchnotes.json | v294 items[2] | 전체 밸런스 재측정 | build 294 | 2026-
 patchnotes.json | v295 title | MVP 투표 카드 개편 | build 295 | 2026-10-18
 patchnotes.json | v295 items[0] | MVP 투표 카드를 한 줄로 나란히 세로로 길게 배치 | build 295 | 2026-10-18
 patchnotes.json | v295 items[1] | 카드 맨 위에 캐릭터 모습(색, 스킨, 무기) 표시 | build 295 | 2026-10-18
+patchnotes.json | v296 title | 서바이벌 탈락 후 나가기와 무기 표시 정리 | build 296 | 2026-10-18
+patchnotes.json | v296 items[0] | 서바이벌에서 죽으면 탈락 화면이 뜨고 바로 나가거나 관전을 고를 수 있음 | build 296 | 2026-10-18
+patchnotes.json | v296 items[1] | 서바이벌·파쿠르·숨바꼭질에서 체력 옆의 무기 표시 제거 | build 296 | 2026-10-18
