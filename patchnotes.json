@@ -2,6 +2,52 @@
  "notes": [
   {
    "date": "2026-10-18",
+   "build": "v292",
+   "title": "듀얼 라운드마다 캐릭터 금지",
+   "items": [
+    "듀얼에서 첫 라운드뿐 아니라 매 라운드 시작 전에 서로 상대 캐릭터를 하나씩 금지",
+    "금지는 해당 라운드의 캐릭터 선택에만 적용"
+   ],
+   "tr": {
+    "en": {
+     "title": "Duel: ban every round",
+     "items": [
+      "In Duel, both players now ban one of the opponent’s characters before every round, not only the first",
+      "The ban only holds for that round’s pick"
+     ]
+    },
+    "es": {
+     "title": "Dúo: veto en cada ronda",
+     "items": [
+      "En el Duelo, ambos jugadores vetan ahora un personaje del rival antes de cada ronda, no solo la primera",
+      "El veto solo vale para la elección de esa ronda"
+     ]
+    },
+    "fr": {
+     "title": "Duel : bannissement à chaque manche",
+     "items": [
+      "Dans le Duel, les deux joueurs bannissent désormais un personnage de l’adversaire avant chaque manche, pas seulement la première",
+      "Le bannissement ne vaut que pour le choix de cette manche"
+     ]
+    },
+    "de": {
+     "title": "Duell: Sperre in jeder Runde",
+     "items": [
+      "Im Duell sperren beide Spieler jetzt vor jeder Runde einen Charakter des Gegners, nicht nur vor der ersten",
+      "Die Sperre gilt nur für die Wahl dieser Runde"
+     ]
+    },
+    "ja": {
+     "title": "デュエル：毎ラウンドの禁止",
+     "items": [
+      "デュエルで、最初のラウンドだけでなく毎ラウンドの前に、お互いが相手のキャラクターを1体禁止するように変更",
+      "禁止はそのラウンドの選択にだけ適用"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-18",
    "build": "v291",
    "title": "계정별 데이터 분리",
    "items": [
