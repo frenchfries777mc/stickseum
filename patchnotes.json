@@ -2,6 +2,70 @@
  "notes": [
   {
    "date": "2026-10-18",
+   "build": "v284",
+   "title": "암살자·차원 여행자·기사·자다이 조정",
+   "items": [
+    "암살자 데미지 35 → 38",
+    "차원 여행자 탄환이 최대 3번까지 튕기도록 변경",
+    "기사 스킬 데미지 24 → 30",
+    "자다이가 받아치는 동안 단거리 공격도 공격한 사람에게 돌려주도록 변경",
+    "밸런스 재측정"
+   ],
+   "tr": {
+    "en": {
+     "title": "Assassin, Dimension Traveler, Knight, Jedi tuning",
+     "items": [
+      "Assassin damage 35 → 38",
+      "Dimension Traveler bullets now bounce up to 3 times",
+      "Knight skill damage 24 → 30",
+      "Jedi now also turns close-range attacks back on the attacker during the deflect window",
+      "Balance re-measured"
+     ]
+    },
+    "es": {
+     "title": "Ajustes de Asesino, Viajero dimensional, Caballero y Jedi",
+     "items": [
+      "Daño del Asesino 35 → 38",
+      "Las balas del Viajero dimensional ahora rebotan hasta 3 veces",
+      "Daño de la habilidad del Caballero 24 → 30",
+      "El Jedi ahora también devuelve al atacante los ataques cuerpo a cuerpo durante la ventana de desvío",
+      "Equilibrio vuelto a medir"
+     ]
+    },
+    "fr": {
+     "title": "Ajustements Assassin, Voyageur dimensionnel, Chevalier et Jedi",
+     "items": [
+      "Dégâts de l'Assassin 35 → 38",
+      "Les balles du Voyageur dimensionnel rebondissent maintenant jusqu'à 3 fois",
+      "Dégâts de la compétence du Chevalier 24 → 30",
+      "Le Jedi renvoie aussi les attaques au corps à corps contre l'attaquant pendant la fenêtre de déviation",
+      "Équilibrage mesuré à nouveau"
+     ]
+    },
+    "de": {
+     "title": "Anpassungen Assassine, Dimensionsreisender, Ritter und Jedi",
+     "items": [
+      "Schaden des Assassinen 35 → 38",
+      "Kugeln des Dimensionsreisenden prallen jetzt bis zu 3-mal ab",
+      "Schaden der Ritter-Fähigkeit 24 → 30",
+      "Der Jedi lenkt im Abwehrfenster jetzt auch Nahkampfangriffe auf den Angreifer zurück",
+      "Balance neu gemessen"
+     ]
+    },
+    "ja": {
+     "title": "暗殺者・次元旅行者・騎士・ジェダイの調整",
+     "items": [
+      "暗殺者のダメージ 35 → 38",
+      "次元旅行者の弾が最大3回まで跳ね返るように変更",
+      "騎士のスキルダメージ 24 → 30",
+      "ジェダイが弾き返しの間、近距離攻撃も攻撃した人に返すよう変更",
+      "バランスを再測定"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-18",
    "build": "v283",
    "title": "MVP 투표 카드",
    "items": [
