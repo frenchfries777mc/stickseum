@@ -2,6 +2,52 @@
  "notes": [
   {
    "date": "2026-10-18",
+   "build": "v289",
+   "title": "야구선수 궁극기 지속시간",
+   "items": [
+    "야구선수 궁극기 이동속도 증가 지속시간 1.5초 → 2.5초",
+    "밸런스 재측정"
+   ],
+   "tr": {
+    "en": {
+     "title": "Baseball Player ultimate duration",
+     "items": [
+      "Baseball Player ultimate speed bonus duration 1.5s → 2.5s",
+      "Balance re-measured"
+     ]
+    },
+    "es": {
+     "title": "Duración del definitivo del Beisbolista",
+     "items": [
+      "Duración de la bonificación de velocidad del definitivo del Beisbolista 1,5 s → 2,5 s",
+      "Equilibrio vuelto a medir"
+     ]
+    },
+    "fr": {
+     "title": "Durée de l’ultime du Joueur de baseball",
+     "items": [
+      "Durée du bonus de vitesse de l’ultime du Joueur de baseball 1,5 s → 2,5 s",
+      "Équilibrage mesuré à nouveau"
+     ]
+    },
+    "de": {
+     "title": "Dauer der Baseballspieler-Ultimate",
+     "items": [
+      "Dauer des Tempo-Bonus der Ultimate des Baseballspielers 1,5 s → 2,5 s",
+      "Balance neu gemessen"
+     ]
+    },
+    "ja": {
+     "title": "野球選手の必殺技の持続時間",
+     "items": [
+      "野球選手の必殺技の移動速度上昇の持続時間 1.5秒 → 2.5秒",
+      "バランスを再測定"
+     ]
+    }
+   }
+  },
+  {
+   "date": "2026-10-18",
    "build": "v288",
    "title": "야구선수·암살자·해적 조정",
    "items": [
